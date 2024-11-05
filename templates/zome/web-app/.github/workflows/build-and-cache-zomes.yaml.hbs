@@ -1,0 +1,74 @@
+name: "Build and cache zomes"
+on:
+  push: 
+    branches: [ main ]
+  pull_request: 
+    branches: [ main ]
+
+jobs:
+  build-and-cache-zomes:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    runs-on: $\{{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: cachix/install-nix-action@v27
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_path: nixpkgs=channel:nixos-24.05
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: holochain-ci
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: darksoil-studio
+
+      - name: Install and test
+        run: |
+          nix develop --no-update-lock-file --accept-flake-config --command bash -c "pnpm i && pnpm t && pnpm -F @darksoil-studio/{{kebab_case app_name}} build"
+
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v2
+
+      - name: Build debug zomes
+        env:
+          CACHIX_AUTH_TOKEN: "$\{{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+        run: |
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#{{snake_case app_name}}_integrity
+          cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#{{snake_case app_name}}_integrity | jq -- -r 'keys[0]')
+
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#{{snake_case app_name}}
+          cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#{{snake_case app_name}} | jq -- -r 'keys[0]')
+
+      - name: Pin debug zomes
+        if: github.event_name != 'pull_request'
+        env:
+          CACHIX_AUTH_TOKEN: "$\{{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+        run: |
+          cachix pin darksoil-studio {{snake_case app_name}}_integrity_debug $(nix path-info --json --accept-flake-config --no-warn-dirty .#{{snake_case app_name}}_integrity | jq -- -r 'keys[0]')
+          cachix pin darksoil-studio {{snake_case app_name}}_debug $(nix path-info --json --accept-flake-config --no-warn-dirty .#{{snake_case app_name}} | jq -- -r 'keys[0]')
+
+      - name: Build release zomes
+        if: matrix.os == 'ubuntu-latest'
+        env:
+          CACHIX_AUTH_TOKEN: "$\{{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+        run: |
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#{{snake_case app_name}}_integrity.meta.release
+          cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#{{snake_case app_name}}_integrity.meta.release | jq -- -r 'keys[0]')
+
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#{{snake_case app_name}}.meta.release
+          cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#{{snake_case app_name}}.meta.release | jq -- -r 'keys[0]')
+
+      - name: Pin release zomes
+        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
+        env:
+          CACHIX_AUTH_TOKEN: "$\{{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+        run: |
+          cachix pin darksoil-studio {{snake_case app_name}}_integrity_debug $(nix path-info --json --accept-flake-config --no-warn-dirty .#{{snake_case app_name}}_integrity | jq -- -r 'keys[0]')
+          cachix pin darksoil-studio {{snake_case app_name}}_debug $(nix path-info --json --accept-flake-config --no-warn-dirty .#{{snake_case app_name}} | jq -- -r 'keys[0]')
+

@@ -1,0 +1,125 @@
+
+import { LitElement, css, html } from 'lit';
+import { property, state, customElement } from 'lit/decorators.js';
+import { AppWebsocket, AppClient, ActionHash } from '@holochain/client';
+import { SignalWatcher } from '@tnesh-stack/signals';
+import { Router } from '@tnesh-stack/elements';
+import { provide } from '@lit/context';
+import { localized, msg } from '@lit/localize';
+import {
+  Profile,
+  ProfilesClient,
+  ProfilesStore,
+  profilesStoreContext
+} from '@darksoil-studio/profiles-zome';
+import { EntryRecord } from '@tnesh-stack/utils';
+
+import '@tnesh-stack/elements/dist/elements/display-error.js';
+import '@darksoil-studio/profiles-zome/dist/elements/profile-prompt.js';
+import '@darksoil-studio/profiles-zome/dist/elements/my-profile.js';
+import '@shoelace-style/shoelace/dist/components/spinner/spinner.js';
+import '@shoelace-style/shoelace/dist/components/icon-button/icon-button.js';
+
+import { rootRouterContext } from './context.js';
+import { appStyles } from './app-styles.js';
+import './home-page.js';
+
+@localized()
+@customElement('holochain-app')
+export class HolochainApp extends SignalWatcher(LitElement) {
+  @state() _loading = true;
+  @state() _view = { view: 'main' };
+  @state() _error: unknown | undefined;
+
+  @provide({ context: profilesStoreContext })
+  @property()
+  _profilesStore!: ProfilesStore;
+
+  _client!: AppClient;
+
+  @provide({ context: rootRouterContext })
+  router = new Router(this, [
+    {
+      path: "/",
+      enter: () => {
+        // Redirect to "/home/"
+        this.router.goto("/home/");
+        return false;
+      },
+    },
+    {
+      path: "/home/*",
+      render: () => html`<home-page></home-page>`,
+    },
+    {
+      path: "/my-profile",
+      render: () => this.renderMyProfilePage(),
+    },
+  ]);
+
+  async firstUpdated() {
+    try {
+      this._client = await AppWebsocket.connect();
+      await this.initStores(this._client);
+    } catch (e: unknown) {
+      this._error = e;
+    } finally {
+      this._loading = false;
+    }
+  }
+
+  // Don't change this
+  async initStores(appClient: AppClient) {
+    this._profilesStore = new ProfilesStore(new ProfilesClient(appClient, 'TODO:REPLACE_ME_WITH_THE_DNA_WITH_THE_PROFILES_ZOME'));
+  }
+
+  renderMyProfilePage() {
+    return html`
+      <div class="column fill">
+        <div class="row top-bar">
+          <sl-icon-button
+            name="arrow-left"
+            @click=${() => this.router.pop()}
+          ></sl-icon-button>
+          <span class="title" style="flex: 1">${msg("{{title_case app_name}}")}</span>
+        </div>
+
+        <my-profile style="margin: 16px"></my-profile>
+      </div>
+    `;
+  }
+
+  render() {
+    if (this._loading)
+      return html`<div
+        class="row"
+        style="flex: 1; height: 100%; align-items: center; justify-content: center;"
+      >
+        <sl-spinner style="font-size: 2rem"></sl-spinner>
+      </div>`;
+
+    if (this._error)
+      return html`
+        <div style="flex: 1; height: 100%; align-items: center; justify-content: center;">
+          <display-error .error=${this._error} .headline=${msg("Error connecting to holochain")}>
+          </display-error>
+        </div>
+      `;
+
+    return html`
+      <profile-prompt style="flex: 1;">
+        ${this.router.outlet()}
+      </profile-prompt>
+    `;
+  }
+
+  static styles = [
+    css`
+      :host {
+        display: flex;
+        flex: 1;
+      }
+    `,
+    ...appStyles,
+  ];
+}

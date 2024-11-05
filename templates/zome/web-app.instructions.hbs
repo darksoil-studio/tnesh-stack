@@ -1,0 +1,26 @@
+Notice that because you are using the zome template, this template only works with a single dna and zome, which are already scaffolded for you. It also comes with the profiles module pre-installed.
+
+So **don't run "hc scaffold dna" or "hc scaffold zome"**.
+
+Set up your development environment with:
+
+  cd {{kebab_case app_name}}
+  nix develop
+  pnpm install
+
+In order to be able to revert any next scaffolding steps, it is also recommended to commit the skeleton now:
+
+  git add .
+  git commit -m "module skeleton scaffolded"
+
+To continue scaffolding your zome, add new entry types:
+
+  hc scaffold entry-type
+
+After that, at any point in time you can start the demo with:
+
+  pnpm start
+
+You can run the tests with:
+
+  pnpm test

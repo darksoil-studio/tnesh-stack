@@ -1,0 +1,61 @@
+name: "build-nix-devshells"
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push: 
+    branches: [ main, next ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-nix-devshells:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, macos-13]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install nix
+        uses: cachix/install-nix-action@v27
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_path: nixpkgs=channel:nixos-24.05
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: holochain-ci
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: darksoil-studio
+
+      - name: Test flake
+        env:
+          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+        run: |
+          cachix watch-exec darksoil-studio -- nix flake check -L 
+
+      - name: Build zomes
+        env:
+          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+        run: |
+          cd ./nix/fixtures/module-repo
+          nix flake update tnesh-stack
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#my_zome.meta.debug
+
+      - name: Build zomes
+        if: matrix.os == 'ubuntu-latest'
+        env:
+          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+        run: |
+          cd ./nix/fixtures/module-repo
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#my_zome
+
+      - name: Test zomes
+        env:
+          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+        run: |
+          cd ./nix/fixtures/module-repo
+          cachix watch-exec darksoil-studio -- nix flake check -L 

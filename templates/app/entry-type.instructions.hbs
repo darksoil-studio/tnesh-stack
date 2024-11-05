@@ -1,0 +1,11 @@
+{{#each entry_type.fields}}
+  {{#if (and widget (eq widget "Image"))}}
+You have scaffolded an entry type with an image field. The image must be stored in the "file-storage" zome, that you can find at https://github.com/darksoil-studio/file-storage. You must include this zome at least once in your app to enable "Image" as a field type.
+
+If you haven't already, scaffold the file-storage zome in one of your DNAs by running these commands:
+
+  nix run github:darksoil-studio/file-storage/main-0.3#scaffold
+
+Then, set up the `FileStorageClient` together with `<file-storage-context>` in your `ui/src/holochain-app.ts`.
+  {{/if}}
+{{/each}}

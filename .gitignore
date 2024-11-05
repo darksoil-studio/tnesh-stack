@@ -1,0 +1,8 @@
+dist-rollup/
+dist/
+node_modules/
+target
+.cargo
+.direnv
+result*
+.DS_Store

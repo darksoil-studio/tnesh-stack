@@ -1,0 +1,33 @@
+name: Test app custom template
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  testbuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install nix
+        uses: cachix/install-nix-action@v27
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_path: nixpkgs=channel:nixos-24.05
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: holochain-ci
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: darksoil-studio
+
+      - name: Test app template
+        run: |
+          nix develop --no-update-lock-file --accept-flake-config --command bash -c "sh templates/run_test_app.sh"
+

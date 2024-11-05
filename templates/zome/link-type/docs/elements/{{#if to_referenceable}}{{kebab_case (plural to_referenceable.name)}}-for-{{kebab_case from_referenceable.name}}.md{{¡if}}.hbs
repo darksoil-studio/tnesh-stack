@@ -1,0 +1,129 @@
+# `<{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}>`
+
+## Usage
+
+0. If you haven't already, [go through the setup for the module](/setup).
+
+1. Import the `<{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}>` element somewhere in the javascript side of your web-app like this:
+
+```js
+import '@darksoil-studio/{{kebab_case coordinator_zome_manifest.name}}/dist/elements/{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}.js'
+```
+
+2. Use it in the html side of your web-app like this:
+
+::: code-group
+```html [Lit]
+<{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}} .{{camel_case from_referenceable.singular_arg}}=${ {{camel_case from_referenceable.singular_arg}} }>
+</{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}>
+```
+
+```html [React]
+<{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}} {{camel_case from_referenceable.singular_arg}}={ {{camel_case from_referenceable.singular_arg}} }>
+</{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}>
+```
+
+```html [Angular]
+<{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}} [{{camel_case from_referenceable.singular_arg}}]="{{camel_case from_referenceable.singular_arg}}">
+</{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}>
+```
+
+```html [Vue]
+<{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}} :{{camel_case from_referenceable.singular_arg}}="{{camel_case from_referenceable.singular_arg}}">
+</{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}>
+```
+
+```html [Svelte]
+<{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}} {{kebab_case from_referenceable.singular_arg}}={encodeHashToBase64({{camel_case from_referenceable.singular_arg}})}>
+</{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}>
+```
+:::
+
+> [!WARNING]
+> Like all the elements in this module, `<{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}>` needs to be placed inside an initialized `<{{kebab_case coordinator_zome_manifest.name}}-context>`.
+
+## Demo
+
+Here is an interactive demo of the element:
+
+<element-demo>
+</element-demo>
+
+<script setup>
+import { onMounted } from "vue";
+import { ProfilesClient, ProfilesStore } from '@darksoil-studio/profiles-zome';
+import { demoProfiles, ProfilesZomeMock } from '@darksoil-studio/profiles-zome/dist/mocks.js';
+import { decodeHashFromBase64, encodeHashToBase64, fakeActionHash, fakeAgentPubKey } from '@holochain/client';
+import { render } from "lit";
+import { html, unsafeStatic } from "lit/static-html.js";
+
+import { {{pascal_case coordinator_zome_manifest.name}}ZomeMock{{#if (eq to_referenceable.hash_type "ActionHash")}}, sample{{pascal_case to_referenceable.name}}{{/if}} } from "../../ui/src/mocks.ts";
+import { {{pascal_case coordinator_zome_manifest.name}}Store } from "../../ui/src/{{kebab_case coordinator_zome_manifest.name}}-store.ts";
+import { {{pascal_case coordinator_zome_manifest.name}}Client } from "../../ui/src/{{kebab_case coordinator_zome_manifest.name}}-client.ts";
+
+onMounted(async () => {
+  // Elements need to be imported on the client side, not the SSR side
+  // Reference: https://vitepress.dev/guide/ssr-compat#importing-in-mounted-hook
+  await import('@api-viewer/docs/lib/api-docs.js');
+  await import('@api-viewer/demo/lib/api-demo.js');
+  await import('@darksoil-studio/profiles-zome/dist/elements/profiles-context.js');
+  if (!customElements.get('{{kebab_case coordinator_zome_manifest.name}}-context')) await import('../../ui/src/elements/{{kebab_case coordinator_zome_manifest.name}}-context.ts');
+  if (!customElements.get('{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}')) await import('../../ui/src/elements/{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}.ts');
+
+  const profiles = await demoProfiles();
+  const myPubKey = Array.from(profiles.keys())[0];
+
+  const profilesMock = new ProfilesZomeMock(profiles, myPubKey);
+  const profilesStore = new ProfilesStore(new ProfilesClient(profilesMock, "{{snake_case dna_role_name}}"));
+
+  const mock = new {{pascal_case coordinator_zome_manifest.name}}ZomeMock();
+  const client = new {{pascal_case coordinator_zome_manifest.name}}Client(mock, "{{snake_case dna_role_name}}");
+
+  {{#if (eq from_referenceable.hash_type "ActionHash")}}
+  const fromHash = await fakeActionHash();
+  {{/if}}
+  {{#if (eq from_referenceable.hash_type "AgentPubKey")}}
+  const fromHash = await fakeAgentPubKey();
+  {{/if}}
+
+  {{#if (eq to_referenceable.hash_type "ActionHash")}}
+  const {{camel_case to_referenceable.name}} = await sample{{pascal_case to_referenceable.name}}(client);
+
+  const record = await mock.create_{{snake_case to_referenceable.name}}({{camel_case to_referenceable.name}});
+
+  await mock.add_{{snake_case to_referenceable.name}}_for_{{snake_case from_referenceable.name}}({
+    {{to_referenceable.singular_arg}}: record.signed_action.hashed.hash,
+    {{from_referenceable.singular_arg}}: fromHash
+  });
+  {{/if}}
+  {{#if (eq to_referenceable.hash_type "AgentPubKey")}}
+  await mock.add_{{snake_case to_referenceable.name}}_for_{{snake_case from_referenceable.name}}({
+    {{to_referenceable.singular_arg}}: myPubKey,
+    {{from_referenceable.singular_arg}}: fromHash
+  });
+  {{/if}}
+
+  const store = new {{pascal_case coordinator_zome_manifest.name}}Store(client);
+
+  render(html`
+    <profiles-context .store=${profilesStore}>
+      <{{kebab_case coordinator_zome_manifest.name}}-context .store=${store}>
+        <api-demo src="custom-elements.json" only="{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}" exclude-knobs="store">
+          <template data-element="{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}" data-target="host">
+            <{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}} {{kebab_case from_referenceable.singular_arg}}="${unsafeStatic(encodeHashToBase64(fromHash))}"></{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}>
+          </template>
+        </api-demo>
+      </{{kebab_case coordinator_zome_manifest.name}}-context>
+    </profiles-context>
+  `, document.querySelector('element-demo'))
+  })
+
+
+</script>
+
+## API Reference
+
+`<{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}>` is a [custom element](https://web.dev/articles/custom-elements-v1), which means that it can be used in any web app or website. Here is the reference for its API:
+
+<api-docs src="custom-elements.json" only="{{kebab_case (plural to_referenceable.name)}}-for-{{kebab_case from_referenceable.name}}">
+</api-docs>

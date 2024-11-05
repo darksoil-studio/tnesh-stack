@@ -1,0 +1,194 @@
+import { LitElement, html } from 'lit';
+import { repeat } from "lit/directives/repeat.js";
+import { state, customElement, property } from 'lit/decorators.js';
+import { ActionHash, Record, EntryHash, AgentPubKey } from '@holochain/client';
+import { EntryRecord } from '@tnesh-stack/utils';
+import { hashState, notifyError, hashProperty, wrapPathInSvg, onSubmit } from '@tnesh-stack/elements';
+import { SignalWatcher, toPromise } from '@tnesh-stack/signals';
+import { consume } from '@lit/context';
+import { localized, msg } from '@lit/localize';
+import { mdiAlertCircleOutline, mdiDelete } from '@mdi/js';
+
+{{#uniq_lines}}
+import '@shoelace-style/shoelace/dist/components/card/card.js';
+import '@shoelace-style/shoelace/dist/components/icon/icon.js';
+import SlAlert from '@shoelace-style/shoelace/dist/components/alert/alert.js';
+import '@shoelace-style/shoelace/dist/components/alert/alert.js';
+import '@shoelace-style/shoelace/dist/components/button/button.js';
+import '@shoelace-style/shoelace/dist/components/icon-button/icon-button.js';
+  {{#each entry_type.fields}}
+    {{#if widget}}
+{{> (concat field_type.type "/" widget "/edit/imports") }}
+
+    {{/if}}
+  {{/each}}
+{{/uniq_lines}}
+
+import { appStyles } from '../../../app-styles.js';
+import { {{pascal_case coordinator_zome_manifest.name}}Store } from '../{{kebab_case coordinator_zome_manifest.name}}-store.js';
+import { {{camel_case coordinator_zome_manifest.name}}StoreContext } from '../context.js';
+import { {{pascal_case entry_type.name}}{{#each entry_type.fields}}{{#if (eq field_type.type "Enum")}}, {{field_type.label}}{{/if}}{{/each}} } from '../types.js';
+
+/**
+ * @element edit-{{kebab_case entry_type.name}}
+ * @fires {{kebab_case entry_type.name}}-updated: detail will contain { {{#if link_from_original_to_each_update}}original{{pascal_case entry_type.name}}Hash, {{/if}}previous{{pascal_case entry_type.name}}Hash, updated{{pascal_case entry_type.name}}Hash }
+ */
+@localized()
+@customElement('edit-{{kebab_case entry_type.name}}')
+export class Edit{{pascal_case entry_type.name}} extends SignalWatcher(LitElement) {
+
+  /**
+   * REQUIRED. The hash of the original `Create` action for this {{pascal_case entry_type.name}}
+   */
+  @property(hashProperty('{{kebab_case entry_type.name}}-hash'))
+  {{camel_case entry_type.name}}Hash!: ActionHash;
+
+  /**
+   * @internal
+   */
+  @consume({ context: {{camel_case coordinator_zome_manifest.name}}StoreContext })
+  {{camel_case coordinator_zome_manifest.name}}Store!: {{pascal_case coordinator_zome_manifest.name}}Store;
+
+  /**
+   * @internal
+   */
+  @state()
+  committing = false;
+   
+{{#each entry_type.fields}}
+  {{#if widget}}
+    {{#if (eq cardinality "vector")}}
+  /**
+   * @internal
+   */
+  @state()
+  _{{camel_case field_name}}Fields: Array<number> = []; 
+    {{/if}}
+  {{/if}}
+{{/each}}
+
+  async firstUpdated() {
+    const currentRecord = await toPromise(this.{{camel_case coordinator_zome_manifest.name}}Store.{{camel_case (plural entry_type.name)}}.get(this.{{camel_case entry_type.name}}Hash).{{#if crud.update}}latestVersion{{else}}entry{{/if}});
+{{#each entry_type.fields}}
+  {{#if widget}}
+    {{#if (eq cardinality "vector")}}
+    this._{{camel_case field_name}}Fields = currentRecord.entry.{{snake_case field_name}}.map((_, index) => index);
+    {{/if}}
+  {{/if}}
+{{/each}}
+    setTimeout(() => {
+      (this.shadowRoot?.getElementById('form') as HTMLFormElement).reset();
+    });
+  }
+
+  async update{{pascal_case entry_type.name}}(currentRecord: EntryRecord<{{pascal_case entry_type.name}}>, fields: Partial<{{pascal_case entry_type.name}}>) {  
+    const {{camel_case entry_type.name}}: {{pascal_case entry_type.name}} = { 
+    {{#each entry_type.fields}}
+      {{#if widget}}
+        {{#if (eq cardinality "vector")}}
+      {{snake_case field_name}}: (Array.isArray(fields.{{snake_case field_name}}!) ? fields.{{snake_case field_name}}! : [fields.{{snake_case field_name}}!] as unknown as Array<{{> (concat field_type.type "/type") }}>).map((el) => {{> (concat field_type.type "/" widget "/edit/to-value") field_name=field_name variable_to_read="el" }}),
+        {{else}}
+          {{#if (eq cardinality "single")}}
+      {{snake_case field_name}}: {{> (concat field_type.type "/" widget "/edit/to-value") field_name=field_name variable_to_read=(concat "fields." (snake_case field_name) "!" ) }},
+          {{else}}
+      {{snake_case field_name}}: fields.{{snake_case.field_name}} ? {{> (concat field_type.type "/" widget "/edit/to-value") field_name=field_name variable_to_read=(concat "fields." (snake_case field_name) ) }} : undefined,
+          {{/if}}
+        {{/if}}
+      {{else}}
+      {{snake_case field_name}}: currentRecord.entry.{{snake_case field_name}}!,
+      {{/if}}
+    {{/each}}
+    };
+
+    try {
+      this.committing = true;
+      const updateRecord = await this.{{camel_case coordinator_zome_manifest.name}}Store.client.update{{pascal_case entry_type.name}}(
+  {{#if link_from_original_to_each_update}}
+        this.{{camel_case entry_type.name}}Hash,
+  {{/if}}
+        currentRecord.actionHash,
+        {{camel_case entry_type.name}}
+      );
+  
+      this.dispatchEvent(new CustomEvent('{{kebab_case entry_type.name}}-updated', {
+        composed: true,
+        bubbles: true,
+        detail: {
+{{#if link_from_original_to_each_update}}
+          original{{pascal_case entry_type.name}}Hash: this.{{camel_case entry_type.name}}Hash,
+{{/if}}
+          previous{{pascal_case entry_type.name}}Hash: currentRecord.actionHash,
+          updated{{pascal_case entry_type.name}}Hash: updateRecord.actionHash
+        }
+      }));
+    } catch (e: unknown) {
+      console.error(e);
+      notifyError(msg("Error updating the {{lower_case entry_type.name}}"));
+    }
+    
+    this.committing = false;
+  }
+
+  renderEditForm(currentRecord: EntryRecord<{{pascal_case entry_type.name}}>) {
+    return html`
+      <sl-card>
+        <span slot="header">${msg("Edit {{title_case entry_type.name}}")}</span>
+
+        <form
+          id="form"
+          class="column"
+          style="flex: 1; gap: 16px;"
+          ${onSubmit(fields => this.update{{pascal_case entry_type.name}}(currentRecord, fields))}
+        >  
+        {{#each entry_type.fields}}
+          {{#if widget}}
+            {{#if (not (eq cardinality "vector") )}}
+        {{> (concat field_type.type "/" widget "/edit/render") label=(title_case field_name) edit=true field_name=field_name required=(eq cardinality "single") default_value=(concat "currentRecord.entry." (snake_case field_name) ) }}
+            {{else}}
+        {{> Vec/edit/render field_name=field_name field_type=field_type edit=true widget=widget }}
+            {{/if}}
+
+          {{/if}}
+        {{/each}}
+
+          <div class="row" style="gap: 8px;">
+            <sl-button
+              @click=${() => this.dispatchEvent(new CustomEvent('edit-canceled', {
+                bubbles: true,
+                composed: true
+              }))}
+              style="flex: 1;"
+            >${msg("Cancel")}</sl-button>
+            <sl-button
+              type="submit"
+              variant="primary"
+              style="flex: 1;"
+              .loading=${this.committing}
+            >${msg("Save")}</sl-button>
+
+          </div>
+        </form>
+      </sl-card>`;
+  }
+
+  render() {
+  const {{camel_case entry_type.name}} = this.{{camel_case coordinator_zome_manifest.name}}Store.{{camel_case (plural entry_type.name)}}.get(this.{{camel_case entry_type.name}}Hash).{{#if crud.update}}latestVersion{{else}}entry{{/if}}.get();
+
+    switch ({{camel_case entry_type.name}}.status) {
+      case 'pending':
+        return html`<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1;"
+        >
+          <sl-spinner style="font-size: 2rem;"></sl-spinner>
+        </div>`;
+      case 'error':
+        return html`<display-error
+          .headline=${msg("Error fetching the {{lower_case entry_type.name}}")}
+          .error=${ {{camel_case entry_type.name}}.error}
+        ></display-error>`;
+      case 'completed':
+        return this.renderEditForm({{camel_case entry_type.name}}.value);
+    }
+  }
+
+  static styles = appStyles;
+}

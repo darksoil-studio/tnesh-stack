@@ -1,0 +1,35 @@
+Notice that this is an empty skeleton for a Holochain web-app, so:
+
+- It won't compile until you add a DNA to it, and then add a zome to that DNA.
+- The UI is empty, you'll need to import the appropriate components to the top level app component.
+
+Set up your development environment with:
+
+  cd {{kebab_case app_name}}
+  nix develop
+  pnpm install
+
+In order to be able to revert any next scaffolding steps, it is also recommended to commit the skeleton now:
+
+  git add .
+  git commit -m "web-app skeleton scaffolded"
+
+To continue scaffolding your app, add a new dna:
+
+  hc scaffold dna
+
+And then add a zome to that dna:
+
+  hc scaffold zome
+
+After that, at any point in time you can start the demo with:
+
+  pnpm start
+
+You can run the tests with:
+
+  pnpm test
+
+And you can build the .webhapp production package with:
+
+  pnpm package

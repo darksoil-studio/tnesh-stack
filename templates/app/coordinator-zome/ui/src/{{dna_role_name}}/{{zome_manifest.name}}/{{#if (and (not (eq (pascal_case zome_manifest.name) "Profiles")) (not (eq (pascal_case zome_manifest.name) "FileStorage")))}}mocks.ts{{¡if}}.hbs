@@ -1,0 +1,42 @@
+import {
+  AgentPubKeyMap,
+  decodeEntry,
+  fakeEntry,
+  fakeCreateAction,
+  fakeUpdateEntry,
+  fakeDeleteEntry,
+  fakeRecord,
+  pickBy,
+  ZomeMock,
+  RecordBag,
+  entryState,
+  HoloHashMap,
+  HashType,
+  hash
+} from "@tnesh-stack/utils";
+import {
+  decodeHashFromBase64,
+  NewEntryAction,
+  AgentPubKey,
+  ActionHash,
+  EntryHash,
+  Delete,
+  AppClient,
+  fakeAgentPubKey,
+  fakeDnaHash,
+  Link,
+  fakeActionHash,
+  SignedActionHashed,
+  fakeEntryHash,
+  Record,
+} from "@holochain/client";
+import { {{pascal_case zome_manifest.name}}Client } from './{{kebab_case zome_manifest.name}}-client.js'
+
+export class {{pascal_case zome_manifest.name}}ZomeMock extends ZomeMock implements AppClient {
+  constructor(
+    myPubKey?: AgentPubKey
+  ) {
+    super("{{snake_case zome_manifest.name}}_test", "{{snake_case zome_manifest.name}}", myPubKey);
+  }
+  
+}
