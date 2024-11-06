@@ -65,6 +65,10 @@ export default withMermaid({
 					},
 				],
 			},
+			{
+				text: 'Integrating with frameworks',
+				link: '/integrating-with-frameworks.md',
+			},
 		],
 
 		socialLinks: [
