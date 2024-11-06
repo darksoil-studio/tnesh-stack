@@ -7,41 +7,10 @@
     , system
     , ...
     }: {
-      packages.{{zome_manifest.name}} = inputs.hc-infra.outputs.builders.${system}.rustZome {
+      packages.{{zome_manifest.name}} = inputs.tnesh-stack.outputs.builders.${system}.rustZome {
         workspacePath = inputs.self.outPath;
         crateCargoToml = ./Cargo.toml;
-        cargoArtifacts = inputs'.hc-infra.packages.zomeCargoArtifacts;
-      };
-
-      # Test only this zome and its integrity in isolation
-      checks.{{zome_manifest.name }}= inputs.hc-infra.outputs.builders.${system}.sweettest {
-        workspacePath = inputs.self.outPath;
-        dna = (inputs.hc-infra.outputs.builders.${system}.dna {
-          dnaManifest = builtins.toFile "dna.yaml" ''
-            ---
-            manifest_version: "1"
-            name: test_dna
-            integrity:
-              network_seed: ~
-              properties: ~
-              origin_time: 1709638576394039
-              zomes: 
-                - name: {{zome_manifest.name}}_integrity
-            coordinator:
-              zomes:
-                - name: {{zome_manifest.name}}
-                  hash: ~
-                  dependencies: 
-                    - name: {{zome_manifest.name}}_integrity
-                  dylib: ~
-          '';
-          zomes = {
-            {{zome_manifest.name}}_integrity = self'.packages.{{zome_manifest.name}}_integrity;
-            {{zome_manifest.name}} = self'.packages.{{zome_manifest.name}};
-          };
-        }).meta.debug;
-        crateCargoToml = ./Cargo.toml;
-        cargoArtifacts = inputs'.hc-infra.packages.holochainCargoArtifacts;
+        cargoArtifacts = inputs'.tnesh-stack.packages.zomeCargoArtifacts;
       };
 
     };
