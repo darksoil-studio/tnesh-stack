@@ -9,7 +9,7 @@ import {
   AsyncComputed,
   pipe,
 } from "@tnesh-stack/signals";
-import { slice, HashType, retype, EntryRecord, LazyHoloHashMap } from "@tnesh-stack/utils";
+import { slice, HashType, retype, EntryRecord, MemoHoloHashMap } from "@tnesh-stack/utils";
 import { NewEntryAction, Record, ActionHash, EntryHash, AgentPubKey } from '@holochain/client';
 
 import { {{pascal_case app_name}}Client } from './{{kebab_case app_name}}-client.js';

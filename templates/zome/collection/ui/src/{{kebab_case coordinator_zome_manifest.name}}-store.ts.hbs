@@ -5,7 +5,7 @@
   /** {{title_case collection_name}} */
 
   {{#if (eq collection_type.type "ByAuthor")}}
-  {{camel_case collection_name}} = new LazyHoloHashMap((author: AgentPubKey) => 
+  {{camel_case collection_name}} = new MemoHoloHashMap((author: AgentPubKey) => 
     pipe(
       collectionSignal(
         this.client, 

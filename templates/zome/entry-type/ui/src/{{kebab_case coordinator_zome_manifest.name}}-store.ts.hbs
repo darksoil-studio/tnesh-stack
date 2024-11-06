@@ -5,8 +5,8 @@ import { {{pascal_case entry_type.name}} } from './types.js';
     {{#merge untrimmed_previous_scope_content}}
       {{#each entry_type.fields}}
         {{#if linked_from}}
-          {{#if (includes ../previous_file_content (concat (camel_case (plural linked_from.name)) " = new LazyHoloHashMap((" (camel_case linked_from.name) "Hash: ActionHash) => ({"))}}
-            {{#match_scope (concat (camel_case (plural linked_from.name)) " = new LazyHoloHashMap((" (camel_case linked_from.name) "Hash: ActionHash) => ({" )}}
+          {{#if (includes ../previous_file_content (concat (camel_case (plural linked_from.name)) " = new MemoHoloHashMap((" (camel_case linked_from.name) "Hash: ActionHash) => ({"))}}
+            {{#match_scope (concat (camel_case (plural linked_from.name)) " = new MemoHoloHashMap((" (camel_case linked_from.name) "Hash: ActionHash) => ({" )}}
     {{../previous_scope_content}}
               {{#if ../crud.delete}}
     {{camel_case (plural ../entry_type.name)}}: {
@@ -45,7 +45,7 @@ import { {{pascal_case entry_type.name}} } from './types.js';
     {{/merge}}
   /** {{title_case entry_type.name}} */
 
-  {{camel_case (plural entry_type.name)}} = new LazyHoloHashMap(({{camel_case entry_type.name}}Hash: {{#if entry_type.reference_entry_hash}}EntryHash{{else}}ActionHash{{/if}}) => ({
+  {{camel_case (plural entry_type.name)}} = new MemoHoloHashMap(({{camel_case entry_type.name}}Hash: {{#if entry_type.reference_entry_hash}}EntryHash{{else}}ActionHash{{/if}}) => ({
     {{#if crud.update}}
     latestVersion: latestVersionOfEntrySignal(this.client, () => this.client.getLatest{{pascal_case entry_type.name}}({{camel_case entry_type.name}}Hash)),
     original: immutableEntrySignal(() => this.client.getOriginal{{pascal_case entry_type.name}}({{camel_case entry_type.name}}Hash)),
@@ -96,9 +96,9 @@ import { {{pascal_case entry_type.name}} } from './types.js';
 
       {{#each entry_type.fields}}
         {{#if linked_from}}
-          {{#if (and (ne (pascal_case linked_from.name) (pascal_case ../entry_type.name)) (not (includes ../previous_file_content (concat (camel_case (plural linked_from.name)) " = new LazyHoloHashMap((" (camel_case linked_from.name) "Hash: ActionHash) => ({"))))}}
+          {{#if (and (ne (pascal_case linked_from.name) (pascal_case ../entry_type.name)) (not (includes ../previous_file_content (concat (camel_case (plural linked_from.name)) " = new MemoHoloHashMap((" (camel_case linked_from.name) "Hash: ActionHash) => ({"))))}}
             {{#if ../crud.delete}}
-  {{camel_case (plural ../entry_type.name)}}For{{pascal_case linked_from.name}} = new LazyHoloHashMap(({{camel_case linked_from.singular_arg}}: {{linked_from.hash_type}}) => ({
+  {{camel_case (plural ../entry_type.name)}}For{{pascal_case linked_from.name}} = new MemoHoloHashMap(({{camel_case linked_from.singular_arg}}: {{linked_from.hash_type}}) => ({
       live: pipe(
         liveLinksSignal(
           this.client,
@@ -117,7 +117,7 @@ import { {{pascal_case entry_type.name}} } from './types.js';
       ),
   }));
             {{else}}
-  {{camel_case (plural ../entry_type.name)}}For{{pascal_case linked_from.name}} = new LazyHoloHashMap(({{camel_case linked_from.singular_arg}}: {{linked_from.hash_type}}) => pipe(
+  {{camel_case (plural ../entry_type.name)}}For{{pascal_case linked_from.name}} = new MemoHoloHashMap(({{camel_case linked_from.singular_arg}}: {{linked_from.hash_type}}) => pipe(
       liveLinksSignal(
         this.client,
         {{camel_case linked_from.singular_arg}},

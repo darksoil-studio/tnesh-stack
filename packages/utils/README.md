@@ -55,14 +55,14 @@ import { MemoHoloHashMap } from '@tnesh-stack/utils';
 const pubKey = fakeAgentPubKey();
 
 // Imagine we want to fetch the profile of the agent whenever an agent public key is requested
-const lazyMap = new MemoHoloHashMap((agent: AgentPubKey) => callZome('get_profile', agent));
+const memoMap = new MemoHoloHashMap((agent: AgentPubKey) => callZome('get_profile', agent));
 
-console.log(lazyMap.get(pubKey)); // Will print a pending promise
+console.log(memoMap.get(pubKey)); // Will print a pending promise
 
 // After the request has finished...
-await lazyMap.get(pubKey);
+await memoMap.get(pubKey);
 
-console.log(lazyMap.get(pubKey)); // Will print a completed promise with the value
+console.log(memoMap.get(pubKey)); // Will print a completed promise with the value
 ```
 
 ## EntryRecord
