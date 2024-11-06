@@ -38,7 +38,7 @@ And then in your html:
 ```
 
 > [!NOTE]
-> Here, every framework has a different style of passing a property down to the component, but they all will work fine. See [Integration with Frameworks](./frameworks.md) for examples of integrations in each of the frontend frameworks.
+> Here, every framework has a different style of passing a property down to the component, but they all will work fine. See [Integration with Frameworks](/guides/custom-elements.md) for examples of integrations in each of the frontend frameworks.
 
 As you may have guessed, context providers can be nested inside each other, to provide multiple contexts to elements that could need them:
 
