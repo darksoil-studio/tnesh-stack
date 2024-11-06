@@ -14,11 +14,11 @@ jobs:
 
       - name: Install and Build 🔧 
         run: |
-          npm install
-          npm run build -w stores-site
+          pnpm install
+          pnpm -F docs build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
           branch: gh-pages # The branch the action should deploy to.
-          folder: sites/dist # The folder the action should deploy.
+          folder: docs/.vitepress/dist # The folder the action should deploy.
