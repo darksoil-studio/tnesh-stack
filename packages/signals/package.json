@@ -18,7 +18,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@tnesh-stack/utils": "workspace:0.300.0",
+		"@tnesh-stack/utils": "workspace:^0.300.0",
 		"@holochain/client": "^0.17.1",
 		"@msgpack/msgpack": "^2.8.0",
 		"async-signals": "^0.1.10",
