@@ -201,17 +201,15 @@
           '';
         };
 
-        packages.hc-scaffold-app-template =
-          inputs.scaffolding.lib.wrapCustomTemplate {
-            inherit pkgs system;
-            customTemplatePath = ./templates/app;
-          };
+        packages.hc-scaffold-app = inputs.scaffolding.lib.wrapCustomTemplate {
+          inherit pkgs system;
+          customTemplatePath = ./templates/app;
+        };
 
-        packages.hc-scaffold-zome-template =
-          inputs.scaffolding.lib.wrapCustomTemplate {
-            inherit pkgs system;
-            customTemplatePath = ./templates/zome;
-          };
+        packages.hc-scaffold-zome = inputs.scaffolding.lib.wrapCustomTemplate {
+          inherit pkgs system;
+          customTemplatePath = ./templates/zome;
+        };
       };
     };
 }

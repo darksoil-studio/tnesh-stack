@@ -3,7 +3,7 @@ set -e
 
 DIR=$(pwd)
 
-nix shell --accept-flake-config .#hc-scaffold-zome-template --command bash -c "
+nix shell --accept-flake-config .#hc-scaffold-zome --command bash -c "
 cd /tmp
 rm -rf posts-open-dev
 mkdir posts-open-dev

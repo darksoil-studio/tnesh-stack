@@ -3,7 +3,7 @@ set -e
 
 DIR=$(pwd)
 
-nix shell --accept-flake-config .#hc-scaffold-app-template --command bash -c "
+nix shell --accept-flake-config .#hc-scaffold-app --command bash -c "
 cd /tmp
 rm -rf forum-lit-open-dev
 
