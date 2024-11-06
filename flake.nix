@@ -201,15 +201,17 @@
           '';
         };
 
-        packages.hc-scaffold-app = inputs.scaffolding.lib.wrapCustomTemplate {
-          inherit pkgs system;
-          customTemplatePath = ./templates/app;
-        };
+        packages.hc-scaffold-app =
+          inputs.holonix.inputs.scaffolding.lib.wrapCustomTemplate {
+            inherit pkgs system;
+            customTemplatePath = ./templates/app;
+          };
 
-        packages.hc-scaffold-zome = inputs.scaffolding.lib.wrapCustomTemplate {
-          inherit pkgs system;
-          customTemplatePath = ./templates/zome;
-        };
+        packages.hc-scaffold-zome =
+          inputs.holonix.inputs.scaffolding.lib.wrapCustomTemplate {
+            inherit pkgs system;
+            customTemplatePath = ./templates/zome;
+          };
       };
     };
 }
