@@ -4,7 +4,6 @@
     pnpmnixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
 
     holonix.url = "github:holochain/holonix/main-0.3";
-    scaffolding.url = "github:holochain/scaffolding/holochain-0.3";
     rust-overlay.follows = "holonix/rust-overlay";
     crane.follows = "holonix/crane";
   };
@@ -21,10 +20,30 @@
   };
 
   outputs = inputs@{ ... }:
-    inputs.holonix.inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+    inputs.holonix.inputs.flake-parts.lib.mkFlake { inherit inputs; } rec {
       flake = {
         flakeModules.builders = ./nix/builders-option.nix;
         flakeModules.dependencies = ./nix/dependencies-option.nix;
+
+        # TODO: remove this when scaffolding is fixed again
+        lib.wrapCustomTemplate = { system, pkgs, customTemplatePath }:
+          let scaffolding = inputs.holonix.packages.${system}.hc-scaffold;
+          in pkgs.runCommand "hc-scaffold" {
+            buildInputs = [ pkgs.makeWrapper ];
+            src = customTemplatePath;
+          } ''
+              mkdir $out
+              mkdir $out/bin
+              # We create the bin folder ourselves and link every binary in it
+              ln -s ${scaffolding}/bin/* $out/bin
+              # Except the hello binary
+              rm $out/bin/hc-scaffold
+              cp $src -R $out/template
+              # Because we create this ourself, by creating a wrapper
+              makeWrapper ${scaffolding}/bin/hc-scaffold $out/bin/hc-scaffold \
+                --add-flags "--template $out/template"
+            	'';
+
       };
 
       imports = [
@@ -202,12 +221,12 @@
           '';
         };
 
-        packages.hc-scaffold-app = inputs.scaffolding.lib.wrapCustomTemplate {
+        packages.hc-scaffold-app = flake.lib.wrapCustomTemplate {
           inherit pkgs system;
           customTemplatePath = ./templates/app;
         };
 
-        packages.hc-scaffold-zome = inputs.scaffolding.lib.wrapCustomTemplate {
+        packages.hc-scaffold-zome = flake.lib.wrapCustomTemplate {
           inherit pkgs system;
           customTemplatePath = ./templates/zome;
         };
