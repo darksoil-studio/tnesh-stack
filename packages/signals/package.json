@@ -1,6 +1,6 @@
 {
 	"name": "@tnesh-stack/signals",
-	"version": "0.300.0",
+	"version": "0.300.1",
 	"description": "Holochain async-signals to build reusable tnesh modules",
 	"author": "guillem.cordoba@gmail.com",
 	"main": "dist/index.js",
