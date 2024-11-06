@@ -33,7 +33,7 @@ jobs:
 
       - name: Build scaffold-remote-zome
         env:
-          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+          CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
           cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#scaffold-remote-zome
           cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#scaffold-remote-zome | nix run nixpkgs#jq -- -r 'keys[0]')
@@ -41,6 +41,6 @@ jobs:
       - name: Build scaffold-remote-zome
         if: github.event_name != 'pull_request'
         env:
-          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+          CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
           cachix pin darksoil-studio scaffold-remote-zome $(nix path-info --json --accept-flake-config --no-warn-dirty .#scaffold-remote-zome | nix run nixpkgs#jq -- -r 'keys[0]')

@@ -33,13 +33,13 @@ jobs:
 
       - name: Test flake
         env:
-          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+          CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
           cachix watch-exec darksoil-studio -- nix flake check -L 
 
       - name: Build zomes
         env:
-          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+          CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
           cd ./nix/fixtures/module-repo
           nix flake update tnesh-stack
@@ -48,14 +48,14 @@ jobs:
       - name: Build zomes
         if: matrix.os == 'ubuntu-latest'
         env:
-          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+          CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
           cd ./nix/fixtures/module-repo
           cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#my_zome
 
       - name: Test zomes
         env:
-          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_TOKEN_HOLOCHAIN_OPEN_DEV }}"
+          CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
           cd ./nix/fixtures/module-repo
           cachix watch-exec darksoil-studio -- nix flake check -L 
