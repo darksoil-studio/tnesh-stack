@@ -4,6 +4,7 @@
     pnpmnixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
 
     holonix.url = "github:holochain/holonix/main-0.3";
+    scaffolding.url = "github:holochain/scaffolding/holochain-0.3";
     rust-overlay.follows = "holonix/rust-overlay";
     crane.follows = "holonix/crane";
   };
@@ -201,17 +202,15 @@
           '';
         };
 
-        packages.hc-scaffold-app =
-          inputs.holonix.inputs.scaffolding.lib.wrapCustomTemplate {
-            inherit pkgs system;
-            customTemplatePath = ./templates/app;
-          };
+        packages.hc-scaffold-app = inputs.scaffolding.lib.wrapCustomTemplate {
+          inherit pkgs system;
+          customTemplatePath = ./templates/app;
+        };
 
-        packages.hc-scaffold-zome =
-          inputs.holonix.inputs.scaffolding.lib.wrapCustomTemplate {
-            inherit pkgs system;
-            customTemplatePath = ./templates/zome;
-          };
+        packages.hc-scaffold-zome = inputs.scaffolding.lib.wrapCustomTemplate {
+          inherit pkgs system;
+          customTemplatePath = ./templates/zome;
+        };
       };
     };
 }
