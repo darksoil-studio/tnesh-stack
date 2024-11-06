@@ -1,108 +1,107 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-GB">
-  <head>
-    <meta charset="utf-8" />
-    <style>
-      body {
-        background: black;
-      }
-    </style>
-    <link rel="stylesheet" href="" />
-  </head>
-  <body class="sl-theme-dark">
-    <holo-identicon
-      hash="uhCEkBsnnW9JSVhGQx4AE2m0lSlWLrioEHP-7Uj4ZnbI0W-M"
-    ></holo-identicon>
-    <form>
-      <select-avatar required></select-avatar>
-      <input type="submit" />
-    </form>
-    <display-error headline="Error getting the things" error="some full error">
-    </display-error>
-    <display-error error="some full error"> </display-error>
-    <display-error error="a tooltip error" tooltip> </display-error>
+	<head>
+		<meta charset="utf-8" />
+		<style>
+			body {
+				background: black;
+			}
+		</style>
+		<link rel="stylesheet" href="" />
+	</head>
+	<body class="sl-theme-dark">
+		<holo-identicon
+			hash="uhCEkBsnnW9JSVhGQx4AE2m0lSlWLrioEHP-7Uj4ZnbI0W-M"
+		></holo-identicon>
+		<form>
+			<select-avatar required></select-avatar>
+			<input type="submit" />
+		</form>
+		<display-error headline="Error getting the things" error="some full error">
+		</display-error>
+		<display-error error="some full error"> </display-error>
+		<display-error error="a tooltip error" tooltip> </display-error>
 
-    <form-test></form-test>
+		<form-test></form-test>
 
-    <script type="module">
-      import { LitElement, html } from "lit";
-      import { repeat } from "lit/directives/repeat.js";
-      import "@shoelace-style/shoelace/dist/themes/dark.css";
-      import "@shoelace-style/shoelace/dist/components/alert/alert.js";
-      import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-      import "@shoelace-style/shoelace/dist/components/textarea/textarea.js";
-      import "@shoelace-style/shoelace/dist/components/input/input.js";
-      import "../src/elements/holo-identicon.ts";
-      import "../src/elements/select-avatar.ts";
-      import "../src/elements/display-error.ts";
-      import "../src/elements/sl-datetime-input.ts";
-      import "../src/elements/sl-textarea-prosemirror.ts";
-      import { onSubmit } from "../src/on-submit.ts";
-      import { formatDateForInput } from "../src/date-utils.ts";
+		<script type="module">
+			import '@shoelace-style/shoelace/dist/components/alert/alert.js';
+			import '@shoelace-style/shoelace/dist/components/icon/icon.js';
+			import '@shoelace-style/shoelace/dist/components/input/input.js';
+			import '@shoelace-style/shoelace/dist/components/textarea/textarea.js';
+			import '@shoelace-style/shoelace/dist/themes/dark.css';
+			import { LitElement, html } from 'lit';
+			import { repeat } from 'lit/directives/repeat.js';
 
-      import { notifyError } from "../src/notify.ts";
+			import { formatDateForInput } from '../src/date-utils.ts';
+			import '../src/elements/display-error.ts';
+			import '../src/elements/holo-identicon.ts';
+			import '../src/elements/select-avatar.ts';
+			import '../src/elements/sl-datetime-input.ts';
+			import { notifyError } from '../src/notify.ts';
+			import { onSubmit } from '../src/on-submit.ts';
 
-      notifyError("eeeee");
+			notifyError('eeeee');
 
-      customElements.define(
-        "form-field",
-        class extends LitElement {
-          constructor() {
-            super();
-            this.loaded = 0;
-          }
+			customElements.define(
+				'form-field',
+				class extends LitElement {
+					constructor() {
+						super();
+						this.loaded = 0;
+					}
 
-          submit(f) {
-            console.log(f);
-          }
+					submit(f) {
+						console.log(f);
+					}
 
-          render() {
-            return html`
-              ${repeat(
-                Array(this.loaded),
-                (i) => i,
-                (i) => html`<select-avatar name="he" required></select-avatar>`
-              )}
-            `;
-          }
-        }
-      );
+					render() {
+						return html`
+							${repeat(
+								Array(this.loaded),
+								i => i,
+								i => html`<select-avatar name="he" required></select-avatar>`,
+							)}
+						`;
+					}
+				},
+			);
 
-      customElements.define(
-        "form-test",
-        class extends LitElement {
-          constructor() {
-            super();
-          }
+			customElements.define(
+				'form-test',
+				class extends LitElement {
+					constructor() {
+						super();
+					}
 
-          firstUpdated() {
-            this.shadowRoot.getElementById("form").reset();
-          }
+					firstUpdated() {
+						this.shadowRoot.getElementById('form').reset();
+					}
 
-          submit(f) {
-            console.log(f.timestamp);
-          }
+					submit(f) {
+						console.log(f.timestamp);
+					}
 
-          render() {
-            return html`
-              <form id="form" ${onSubmit((f) => this.submit(f))}>
-                <sl-datetime-input
-                  label="hi"
-                  required
-                  .defaultValue=${new Date()}
-                  name="timestamp"
-                ></sl-datetime-input>
-                <sl-input
-                  name="timestamp2"
-                  .defaultValue=${formatDateForInput(new Date())}
-                  type="datetime-local"
-                ></sl-input>
-                <input type="submit" />
-              </form>
-            `;
-          }
-        }
-      );
-    </script>
-  </body>
+					render() {
+						return html`
+							<form id="form" ${onSubmit(f => this.submit(f))}>
+								<sl-datetime-input
+									label="hi"
+									required
+									.defaultValue=${new Date()}
+									name="timestamp"
+								></sl-datetime-input>
+								<sl-input
+									name="timestamp2"
+									.defaultValue=${formatDateForInput(new Date())}
+									type="datetime-local"
+								></sl-input>
+								<input type="submit" />
+							</form>
+						`;
+					}
+				},
+			);
+		</script>
+	</body>
 </html>

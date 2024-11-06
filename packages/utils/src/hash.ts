@@ -10,8 +10,6 @@ import {
 import { encode } from '@msgpack/msgpack';
 import blake from 'blakejs';
 import { Base64 } from 'js-base64';
-import isPlainObject from 'lodash-es/isPlainObject.js';
-import sortKeys from 'sort-keys';
 
 export enum HashType {
 	AGENT,
