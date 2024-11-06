@@ -10,10 +10,10 @@ hero:
       link: /introduction.md
     - theme: alt
       text: Scaffold a TNESH hApp
-      link: /scaffold-a-happ.md
+      link: /scaffolding-a-happ.md
     - theme: alt
       text: Scaffold a TNESH zome module
-      link: /scaffold-a-zome-module.md
+      link: /scaffolding-a-zome-module.md
 
 features:
   - title: Tauri
