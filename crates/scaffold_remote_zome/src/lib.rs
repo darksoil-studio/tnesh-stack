@@ -369,7 +369,7 @@ mod tests {
 
         let repo = scaffold_remote_zome(
             repo,
-            "profiles".into(),
+            "profiles-zome".into(),
             Some("profiles_integrity".into()),
             Some("profiles".into()),
             "github:darksoil-studio/profiles-zome".into(),

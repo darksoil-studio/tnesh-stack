@@ -125,13 +125,16 @@
             };
         };
 
-        devShells.default = pkgs.mkShell {
-          inputsFrom =
-            [ inputs'.holonix.devShells.default devShells.synchronized-pnpm ];
-        };
-
         devShells.holochainDev = pkgs.mkShell {
           buildInputs = self'.dependencies.holochain.buildInputs;
+        };
+
+        devShells.default = pkgs.mkShell {
+          inputsFrom = [
+            devShells.holochainDev
+            inputs'.holonix.devShells.default
+            devShells.synchronized-pnpm
+          ];
         };
 
         packages = {
