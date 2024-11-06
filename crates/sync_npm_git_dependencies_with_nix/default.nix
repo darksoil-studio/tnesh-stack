@@ -1,4 +1,4 @@
-{ inputs, self, ... }:
+{ inputs, ... }:
 
 {
   perSystem = { inputs', pkgs, self', lib, ... }: {
@@ -18,7 +18,7 @@
         buildInputs = self'.dependencies.holochain.buildInputs;
       };
       cargoArtifacts = craneLib.buildDepsOnly (commonArgs // {
-        pname = "t-nesh-workspace";
+        pname = "tnesh-workspace";
         version = "0.3.x";
       });
     in craneLib.buildPackage (commonArgs // {
