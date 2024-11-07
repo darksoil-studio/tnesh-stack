@@ -112,10 +112,10 @@ let
 
   guardedRelease = if matchingZomeHash != null then
     runCommandNoCC "check-zome-${crate}-hash" {
-      srcs = [ release matchingZomeHash.meta.release ];
+      srcs = [ release matchingZomeHash ];
       buildInputs = [ zome-wasm-hash ];
     } ''
-      ORIGINAL_HASH=$(zome-wasm-hash ${matchingZomeHash.meta.release})
+      ORIGINAL_HASH=$(zome-wasm-hash ${matchingZomeHash})
       NEW_HASH=$(zome-wasm-hash ${release})
 
       if [[ "$ORIGINAL_HASH" != "$NEW_HASH" ]]; then
