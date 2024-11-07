@@ -531,7 +531,7 @@ coordinator:
     nixpkgs.follows = "holonix/nixpkgs";
 
     holonix.url = "github:holochain/holonix";
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4;
   };
 
   outputs = inputs @ { ... }:
