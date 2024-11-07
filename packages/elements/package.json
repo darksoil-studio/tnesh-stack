@@ -1,6 +1,6 @@
 {
   "name": "@tnesh-stack/elements",
-  "version": "0.400.0-rc",
+  "version": "0.400.0-rc.0",
   "description": "Common utilities and elements to build Holochain web applications",
   "author": "guillem.cordoba@gmail.com",
   "main": "dist/index.js",
