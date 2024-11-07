@@ -5,7 +5,7 @@ on:
   push: 
     branches: [ main, next ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, main-0.4 ]
 
 jobs:
   build-nix-devshells:
