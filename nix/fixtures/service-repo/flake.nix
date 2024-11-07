@@ -6,7 +6,10 @@
     holonix.url = "github:holochain/holonix/main-0.3";
 
     tnesh-stack.url = "path:./../../..";
-    module.url = "path:./../module-repo";
+    module = {
+      url = "path:./../module-repo";
+      inputs.tnesh-stack.follows = "tnesh-stack";
+    };
     profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.3";
 
     # previousDnaVersion.url =

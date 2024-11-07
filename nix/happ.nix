@@ -39,6 +39,7 @@ let
 in runCommandNoCC manifest.name {
   meta = meta // { inherit debug; };
   srcs = dnaSrcs;
+  outputs = [ "out" "dna_hashes" ];
 } ''
     mkdir workdir
 
@@ -52,4 +53,14 @@ in runCommandNoCC manifest.name {
 
   	${holochain}/bin/hc app pack workdir
   	mv workdir/${manifest.name}.happ $out
+
+    export DNA_HASHES=
+    ${
+      builtins.toString (builtins.map (role: ''
+        export DNA_HASHES=$DNA_HASHES:$(cat ${dnas.${role.name}.hash}) 
+      '') manifest'.roles)
+    }
+    export DNA_HASHES="''${DNA_HASHES:1}"
+    
+    echo $DNA_HASHES > $dna_hashes
 ''

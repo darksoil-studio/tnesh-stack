@@ -25,25 +25,48 @@
         flakeModules.builders = ./nix/builders-option.nix;
         flakeModules.dependencies = ./nix/dependencies-option.nix;
 
-        # TODO: remove this when scaffolding is fixed again
-        lib.wrapCustomTemplate = { system, pkgs, customTemplatePath }:
-          let scaffolding = inputs.holonix.packages.${system}.hc-scaffold;
-          in pkgs.runCommand "hc-scaffold" {
-            buildInputs = [ pkgs.makeWrapper ];
-            src = customTemplatePath;
-          } ''
-              mkdir $out
-              mkdir $out/bin
-              # We create the bin folder ourselves and link every binary in it
-              ln -s ${scaffolding}/bin/* $out/bin
-              # Except the hello binary
-              rm $out/bin/hc-scaffold
-              cp $src -R $out/template
-              # Because we create this ourself, by creating a wrapper
-              makeWrapper ${scaffolding}/bin/hc-scaffold $out/bin/hc-scaffold \
-                --add-flags "--template $out/template"
-            	'';
+        lib = rec {
+          # TODO: remove this when scaffolding is fixed again
+          wrapCustomTemplate = { system, pkgs, customTemplatePath }:
+            let scaffolding = inputs.holonix.packages.${system}.hc-scaffold;
+            in pkgs.runCommand "hc-scaffold" {
+              buildInputs = [ pkgs.makeWrapper ];
+              src = customTemplatePath;
+            } ''
+                mkdir $out
+                mkdir $out/bin
+                # We create the bin folder ourselves and link every binary in it
+                ln -s ${scaffolding}/bin/* $out/bin
+                # Except the hello binary
+                rm $out/bin/hc-scaffold
+                cp $src -R $out/template
+                # Because we create this ourself, by creating a wrapper
+                makeWrapper ${scaffolding}/bin/hc-scaffold $out/bin/hc-scaffold \
+                  --add-flags "--template $out/template"
+              	'';
+          filterPnpmSources = { lib }:
+            orig_path: type:
+            let
+              path = (toString orig_path);
+              base = baseNameOf path;
 
+              matchesSuffix = lib.any (suffix: lib.hasSuffix suffix base) [
+                ".ts"
+                ".js"
+                ".json"
+                ".yaml"
+                ".html"
+              ];
+            in type == "directory" || matchesSuffix;
+          cleanPnpmDepsSource = { lib }:
+            src:
+            lib.cleanSourceWith {
+              src = lib.cleanSource src;
+              filter = filterPnpmSources { inherit lib; };
+
+              name = "pnpm-workspace";
+            };
+        };
       };
 
       imports = [
@@ -51,6 +74,7 @@
         ./crates/compare_dnas_integrity/default.nix
         ./crates/zome_wasm_hash/default.nix
         ./crates/sync_npm_git_dependencies_with_nix/default.nix
+        ./crates/dna_hash/default.nix
         ./nix/builders-option.nix
         ./nix/dependencies-option.nix
         # inputs.holonix.inputs.flake-parts.flakeModules.flakeModules
@@ -67,7 +91,7 @@
             pkgs.darwin.apple_sdk.frameworks.AppKit
             pkgs.darwin.apple_sdk.frameworks.WebKit
             (if pkgs.system == "x86_64-darwin" then
-              (pkgs.stdenv.mkDerivation {
+              (pkgs.darwin.apple_sdk_11_0.stdenv.mkDerivation {
                 name = "go";
                 nativeBuildInputs = with pkgs; [ makeBinaryWrapper go ];
                 dontBuild = true;
@@ -110,13 +134,11 @@
                 ++ self'.dependencies.holochain.buildInputs;
             };
           dna = { dnaManifest, zomes, matchingIntegrityDna ? null, meta ? { } }:
-            let
+            pkgs.callPackage ./nix/dna.nix {
+              inherit zomes dnaManifest matchingIntegrityDna meta;
               compare-dnas-integrity = self'.packages.compare-dnas-integrity;
               holochain = inputs'.holonix.packages.holochain;
-
-            in pkgs.callPackage ./nix/dna.nix {
-              inherit zomes holochain dnaManifest compare-dnas-integrity
-                matchingIntegrityDna meta;
+              dna-hash = self'.packages.dna-hash;
             };
           happ = { happManifest, dnas, meta ? { } }:
             pkgs.callPackage ./nix/happ.nix {

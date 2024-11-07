@@ -6,7 +6,10 @@
     holonix.url = "github:holochain/holonix/main-0.3";
 
     tnesh-stack.url = "path:./../../..";
-    service.url = "path:./../service-repo";
+    service = {
+      url = "path:./../service-repo";
+      inputs.tnesh-stack.follows = "tnesh-stack";
+    };
   };
 
   outputs = inputs@{ ... }:

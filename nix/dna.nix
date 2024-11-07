@@ -3,7 +3,8 @@
 , holochain
 # If given a DNA, will check whether the DNA hashes for the given `matchingIntegrityDna` and the DNA to be built match
 # If they don't, it will print an error describing which zomes don't match
-, matchingIntegrityDna ? null, compare-dnas-integrity, zomes ? { }, meta }:
+, matchingIntegrityDna ? null, compare-dnas-integrity, dna-hash, zomes ? { }
+, meta }:
 
 let
   zomeSrcs = builtins.attrValues zomes;
@@ -69,6 +70,7 @@ let
     runCommandNoCC "check-match-dna-${manifest.name}-integrity" {
       srcs = [ release matchingIntegrityDna ];
       buildInputs = [ compare-dnas-integrity ];
+      outputs = [ "out" ];
     } ''
       ${compare-dnas-integrity}/bin/compare-dnas-integrity ${matchingIntegrityDna} ${release}
       cp ${release} $out
@@ -78,7 +80,8 @@ let
 
 in runCommandNoCC manifest.name {
   meta = meta // { inherit debug; };
-  outputs = [ "out" ];
+  outputs = [ "out" "hash" ];
 } ''
   cp ${guardedRelease} $out
+  ${dna-hash}/bin/dna-hash $out > $hash
 ''
