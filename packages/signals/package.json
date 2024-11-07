@@ -1,43 +1,40 @@
 {
-  "name": "@tnesh-stack/signals",
-  "version": "0.300.1",
-  "description": "Holochain async-signals to build reusable tnesh modules",
-  "author": "guillem.cordoba@gmail.com",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "src"
-  ],
-  "exports": {
-    ".": "./dist/index.js",
-    "./dist/*": "./dist/*"
-  },
-  "scripts": {
-    "start": "vite --open",
-    "build": "pnpm lint && tsc",
-    "lint": "eslint src",
-    "test": "vitest run"
-  },
-  "dependencies": {
-    "@tnesh-stack/utils": "workspace:^0.300.0",
-    "@holochain/client": "^0.17.1",
-    "@msgpack/msgpack": "^2.8.0",
-    "async-signals": "^0.1.10",
-    "lodash-es": "^4.17.21",
-    "lit-signal-watcher": "^0.1.1",
-    "signal-polyfill": "^0.1.1"
-  },
-  "devDependencies": {
-    "@types/lodash-es": "^4.17.6",
-    "js-base64": "^3.7.7",
-    "typescript": "^5.4.0",
-    "vite": "^4.1.1",
-    "vitest": "^1.5.0"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "type": "module"
+	"name": "@tnesh-stack/signals",
+	"version": "0.400.0-rc",
+	"description": "Holochain async-signals to build reusable tnesh modules",
+	"author": "guillem.cordoba@gmail.com",
+	"main": "dist/index.js",
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": ["dist", "src"],
+	"exports": {
+		".": "./dist/index.js",
+		"./dist/*": "./dist/*"
+	},
+	"scripts": {
+		"start": "vite --open",
+		"build": "pnpm lint && tsc",
+		"lint": "eslint src",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@tnesh-stack/utils": "workspace:^0.400.0",
+		"@holochain/client": "^0.18.0-rc",
+		"@msgpack/msgpack": "^2.8.0",
+		"async-signals": "^0.1.10",
+		"lodash-es": "^4.17.21",
+		"lit-signal-watcher": "^0.1.1",
+		"signal-polyfill": "^0.1.1"
+	},
+	"devDependencies": {
+		"@types/lodash-es": "^4.17.6",
+		"js-base64": "^3.7.7",
+		"typescript": "^5.4.0",
+		"vite": "^4.1.1",
+		"vitest": "^1.5.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"type": "module"
 }

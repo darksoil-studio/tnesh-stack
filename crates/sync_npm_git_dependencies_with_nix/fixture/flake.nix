@@ -4,10 +4,10 @@
   inputs = {
     nixpkgs.follows = "holonix/nixpkgs";
 
-    holonix.url = "github:holochain/holonix/main-0.3";
+    holonix.url = "github:holochain/holonix/main-0.4";
     tnesh-stack.url = "path:../../..";
-    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.3";
-    file-storage.url = "github:darksoil-studio/file-storage/main-0.3";
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.4";
+    file-storage.url = "github:darksoil-studio/file-storage/main-0.4";
   };
 
   outputs = inputs@{ ... }:

@@ -1,10 +1,10 @@
 [package]
 name = "zome"
-version ="0.3.2"
+version ="0.4.0"
 edition = "2021"
 
 [dependencies]
-hdk = "0.3.2"
+hdk = "0.4.0-rc"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
