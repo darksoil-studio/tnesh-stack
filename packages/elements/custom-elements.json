@@ -145,6 +145,23 @@
               }
             }
           ]
+        },
+        {
+          "kind": "function",
+          "name": "hashesProperty",
+          "return": {
+            "type": {
+              "text": "PropertyDeclaration<object | null, unknown>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "attributeName",
+              "type": {
+                "text": "string"
+              }
+            }
+          ]
         }
       ],
       "exports": [
@@ -161,6 +178,14 @@
           "name": "hashProperty",
           "declaration": {
             "name": "hashProperty",
+            "module": "src/holo-hash-property.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hashesProperty",
+          "declaration": {
+            "name": "hashesProperty",
             "module": "src/holo-hash-property.ts"
           }
         }
