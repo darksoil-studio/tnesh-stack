@@ -1,4 +1,8 @@
-import { HoloHash, decodeHashFromBase64 } from '@holochain/client';
+import {
+	HoloHash,
+	decodeHashFromBase64,
+	encodeHashToBase64,
+} from '@holochain/client';
 import { PropertyDeclaration } from 'lit';
 
 export function hashState() {
@@ -17,29 +21,38 @@ export function hashesState() {
 
 export function hashProperty(
 	attributeName: string,
-): PropertyDeclaration<object | null, unknown> {
+): PropertyDeclaration<HoloHash | null, unknown> {
 	return {
 		attribute: attributeName,
 		type: Object,
 		hasChanged: (oldVal: HoloHash | undefined, newVal: HoloHash | undefined) =>
 			oldVal?.toString() !== newVal?.toString(),
-		converter: (s: string | undefined) =>
-			s && s.length > 0 && decodeHashFromBase64(s),
+		converter: {
+			fromAttribute: value =>
+				value && value.length > 0 && decodeHashFromBase64(value),
+			toAttribute: hash => hash && encodeHashToBase64(hash),
+		},
+		reflect: true,
 	};
 }
 
 export function hashesProperty(
 	attributeName: string,
-): PropertyDeclaration<object | null, unknown> {
+): PropertyDeclaration<HoloHash[], unknown> {
 	return {
 		attribute: attributeName,
 		type: Object,
 		hasChanged: (oldVal: HoloHash[], newVal: HoloHash[]) =>
 			oldVal?.toString() !== newVal?.toString(),
-		converter: (s: string | null) => {
-			if (!s) return [];
-			const split = s.split(',');
-			return split.map(decodeHashFromBase64);
+		converter: {
+			fromAttribute: value => {
+				if (!value) return [];
+				const split = value.split(',');
+				return split.map(decodeHashFromBase64);
+			},
+			toAttribute: (hash: HoloHash[]) =>
+				hash && hash.map(encodeHashToBase64).join(','),
 		},
+		reflect: true,
 	};
 }
