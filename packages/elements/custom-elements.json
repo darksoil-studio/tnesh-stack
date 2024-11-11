@@ -131,10 +131,14 @@
         },
         {
           "kind": "function",
+          "name": "hashesState"
+        },
+        {
+          "kind": "function",
           "name": "hashProperty",
           "return": {
             "type": {
-              "text": "PropertyDeclaration<object | null, unknown>"
+              "text": "PropertyDeclaration<HoloHash | null, unknown>"
             }
           },
           "parameters": [
@@ -151,7 +155,7 @@
           "name": "hashesProperty",
           "return": {
             "type": {
-              "text": "PropertyDeclaration<object | null, unknown>"
+              "text": "PropertyDeclaration<HoloHash[], unknown>"
             }
           },
           "parameters": [
@@ -170,6 +174,14 @@
           "name": "hashState",
           "declaration": {
             "name": "hashState",
+            "module": "src/holo-hash-property.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hashesState",
+          "declaration": {
+            "name": "hashesState",
             "module": "src/holo-hash-property.ts"
           }
         },
