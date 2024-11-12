@@ -10,7 +10,7 @@
 
       cargoToml =
         builtins.fromTOML (builtins.readFile "${cratePath}/Cargo.toml");
-      crate = cargoToml.package.name;
+      crate = (lib.elemAt cargoToml.bin 0).name;
 
       commonArgs = {
         src = (self.lib.cleanScaffoldingSource { inherit lib; })
