@@ -66,6 +66,38 @@
 
               name = "pnpm-workspace";
             };
+          filterScaffoldingSources = { lib }:
+            orig_path: type:
+            let
+              path = (toString orig_path);
+              base = baseNameOf path;
+              parentDir = baseNameOf (dirOf path);
+
+              matchesSuffix = lib.any (suffix: lib.hasSuffix suffix base) [
+                # Keep rust sources
+                ".rs"
+                # Keep all toml files as they are commonly used to configure other
+                # cargo-based tools
+                ".toml"
+                # Keep templates
+                ".hbs"
+              ];
+
+              # Cargo.toml already captured above
+              isCargoFile = base == "Cargo.lock";
+
+              # .cargo/config.toml already captured above
+              isCargoConfig = parentDir == ".cargo" && base == "config";
+            in type == "directory" || matchesSuffix || isCargoFile
+            || isCargoConfig;
+          cleanScaffoldingSource = { lib }:
+            src:
+            lib.cleanSourceWith {
+              src = lib.cleanSource src;
+              filter = filterScaffoldingSources { inherit lib; };
+
+              name = "scaffolding-workspace";
+            };
         };
       };
 
@@ -75,9 +107,9 @@
         ./crates/zome_wasm_hash/default.nix
         ./crates/sync_npm_git_dependencies_with_nix/default.nix
         ./crates/dna_hash/default.nix
+        ./crates/scaffold_tnesh_zome/default.nix
         ./nix/builders-option.nix
         ./nix/dependencies-option.nix
-        # inputs.holonix.inputs.flake-parts.flakeModules.flakeModules
       ];
 
       systems = builtins.attrNames inputs.holonix.devShells;

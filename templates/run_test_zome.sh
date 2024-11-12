@@ -3,16 +3,16 @@ set -e
 
 DIR=$(pwd)
 
-nix shell --accept-flake-config .#hc-scaffold-zome --command bash -c "
+
+nix shell --accept-flake-config .#scaffold-tnesh-zome --command bash -c "
 cd /tmp
 rm -rf posts-open-dev
 mkdir posts-open-dev
 cd posts-open-dev
-
-hc-scaffold web-app posts --setup-nix true -F --package-manager pnpm
+scaffold-tnesh-zome --zome-name posts --github-organization darksoil-studio --cachix-cache darksoil-studio --npm-organization darksoil-studio 
 "
 
-cd /tmp/posts-open-dev/posts
+cd /tmp/posts-open-dev/posts-zome
 
 nix develop --no-update-lock-file --accept-flake-config --override-input tnesh-stack "path:$DIR" --command bash -c "
 set -e

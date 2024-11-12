@@ -13,8 +13,9 @@ hc-scaffold web-app forum-lit-open-dev --setup-nix true -F --package-manager pnp
 cd /tmp/forum-lit-open-dev
 
 nix develop --no-update-lock-file --accept-flake-config --override-input tnesh-stack "path:$DIR" --command bash -c "
-
 set -e
+
+cat package.json | nix run nixpkgs#jq -- 'del(.hcScaffold)' > package-tmp.json && mv package-tmp.json package.json
 hc-scaffold dna forum 
 
 hc-scaffold zome posts --integrity dnas/forum/zomes/integrity/ --coordinator dnas/forum/zomes/coordinator/

@@ -131,10 +131,31 @@
         },
         {
           "kind": "function",
+          "name": "hashesState"
+        },
+        {
+          "kind": "function",
           "name": "hashProperty",
           "return": {
             "type": {
-              "text": "PropertyDeclaration<object | null, unknown>"
+              "text": "PropertyDeclaration<HoloHash | null, unknown>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "attributeName",
+              "type": {
+                "text": "string"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "hashesProperty",
+          "return": {
+            "type": {
+              "text": "PropertyDeclaration<HoloHash[], unknown>"
             }
           },
           "parameters": [
@@ -158,9 +179,25 @@
         },
         {
           "kind": "js",
+          "name": "hashesState",
+          "declaration": {
+            "name": "hashesState",
+            "module": "src/holo-hash-property.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "hashProperty",
           "declaration": {
             "name": "hashProperty",
+            "module": "src/holo-hash-property.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hashesProperty",
+          "declaration": {
+            "name": "hashesProperty",
             "module": "src/holo-hash-property.ts"
           }
         }
@@ -694,6 +731,81 @@
           "declaration": {
             "name": "DisplayError",
             "module": "src/elements/display-error.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/download-installer-button.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "DownloadInstallerButton",
+          "members": [
+            {
+              "kind": "field",
+              "name": "linuxUrl",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "nixCommand",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "macosIntelUrl",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "macosSiliconUrl",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "windowsUrl",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getUrlFor",
+              "parameters": [
+                {
+                  "name": "browser",
+                  "type": {
+                    "text": "BrowserType"
+                  }
+                }
+              ]
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "DownloadInstallerButton",
+          "declaration": {
+            "name": "DownloadInstallerButton",
+            "module": "src/elements/download-installer-button.ts"
           }
         }
       ]

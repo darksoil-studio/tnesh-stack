@@ -1,4 +1,4 @@
-{ inputs, self, ... }:
+{ inputs, ... }:
 
 {
   perSystem = { inputs', pkgs, self', lib, ... }: {
@@ -19,7 +19,7 @@
       };
       cargoArtifacts = craneLib.buildDepsOnly (commonArgs // {
         pname = "t-nesh-workspace";
-        version = "0.4.x";
+        version = "0.3.x";
       });
     in craneLib.buildPackage (commonArgs // {
       pname = crate;

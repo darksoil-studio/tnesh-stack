@@ -3,11 +3,7 @@
 To scaffold a TNESH zome module, run this:
 
 ```bash
-nix run github:darksoil-studio/tnesh-stack#hc-scaffold-zome -- web-app
+nix run github:darksoil-studio/tnesh-stack#scaffold-tnesh-zome
 ```
 
 Then, follow the instructions that command gives.
-
-> [!NOTE]
-> This command is just a wrapper around the [holochain scaffolding tool](https://gihtub.com/holochain/scaffolding), with the TNESH stack custom template.
-

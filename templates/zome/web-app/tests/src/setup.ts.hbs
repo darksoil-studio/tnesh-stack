@@ -32,6 +32,9 @@ export async function setup(scenario: Scenario) {
     { appBundleSource: { path: testHappUrl } },
   ]);
 
+  patchCallZome(alice.appWs as AppWebsocket);
+  patchCallZome(bob.appWs as AppWebsocket);
+
   // Shortcut peer discovery through gossip and register all agents in every
   // conductor of the scenario.
   await scenario.shareAllAgents();
@@ -60,3 +63,19 @@ export async function setup(scenario: Scenario) {
   };
 }
 
+function patchCallZome(appWs: AppWebsocket) {
+  const callZome = appWs.callZome;
+  appWs.callZome = async req => {
+    try {
+      const result = await callZome(req);
+      return result;
+    } catch (e) {
+      if (
+        !e.toString().includes('Socket is not open') &&
+        !e.toString().includes('ClientClosedWithPendingRequests')
+      ) {
+        throw e;
+      }
+    }
+  };
+}

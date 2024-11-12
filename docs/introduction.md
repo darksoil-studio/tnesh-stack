@@ -21,11 +21,11 @@ As such, the need for modular and battle tested building blocks is much greater 
 
 ### Existing Modules
 
-- [profiles-zome](https://github.com/darksoil-studio/profiles-zome)
-- [linked-devices-zome](https://github.com/darksoil-studio/linked-devices-zome)
-- [file-storage-zome](https://github.com/darksoil-studio/file-storage)
-- [notifications-zome](https://github.com/darksoil-studio/notifications-zome)
-- [roles-zome](https://github.com/darksoil-studio/roles-zome)
+- [profiles-zome](https://darksoil.studio/profiles-zome)
+- [linked-devices-zome](https://darksoil.studio/linked-devices)
+- [file-storage-zome](https://darksoil.studio/file-storage)
+- [notifications-zome](https://darksoil.studio/notifications-zome)
+- [roles-zome](https://darksoil.studio/roles-zome)
 
 Other TNESH modules like mutual-credit, tasks or booking of time slots are being developed.
 

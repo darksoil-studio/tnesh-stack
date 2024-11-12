@@ -1,0 +1,22 @@
+import { 
+  SignedActionHashed,
+  CreateLink,
+  Link,
+  DeleteLink,
+  Delete,
+  AppClient, 
+  Record, 
+  ActionHash, 
+  EntryHash, 
+  AgentPubKey,
+} from '@holochain/client';
+import { EntryRecord, ZomeClient } from '@tnesh-stack/utils';
+
+import { {{pascal_case zome_name}}Signal } from './types.js';
+
+export class {{pascal_case zome_name}}Client extends ZomeClient<{{pascal_case zome_name}}Signal> {
+
+  constructor(public client: AppClient, public roleName: string, public zomeName = '{{snake_case zome_name}}') {
+    super(client, roleName, zomeName);
+  }
+}

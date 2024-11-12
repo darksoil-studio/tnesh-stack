@@ -1,0 +1,29 @@
+---
+# https://vitepress.dev/reference/default-theme-home-page
+layout: home
+
+hero:
+  name: "@{{npm_organization}}/{{kebab_case zome_name}}-zome"
+  text: "{{title_case zome_name}} zome for holochain apps"
+  tagline: Plug-and-play {{lower_case zome_name}} management for your hApps
+  actions:
+    - theme: brand
+      text: Setup
+      link: /setup.md
+    - theme: alt
+      text: Integrity Zome API
+      link: "/backend/doc/{{snake_case zome_name}}_integrity/index.html"
+      target: "_blank"
+    - theme: alt
+      text: Coordinator Zome API
+      link: "/backend/doc/{{snake_case zome_name}}/index.html"
+      target: "_blank"
+    - theme: alt
+      text: Frontend API
+      link: "/{{kebab_case zome_name}}-store.md"
+
+features:
+  - title: UI+Backend Module
+    details: Following the tnesh-stack guidelines
+    link: https://darksoil.studio/tnesh-stack
+---

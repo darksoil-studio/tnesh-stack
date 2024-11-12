@@ -1,0 +1,21 @@
+import { 
+  collectionSignal, 
+  liveLinksSignal, 
+  deletedLinksSignal, 
+  allRevisionsOfEntrySignal,
+  latestVersionOfEntrySignal, 
+  immutableEntrySignal, 
+  deletesForEntrySignal, 
+  AsyncComputed,
+  pipe,
+} from "@tnesh-stack/signals";
+import { slice, HashType, retype, EntryRecord, MemoHoloHashMap } from "@tnesh-stack/utils";
+import { NewEntryAction, Record, ActionHash, EntryHash, AgentPubKey } from '@holochain/client';
+
+import { {{pascal_case zome_name}}Client } from './{{kebab_case zome_name}}-client.js';
+
+export class {{pascal_case zome_name}}Store {
+
+  constructor(public client: {{pascal_case zome_name}}Client) {}
+  
+}

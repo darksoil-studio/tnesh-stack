@@ -1,7 +1,7 @@
 # Setup
 
 > [!WARNING]
-> This guide assumes that you have scaffolded a hApp with the [tnesh-stack template](https://darksoil.studio/tnesh-stack).
+> This guide assumes that you have scaffolded a hApp with the [TNESH stack template](https://darksoil.studio/tnesh-stack).
 
 1. Run this to scaffold this zome in your hApp:
 
@@ -19,7 +19,7 @@ Now you only need to integrate the zome's frontend in your web-app.
 2. Connect to Holochain with the `AppClient`, and create the `{{pascal_case app_name}}Store` with it:
 
 ```js
-import { {{pascal_case app_name}}Store, {{pascal_case app_name}}Client } from "@darksoil-studio/profiles-zome";
+import { {{pascal_case app_name}}Store, {{pascal_case app_name}}Client } from "@darksoil-studio/{{kebab_case app_name}}-zome";
 import { AppWebsocket } from "@holochain/client";
 
 async function setup{{pascal_case app_name}}Store() {
