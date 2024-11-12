@@ -31,18 +31,18 @@ async function setup{{pascal_case zome_name}}Store() {
 }
 ```
 
-3. Import the `<{{kebab_case zome_name}}-context>` element and add it to your html **wrapping the whole section of your page in which you are going to be placing** the other elements from `@{{npm_organization}}/{{kebab_case zome_name}}`:
+3. Import the `<{{kebab_case zome_name}}-context>` element and add it to your html **wrapping the whole section of your page in which you are going to be placing** the other elements from `@{{npm_organization}}/{{kebab_case zome_name}}-zome`:
 
 ```js
 // This can be placed in the index.js, at the top level of your web-app.
-import "@{{npm_organization}}/{{kebab_case zome_name}}/dist/elements/{{kebab_case zome_name}}-context.js";
+import "@{{npm_organization}}/{{kebab_case zome_name}}-zome/dist/elements/{{kebab_case zome_name}}-context.js";
 ```
 
 And then add the `<{{kebab_case zome_name}}-context>` element in your html:
 
 ```html
 <{{kebab_case zome_name}}-context>
-  <!-- Add here other elements from @{{npm_organization}}/{{kebab_case zome_name}} -->
+  <!-- Add here other elements from @{{npm_organization}}/{{kebab_case zome_name}}-zome -->
 </{{kebab_case zome_name}}-context>
 ```
 
@@ -90,7 +90,7 @@ contextElement.store = store;
 5. [Choose which elements you need](?path=/docs/frontend-elements) and import them like this:
 
 ```js
-import "@{{npm_organization}}/{{kebab_case zome_name}}/dist/elements/{{kebab_case zome_name}}-context.js";
+import "@{{npm_organization}}/{{kebab_case zome_name}}-zome/dist/elements/{{kebab_case zome_name}}-context.js";
 ```
 
 And then they are ready be used inside the `<{{kebab_case zome_name}}-context>` just like any other HTML tag.

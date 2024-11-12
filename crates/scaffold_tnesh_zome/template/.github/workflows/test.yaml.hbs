@@ -34,4 +34,4 @@ jobs:
 
       - name: Install and test
         run: |
-          nix develop --no-update-lock-file --accept-flake-config --command bash -c "pnpm i && pnpm t && pnpm -F @{{npm_organization}}/{{kebab_case zome_name}} build"
+          nix develop --no-update-lock-file --accept-flake-config --command bash -c "pnpm i && pnpm t && pnpm -F @{{npm_organization}}/{{kebab_case zome_name}}-zome build"
