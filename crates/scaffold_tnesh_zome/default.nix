@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, self, ... }:
 
 {
   perSystem = { inputs', self', pkgs, system, lib, ... }: {
@@ -13,7 +13,8 @@
       crate = cargoToml.package.name;
 
       commonArgs = {
-        src = craneLib.cleanCargoSource (craneLib.path ../../.);
+        src = (self.lib.cleanScaffoldingSource { inherit lib; })
+          (craneLib.path ../../.);
         doCheck = false;
         buildInputs = self'.dependencies.holochain.buildInputs;
         cargoExtraArgs = "--locked --package scaffold_tnesh_zome";
