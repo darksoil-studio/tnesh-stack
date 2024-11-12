@@ -1,6 +1,5 @@
 use anyhow::Result;
 use build_fs_tree::dir;
-use convert_case::{Case, Casing};
 use dialoguer::{theme::ColorfulTheme, Confirm, Input};
 use file_tree_utils::{dir_to_file_tree, FileTree, FileTreeError};
 use handlebars::RenderError;
@@ -88,6 +87,7 @@ pub fn scaffold_tnesh_zome(
 
     // - Create the src-tauri directory structure
     let template_file_tree = dir_to_file_tree(&TEMPLATE)?;
+    println!("filetreee {template_file_tree:?}");
     let h = handlebars::Handlebars::new();
     let h = register_case_helpers(h);
 

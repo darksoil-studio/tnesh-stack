@@ -1216,18 +1216,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "file_tree_utils"
-version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/tnesh-stack?branch=main-0.3#3c6c545a065e90f8c0515328969c5863d09994cc"
-dependencies = [
- "build-fs-tree",
- "ignore",
- "include_dir",
- "serde",
- "thiserror",
-]
-
-[[package]]
 name = "filetime"
 version = "0.2.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1783,7 +1771,7 @@ name = "holochain_scaffolding_utils"
 version = "0.1.0"
 dependencies = [
  "dialoguer",
- "file_tree_utils 0.1.0",
+ "file_tree_utils",
  "holochain_types",
  "mr_bundle",
  "serde",
@@ -2952,7 +2940,7 @@ dependencies = [
  "build-fs-tree",
  "clap 4.5.20",
  "colored",
- "file_tree_utils 0.1.0",
+ "file_tree_utils",
  "ignore",
  "regex",
  "rnix",
@@ -2980,7 +2968,7 @@ dependencies = [
  "clap 4.5.20",
  "colored",
  "dialoguer",
- "file_tree_utils 0.1.0",
+ "file_tree_utils",
  "ignore",
  "regex",
  "serde",
@@ -3838,7 +3826,7 @@ dependencies = [
  "clap 4.5.20",
  "colored",
  "dialoguer",
- "file_tree_utils 0.1.0",
+ "file_tree_utils",
  "ignore",
  "regex",
  "serde",
@@ -3970,7 +3958,7 @@ dependencies = [
  "clap 4.5.20",
  "colored",
  "dialoguer",
- "file_tree_utils 0.1.0",
+ "file_tree_utils",
  "holochain_types",
  "ignore",
  "nix_scaffolding_utils",
@@ -3995,13 +3983,13 @@ dependencies = [
  "colored",
  "convert_case 0.6.0",
  "dialoguer",
- "file_tree_utils 0.1.0 (git+https://github.com/darksoil-studio/tnesh-stack?branch=main-0.3)",
+ "file_tree_utils",
  "handlebars",
  "ignore",
  "include_dir",
  "path-clean",
  "serde",
- "templates_scaffolding_utils 0.1.0 (git+https://github.com/darksoil-studio/tnesh-stack?branch=main-0.3)",
+ "templates_scaffolding_utils",
  "thiserror",
 ]
 
@@ -4692,26 +4680,7 @@ dependencies = [
  "build-fs-tree",
  "clap 4.5.20",
  "convert_case 0.6.0",
- "file_tree_utils 0.1.0",
- "handlebars",
- "ignore",
- "regex",
- "rnix",
- "serde",
- "serde_json",
- "thiserror",
-]
-
-[[package]]
-name = "templates_scaffolding_utils"
-version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/tnesh-stack?branch=main-0.3#3c6c545a065e90f8c0515328969c5863d09994cc"
-dependencies = [
- "anyhow",
- "build-fs-tree",
- "clap 4.5.20",
- "convert_case 0.6.0",
- "file_tree_utils 0.1.0 (git+https://github.com/darksoil-studio/tnesh-stack?branch=main-0.3)",
+ "file_tree_utils",
  "handlebars",
  "ignore",
  "regex",
