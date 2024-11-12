@@ -64,19 +64,18 @@ export async function setup(scenario: Scenario) {
 }
 
 function patchCallZome(appWs: AppWebsocket) {
-	const callZome = appWs.callZome;
-
-	appWs.callZome = async req => {
-		try {
-			const result = await callZome(req);
-			return result;
-		} catch (e) {
-			if (
-				!e.toString().includes('Socket is not open') &&
-				!e.toString().includes('ClientClosedWithPendingRequests')
-			) {
-				throw e;
-			}
-		}
-	};
+  const callZome = appWs.callZome;
+  appWs.callZome = async req => {
+    try {
+      const result = await callZome(req);
+      return result;
+    } catch (e) {
+      if (
+        !e.toString().includes('Socket is not open') &&
+        !e.toString().includes('ClientClosedWithPendingRequests')
+      ) {
+        throw e;
+      }
+    }
+  };
 }
