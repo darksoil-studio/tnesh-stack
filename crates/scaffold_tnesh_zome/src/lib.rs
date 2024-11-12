@@ -87,7 +87,6 @@ pub fn scaffold_tnesh_zome(
 
     // - Create the src-tauri directory structure
     let template_file_tree = dir_to_file_tree(&TEMPLATE)?;
-    println!("filetreee {template_file_tree:?}");
     let h = handlebars::Handlebars::new();
     let h = register_case_helpers(h);
 

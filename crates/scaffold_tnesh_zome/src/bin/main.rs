@@ -2,12 +2,13 @@ use anyhow::{anyhow, Result};
 use build_fs_tree::{Build, MergeableFileSystemTree};
 use clap::Parser;
 use colored::Colorize;
+use git2::{IndexAddOption, Repository, RepositoryInitOptions};
 use scaffold_tnesh_zome::scaffold_tnesh_zome;
 use std::{
     ffi::OsString,
     fs,
-    path::PathBuf,
-    process::{Command, ExitCode},
+    path::{Path, PathBuf},
+    process::ExitCode,
 };
 
 #[derive(Parser, Debug)]
@@ -54,9 +55,9 @@ fn internal_main() -> Result<()> {
 
     let folder_name = format!("{name}-zome");
 
-    let runtime_path = args.path.join(&folder_name);
+    let project_path = args.path.join(&folder_name);
 
-    if let Ok(path) = std::fs::canonicalize(&runtime_path) {
+    if let Ok(path) = std::fs::canonicalize(&project_path) {
         if path.exists() {
             return Err(anyhow!(
                 "The directory {name}-zome already exists: choose another name"
@@ -64,16 +65,36 @@ fn internal_main() -> Result<()> {
         }
     }
 
-    fs::create_dir_all(&runtime_path)?;
+    fs::create_dir_all(&project_path)?;
 
     let file_tree = MergeableFileSystemTree::<OsString, String>::from(file_tree);
 
-    file_tree.build(&runtime_path)?;
+    file_tree.build(&project_path)?;
+
+    setup_git_environment(&project_path)?;
 
     println!(
         "{}",
         format!("Successfully scaffolded the {name} TNESH zome").green()
     );
+
+    Ok(())
+}
+
+fn setup_git_environment<P: AsRef<Path>>(path: P) -> anyhow::Result<()> {
+    if let Err(e) = (|| {
+        let repo = Repository::init_opts(path, RepositoryInitOptions::new().initial_head("main"))?;
+        let mut index = repo.index()?;
+        index.add_all(["*"].iter(), IndexAddOption::DEFAULT, None)?;
+        index.write()?;
+        Ok::<_, git2::Error>(())
+    })() {
+        println!(
+            "{}{}",
+            "Warning: Failed to set up git repository: ".yellow(),
+            e.to_string().yellow()
+        );
+    }
 
     Ok(())
 }

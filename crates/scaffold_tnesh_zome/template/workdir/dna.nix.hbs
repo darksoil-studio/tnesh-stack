@@ -8,7 +8,7 @@
     , system
     , ...
     }: {
-  	  packages.{{snake_case zome_name}}_test_dna = inputs.tnesh-stack.outputs.builders.${system}.dna {
+      packages.{{snake_case zome_name}}_test_dna = inputs.tnesh-stack.outputs.builders.${system}.dna {
         dnaManifest = ./dna.yaml;
         zomes = {
           # Include here the zome packages for this DNA, e.g.:
@@ -19,6 +19,6 @@
           {{snake_case zome_name}} = self'.packages.{{snake_case zome_name}};
         };
       };
-  	};
+    };
 }
 

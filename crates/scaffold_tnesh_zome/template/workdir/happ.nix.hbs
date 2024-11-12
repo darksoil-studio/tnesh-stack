@@ -8,7 +8,7 @@
     , system
     , ...
     }: {
-  	  packages.{{snake_case zome_name}}_test_happ = inputs.tnesh-stack.outputs.builders.${system}.happ {
+      packages.{{snake_case zome_name}}_test_happ = inputs.tnesh-stack.outputs.builders.${system}.happ {
         happManifest = ./happ.yaml;
 
         dnas = {
@@ -18,5 +18,5 @@
           {{snake_case zome_name}}_test = self'.packages.{{snake_case zome_name}}_test_dna;
         };
       };
-  	};
+    };
 }
