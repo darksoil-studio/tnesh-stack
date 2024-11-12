@@ -13,11 +13,9 @@
       crate = cargoToml.package.name;
 
       commonArgs = {
-        src = (self.lib.cleanScaffoldingSource { inherit lib; })
-          (craneLib.path ../../.);
+        src = craneLib.cleanCargoSource (craneLib.path ../../.);
         doCheck = false;
-        buildInputs = self'.dependencies.tauriHapp.buildInputs;
-        nativeBuildInputs = self'.dependencies.tauriHapp.nativeBuildInputs;
+        buildInputs = self'.dependencies.holochain.buildInputs;
         cargoExtraArgs = "--locked --package scaffold_tnesh_zome";
       };
     in craneLib.buildPackage (commonArgs // {

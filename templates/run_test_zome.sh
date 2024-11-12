@@ -3,12 +3,14 @@ set -e
 
 DIR=$(pwd)
 
+
+nix shell --accept-flake-config .#scaffold-tnesh-zome --command bash -c "
 cd /tmp
 rm -rf posts-open-dev
 mkdir posts-open-dev
 cd posts-open-dev
-
-nix shell --accept-flake-config .#scaffold-tnesh-zome -- --zome-name posts --github-organization darksoil-studio --cachix-cache darksoil-studio --npm-organization darksoil-studio
+scaffold-tnesh-zome --zome-name posts --github-organization darksoil-studio --cachix-cache darksoil-studio --npm-organization darksoil-studio 
+"
 
 cd /tmp/posts-open-dev/posts-zome
 
