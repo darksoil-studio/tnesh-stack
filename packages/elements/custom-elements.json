@@ -737,6 +737,81 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/download-installer-button.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "DownloadInstallerButton",
+          "members": [
+            {
+              "kind": "field",
+              "name": "linuxUrl",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "nixCommand",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "macosIntelUrl",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "macosSiliconUrl",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "windowsUrl",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getUrlFor",
+              "parameters": [
+                {
+                  "name": "browser",
+                  "type": {
+                    "text": "BrowserType"
+                  }
+                }
+              ]
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "DownloadInstallerButton",
+          "declaration": {
+            "name": "DownloadInstallerButton",
+            "module": "src/elements/download-installer-button.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/holo-identicon.ts",
       "declarations": [
         {
