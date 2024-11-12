@@ -1,0 +1,15 @@
+[package]
+name = "{{snake_case zome_name}}"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+name = "{{snake_case zome_name}}"
+
+[dependencies]
+hdk = { workspace = true }
+
+serde = { workspace = true }
+
+{{snake_case zome_name}}_integrity = { path = "../../integrity/{{snake_case zome_name}}", package = "{{snake_case zome_name}}_integrity" }

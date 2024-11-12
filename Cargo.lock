@@ -58,9 +58,9 @@ dependencies = [
 
 [[package]]
 name = "allocator-api2"
-version = "0.2.18"
+version = "0.2.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c6cb57a04249c6480766f7f7cef5467412af1490f8d1e243141daddada3264f"
+checksum = "45862d1c77f2228b9e10bc609d5bc203d86ebc9b87ad8d5d5167a6c9abf739d9"
 
 [[package]]
 name = "android-tzdata"
@@ -428,9 +428,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.1.36"
+version = "1.1.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "baee610e9452a8f6f0a1b6194ec09ff9e2d85dea54432acdae41aa0761c95d70"
+checksum = "40545c26d092346d8a8dab71ee48e7685a7a9cba76e634790c215b41a4a7b4cf"
 dependencies = [
  "shlex",
 ]
@@ -644,9 +644,9 @@ checksum = "7704b5fdd17b18ae31c4c1da5a2e0305a2bf17b5249300a9ee9ed7b72114c636"
 
 [[package]]
 name = "cpufeatures"
-version = "0.2.14"
+version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "608697df725056feaccfa42cffdaeeec3fccc4ffc38358ecd19b243e716a78e0"
+checksum = "0ca741a962e1b0bff6d724a1a0958b686406e853bb14061f218562e1896f95e6"
 dependencies = [
  "libc",
 ]
@@ -1200,13 +1200,25 @@ checksum = "7360491ce676a36bf9bb3c56c1aa791658183a54d2744120f27285738d90465a"
 
 [[package]]
 name = "fastrand"
-version = "2.1.1"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8c02a5121d4ea3eb16a80748c74f5549a5665e4c21333c6098f283870fbdea6"
+checksum = "486f806e73c5707928240ddc295403b1b93c96a02038563881c4a2fd84b81ac4"
 
 [[package]]
 name = "file_tree_utils"
 version = "0.1.0"
+dependencies = [
+ "build-fs-tree",
+ "ignore",
+ "include_dir",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
+name = "file_tree_utils"
+version = "0.1.0"
+source = "git+https://github.com/darksoil-studio/tnesh-stack?branch=main-0.3#3c6c545a065e90f8c0515328969c5863d09994cc"
 dependencies = [
  "build-fs-tree",
  "ignore",
@@ -1470,7 +1482,7 @@ dependencies = [
  "aho-corasick",
  "bstr",
  "log",
- "regex-automata 0.4.8",
+ "regex-automata 0.4.9",
  "regex-syntax 0.8.5",
 ]
 
@@ -1771,7 +1783,7 @@ name = "holochain_scaffolding_utils"
 version = "0.1.0"
 dependencies = [
  "dialoguer",
- "file_tree_utils",
+ "file_tree_utils 0.1.0",
  "holochain_types",
  "mr_bundle",
  "serde",
@@ -2314,7 +2326,7 @@ dependencies = [
  "globset",
  "log",
  "memchr",
- "regex-automata 0.4.8",
+ "regex-automata 0.4.9",
  "same-file",
  "walkdir",
  "winapi-util",
@@ -2940,7 +2952,7 @@ dependencies = [
  "build-fs-tree",
  "clap 4.5.20",
  "colored",
- "file_tree_utils",
+ "file_tree_utils 0.1.0",
  "ignore",
  "regex",
  "rnix",
@@ -2968,7 +2980,7 @@ dependencies = [
  "clap 4.5.20",
  "colored",
  "dialoguer",
- "file_tree_utils",
+ "file_tree_utils 0.1.0",
  "ignore",
  "regex",
  "serde",
@@ -3552,7 +3564,7 @@ checksum = "b544ef1b4eac5dc2db33ea63606ae9ffcfac26c1416a2806ae0bf5f56b201191"
 dependencies = [
  "aho-corasick",
  "memchr",
- "regex-automata 0.4.8",
+ "regex-automata 0.4.9",
  "regex-syntax 0.8.5",
 ]
 
@@ -3567,9 +3579,9 @@ dependencies = [
 
 [[package]]
 name = "regex-automata"
-version = "0.4.8"
+version = "0.4.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "368758f23274712b504848e9d5a6f010445cc8b87a7cdb4d7cbee666c1288da3"
+checksum = "809e8dc61f6de73b46c85f4c96486310fe304c434cfa43669d7b40f711150908"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -3826,7 +3838,7 @@ dependencies = [
  "clap 4.5.20",
  "colored",
  "dialoguer",
- "file_tree_utils",
+ "file_tree_utils 0.1.0",
  "ignore",
  "regex",
  "serde",
@@ -3857,9 +3869,9 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "0.38.39"
+version = "0.38.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "375116bee2be9ed569afe2154ea6a99dfdffd257f533f187498c2a8f5feaf4ee"
+checksum = "99e4ea3e1cdc4b559b8e5650f9c8e5998e3e5c1343b4eaf034565f32318d63c0"
 dependencies = [
  "bitflags 2.6.0",
  "errno",
@@ -3958,7 +3970,7 @@ dependencies = [
  "clap 4.5.20",
  "colored",
  "dialoguer",
- "file_tree_utils",
+ "file_tree_utils 0.1.0",
  "holochain_types",
  "ignore",
  "nix_scaffolding_utils",
@@ -3970,6 +3982,26 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "sync_npm_git_dependencies_with_nix",
+ "thiserror",
+]
+
+[[package]]
+name = "scaffold_tnesh_zome"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "build-fs-tree",
+ "clap 4.5.20",
+ "colored",
+ "convert_case 0.6.0",
+ "dialoguer",
+ "file_tree_utils 0.1.0 (git+https://github.com/darksoil-studio/tnesh-stack?branch=main-0.3)",
+ "handlebars",
+ "ignore",
+ "include_dir",
+ "path-clean",
+ "serde",
+ "templates_scaffolding_utils 0.1.0 (git+https://github.com/darksoil-studio/tnesh-stack?branch=main-0.3)",
  "thiserror",
 ]
 
@@ -4053,9 +4085,9 @@ dependencies = [
 
 [[package]]
 name = "security-framework-sys"
-version = "2.12.0"
+version = "2.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea4a292869320c0272d7bc55a5a6aafaff59b4f63404a003887b679a2e05b4b6"
+checksum = "fa39c7303dc58b5543c94d22c1766b0d31f2ee58306363ea622b10bbc075eaa2"
 dependencies = [
  "core-foundation-sys",
  "libc",
@@ -4641,9 +4673,9 @@ checksum = "61c41af27dd6d1e27b1b16b489db798443478cef1f06a660c96db617ba5de3b1"
 
 [[package]]
 name = "tempfile"
-version = "3.13.0"
+version = "3.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0f2c9fc62d0beef6951ccffd757e241266a2c833136efbe35af6cd2567dca5b"
+checksum = "28cce251fcbc87fac86a866eeb0d6c2d536fc16d06f184bb61aeae11aa4cee0c"
 dependencies = [
  "cfg-if",
  "fastrand",
@@ -4660,7 +4692,26 @@ dependencies = [
  "build-fs-tree",
  "clap 4.5.20",
  "convert_case 0.6.0",
- "file_tree_utils",
+ "file_tree_utils 0.1.0",
+ "handlebars",
+ "ignore",
+ "regex",
+ "rnix",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "templates_scaffolding_utils"
+version = "0.1.0"
+source = "git+https://github.com/darksoil-studio/tnesh-stack?branch=main-0.3#3c6c545a065e90f8c0515328969c5863d09994cc"
+dependencies = [
+ "anyhow",
+ "build-fs-tree",
+ "clap 4.5.20",
+ "convert_case 0.6.0",
+ "file_tree_utils 0.1.0 (git+https://github.com/darksoil-studio/tnesh-stack?branch=main-0.3)",
  "handlebars",
  "ignore",
  "regex",
@@ -4750,18 +4801,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.68"
+version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02dd99dc800bbb97186339685293e1cc5d9df1f8fae2d0aecd9ff1c77efea892"
+checksum = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.68"
+version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a7c61ec9a6f64d2793d8a45faba21efbe3ced62a886d44c36a009b2b519b4c7e"
+checksum = "4fee6c4efc90059e10f81e6d42c60a18f76588c3d74cb83a0b242a2b6c7504c1"
 dependencies = [
  "proc-macro2",
  "quote",

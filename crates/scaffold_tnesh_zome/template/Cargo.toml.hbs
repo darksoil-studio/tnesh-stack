@@ -1,0 +1,15 @@
+[profile.dev]
+opt-level = "z"
+
+[profile.release]
+opt-level = "z"
+
+[workspace]
+members = ["zomes/coordinator/*", "zomes/integrity/*"]
+resolver = "2"
+
+[workspace.dependencies]
+hdi = "0.4"
+hdk = "0.3"
+serde = "1"
+

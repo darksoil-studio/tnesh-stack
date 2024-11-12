@@ -75,9 +75,9 @@
         ./crates/zome_wasm_hash/default.nix
         ./crates/sync_npm_git_dependencies_with_nix/default.nix
         ./crates/dna_hash/default.nix
+        ./crates/scaffold_tnesh_zome/default.nix
         ./nix/builders-option.nix
         ./nix/dependencies-option.nix
-        # inputs.holonix.inputs.flake-parts.flakeModules.flakeModules
       ];
 
       systems = builtins.attrNames inputs.holonix.devShells;

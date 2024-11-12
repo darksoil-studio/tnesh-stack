@@ -1,0 +1,30 @@
+[package]
+name = "scaffold_tnesh_zome"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "scaffold_tnesh_zome"
+path = "src/lib.rs"
+
+[[bin]]
+name = "scaffold-tnesh-zome"
+path = "src/bin/main.rs"
+
+[dependencies]
+anyhow = "1.0.81"
+ignore = "0.4"
+serde = "1"
+clap = {version = "4.5.4", features = ["derive"]}
+file_tree_utils = { git ="https://github.com/darksoil-studio/tnesh-stack", branch = "main-0.3"}
+templates_scaffolding_utils = { git ="https://github.com/darksoil-studio/tnesh-stack", branch = "main-0.3" }
+include_dir = "0.7.3"
+thiserror = "1"
+handlebars = "5.1.0"
+build-fs-tree = "0.4"
+path-clean = "1"
+dialoguer = "0.11"
+colored = "2.1.0"
+convert_case = "0.6"

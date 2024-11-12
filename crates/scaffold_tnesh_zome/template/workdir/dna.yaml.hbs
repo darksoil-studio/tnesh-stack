@@ -1,0 +1,28 @@
+---
+manifest_version: "1"
+name: {{snake_case zome_name}}_test
+integrity:
+  network_seed: ~
+  properties: ~
+  origin_time: 1676140846503210
+  zomes:
+    - name: {{snake_case zome_name}}_integrity
+      hash: ~
+      bundled: "../target/wasm32-unknown-unknown/release/{{snake_case zome_name}}_integrity.wasm"
+      dependencies: ~    
+    - name: profiles_integrity
+      hash: ~
+      bundled: <NIX PACKAGE>
+      dependencies: ~
+coordinator:
+  zomes:
+    - name: {{snake_case zome_name}}
+      hash: ~
+      bundled: "../target/wasm32-unknown-unknown/release/{{snake_case zome_name}}.wasm"
+      dependencies:
+        - name: {{snake_case zome_name}}_integrity    
+    - name: profiles
+      hash: ~
+      bundled: <NIX PACKAGE>
+      dependencies:
+        - name: profiles_integrity
