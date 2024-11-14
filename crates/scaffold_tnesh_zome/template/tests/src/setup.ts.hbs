@@ -40,7 +40,7 @@ export async function setup(scenario: Scenario) {
   await scenario.shareAllAgents();
 
   const aliceStore = new {{pascal_case zome_name}}Store(
-    new {{pascal_case zome_name}}Client(alice.appWs as any, '{{snake_case zome_name}}_test', '{{snake_case zome_name}}')
+    new {{pascal_case zome_name}}Client(alice.appWs as any, '{{snake_case zome_name}}_test')
   );
 
   const bobStore = new {{pascal_case zome_name}}Store(

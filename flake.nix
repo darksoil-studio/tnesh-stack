@@ -278,7 +278,7 @@
           '';
         };
 
-        packages.hc-scaffold-app = flake.lib.wrapCustomTemplate {
+        packages.hc-scaffold-happ = flake.lib.wrapCustomTemplate {
           inherit pkgs system;
           customTemplatePath = ./templates/app;
         };

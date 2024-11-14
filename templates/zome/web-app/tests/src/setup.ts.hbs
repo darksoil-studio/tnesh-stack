@@ -40,11 +40,11 @@ export async function setup(scenario: Scenario) {
   await scenario.shareAllAgents();
 
   const aliceStore = new {{pascal_case app_name}}Store(
-    new {{pascal_case app_name}}Client(alice.appWs as any, '{{snake_case app_name}}_test', '{{snake_case app_name}}')
+    new {{pascal_case app_name}}Client(alice.appWs as any, '{{snake_case app_name}}_test')
   );
 
   const bobStore = new {{pascal_case app_name}}Store(
-    new {{pascal_case app_name}}Client(bob.appWs as any, '{{snake_case app_name}}_test', '{{snake_case app_name}}')
+    new {{pascal_case app_name}}Client(bob.appWs as any, '{{snake_case app_name}}_test')
   );
 
   // Shortcut peer discovery through gossip and register all agents in every
