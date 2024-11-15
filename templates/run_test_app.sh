@@ -36,8 +36,7 @@ hc-scaffold link-type agent:creator post --delete false --bidirectional false
 
 git add .
 
-sed -i 's/TODO:REPLACE_ME_WITH_THE_DNA_WITH_THE_PROFILES_ZOME/forum/g' ui/src/holochain-app.ts  
-nix run github:darksoil-studio/profiles-zome/main-0.3#scaffold --refresh -- --local-dna-to-add-the-zome-to forum --local-npm-package-to-add-the-ui-to ui
+nix run github:darksoil-studio/profiles-zome/main-0.3#scaffold --refresh -- --local-dna-to-add-the-zome-to forum
 
 pnpm i
 

@@ -7,8 +7,8 @@
     "launch": "echo pass | RUST_LOG=warn hc launch --piped -n $AGENTS workdir/{{app_name}}.happ --ui-port $UI_PORT network --bootstrap http://127.0.0.1:$BOOTSTRAP_PORT webrtc ws://127.0.0.1:$SIGNAL_PORT",
     "local-services": "hc run-local-services --bootstrap-port $BOOTSTRAP_PORT --signal-port $SIGNAL_PORT",
     "test": "pnpm build:happ && pnpm -F tests test",
-    "build:happ": "nix build -L .#{{app_name}}.meta.debug -o workdir/{{app_name}}.happ",
-    "package": "nix build -L .#{{app_name}} -o workdir/{{app_name}}.happ && pnpm -F ui package && hc web-app pack workdir"
+    "build:happ": "nix build -L .#{{app_name}}_happ.meta.debug -o workdir/{{app_name}}.happ",
+    "package": "nix build -L .#{{app_name}}_happ -o workdir/{{app_name}}.happ && pnpm -F ui package && hc web-app pack workdir"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",

@@ -1,16 +1,38 @@
 import { css, html, LitElement } from 'lit';
 import { provide } from '@lit/context';
 import { customElement, property } from 'lit/decorators.js';
+import { AppClient } from '@holochain/client';
+import { appClientContext } from '@tnesh-stack/elements';
 
 import { {{camel_case app_name}}StoreContext } from '../context.js';
 import { {{pascal_case app_name}}Store } from '../{{kebab_case app_name}}-store.js';
 
+/**
+ * @element {{kebab_case app_name}}-context
+ */
 @customElement('{{kebab_case app_name}}-context')
 export class {{pascal_case app_name}}Context extends LitElement {
+  @consume({ context: appClientContext })
+  private client!: AppClient;
+
   @provide({ context: {{camel_case app_name}}StoreContext })
   @property({ type: Object })
   store!: {{pascal_case app_name}}Store;
 
+  @property()
+  role!: string;
+
+  @property()
+  zome = {{snake_case app_name}};
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (!this.role) {
+      throw new Error(`<{{kebab_case app_name}}-context> must have a role="YOUR_DNA_ROLE" property, eg: <{{kebab_case app_name}}-context role="role1">`)
+    }
+    this.store = new {{pascal_case app_name}}Store(new {{pascal_case app_name}}Client(this.role, this.zome));
+  }
+  
   render() {
     return html`<slot></slot>`;
   }

@@ -37,7 +37,7 @@ fn default_select_npm_package(
         .interact()?)
 }
 
-pub fn choose_npm_package(file_tree: &FileTree, prompt: &String) -> Result<String, NpmScaffoldingUtilsError> {
+pub fn choose_npm_package(file_tree: &FileTree, prompt: &String) -> Result<(PathBuf,String), NpmScaffoldingUtilsError> {
     let package_jsons = find_files_by_name(&file_tree, PathBuf::from("package.json").as_path());
 
     let package_jsons: Vec<(PathBuf, String)> = package_jsons.into_iter().collect();
@@ -52,7 +52,7 @@ pub fn choose_npm_package(file_tree: &FileTree, prompt: &String) -> Result<Strin
         .items(&packages_names[..])
         .interact()?;
 
-    Ok(packages_names[index].clone())
+    Ok(package_jsons[index].clone())
 }
 
 pub fn add_npm_dependency(
@@ -115,7 +115,7 @@ pub fn add_npm_dependency(
     Ok(file_tree)
 }
 
-fn get_npm_package_name(
+pub fn get_npm_package_name(
     package_json: &(PathBuf, String),
 ) -> Result<String, NpmScaffoldingUtilsError> {
     let json: serde_json::Value = serde_json::from_str(package_json.1.as_str())?;

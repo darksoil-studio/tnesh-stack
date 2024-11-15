@@ -2,7 +2,8 @@ use anyhow::Result;
 use build_fs_tree::{Build, MergeableFileSystemTree};
 use clap::Parser;
 use colored::Colorize;
-use scaffold_remote_zome::scaffold_remote_zome;
+use dialoguer::Confirm;
+use scaffold_remote_zome::{scaffold_remote_zome, ScaffoldRemoteZomeError};
 use std::{
     ffi::OsString,
     path::PathBuf,
@@ -48,6 +49,10 @@ struct Args {
     #[arg(long)]
     local_npm_package_to_add_the_ui_to: Option<String>,
 
+    /// <*-context> element that will be added to the top level context setting for the app's UI
+    #[arg(long)]
+    context_element: Option<String>,
+
     /// The path of the file tree to modify.
     #[clap(long, default_value = "./.")]
     pub path: PathBuf,
@@ -64,6 +69,37 @@ fn main() -> ExitCode {
 fn internal_main() -> Result<()> {
     let args = Args::parse();
 
+    let zomes_prompt = match (args.integrity_zome_name.clone(), args.coordinator_zome_name.clone()) {
+        (Some(integrity), Some(coordinator)) => format!(
+                "Add the {integrity} integrity zome and the {coordinator} coordinator zome to the dna.nix that you select."
+            ),
+        (Some(integrity), None) => format!("Add the {integrity} integrity zome to the dna.nix that you select."),
+        (None, Some(coordinator)) => format!("Add the {coordinator} coordinator zome to the dna.nix that you select."),
+        (None, None) => {
+            return Err(ScaffoldRemoteZomeError::NoZomesSpecifiedError)?;
+        }
+    };
+
+    let confirm = Confirm::new()
+        .with_prompt(format!(
+            r#"You are about to add the profiles zome to your hApp.
+
+These are the steps that will be taken:
+
+- Add the flake input "{}" to your flake.nix.
+- {}
+- Add the UI package for that zome as a dependency of your UI package.
+- Set up the "<{}-context>" element in your top level app component so that you can directly import the UI elements you need from the {} package.
+
+Are you ready to continue?"#,
+            args.remote_zome_git_url, zomes_prompt, args.module_name, args.remote_npm_package_name
+        ))
+        .interact()?;
+
+    if !confirm {
+        return Ok(());
+    }
+
     let file_tree = file_tree_utils::load_directory_into_memory(&args.path)?;
 
     let file_tree = scaffold_remote_zome(
@@ -77,6 +113,7 @@ fn internal_main() -> Result<()> {
         args.remote_npm_package_path,
         args.local_dna_to_add_the_zome_to,
         args.local_npm_package_to_add_the_ui_to,
+        args.context_element,
     )?;
 
     let file_tree = MergeableFileSystemTree::<OsString, String>::from(file_tree);

@@ -1,12 +1,15 @@
-use nix_scaffolding_utils::{add_flake_input, NixScaffoldingUtilsError};
-use npm_scaffolding_utils::{add_npm_dependency, NpmScaffoldingUtilsError};
 use anyhow::Result;
 use dialoguer::{theme::ColorfulTheme, Select};
 use file_tree_utils::{
-    find_files_by_extension, find_files_by_name, insert_file, map_file, FileTree, FileTreeError,
+    find_files_by_extension, find_files_by_name, insert_file, map_all_files, map_file, FileTree, FileTreeError
 };
 use holochain_types::prelude::{
     DnaManifest, DnaManifestCurrentBuilder, ZomeDependency, ZomeLocation,
+};
+use nix_scaffolding_utils::{add_flake_input, NixScaffoldingUtilsError};
+use npm_scaffolding_utils::{
+     add_npm_dependency_to_package,  get_npm_package_name,
+    NpmScaffoldingUtilsError,
 };
 use path_clean::PathClean;
 use regex::{Captures, Regex};
@@ -63,6 +66,7 @@ pub fn scaffold_remote_zome(
     remote_npm_package_path: PathBuf,
     local_dna_to_add_the_zome_to: Option<String>,
     local_npm_package_to_add_the_ui_to: Option<String>,
+    context_element: Option<String>,
 ) -> Result<FileTree, ScaffoldRemoteZomeError> {
     let nix_git_url = format!(
         "{remote_zome_git_url}{}",
@@ -91,16 +95,16 @@ pub fn scaffold_remote_zome(
         remote_npm_package_path.to_str().unwrap()
     );
 
-    let m = module_name.clone();
+    let (mut file_tree , package_json)= add_npm_dependency(file_tree, remote_npm_package_name, npm_dependency_source, local_npm_package_to_add_the_ui_to)?;
 
-    let clo = move |packages| select_npm_package(m.clone(), packages);
-
-    let file_tree = add_npm_dependency(file_tree, remote_npm_package_name, npm_dependency_source, local_npm_package_to_add_the_ui_to, Some(Box::new(clo)))?;
+    if let Some(context_element) = context_element {
+        file_tree = add_context_element(file_tree, &package_json, context_element)?;
+    }
 
     Ok(file_tree)
 }
 
-fn select_npm_package(module_name: String, npm_packages: Vec<String>) -> Result<usize, NpmScaffoldingUtilsError> {
+fn select_npm_package(npm_dependency_package_name: String, npm_packages: Vec<String>) -> Result<usize, NpmScaffoldingUtilsError> {
     let mut i = 0;
     let mut found = false;
 
@@ -118,10 +122,108 @@ fn select_npm_package(module_name: String, npm_packages: Vec<String>) -> Result<
     Ok(Select::with_theme(&ColorfulTheme::default())
         .with_prompt(
         format!(    
-"Multiple NPM packages were found in this project, choose one to add the UI package for the {module_name} zome:"))
+"Multiple NPM packages were found in this project. Choose one to which to add the {npm_dependency_package_name} dependency:"))
         .default(default)
         .items(&npm_packages[..])
         .interact()?)
+}
+
+pub fn add_npm_dependency(
+    mut file_tree: FileTree,
+    dependency: String,
+    dependency_source: String,
+    package_to_add_the_dependency_to: Option<String>,
+) -> Result<(FileTree, (PathBuf, String)), NpmScaffoldingUtilsError> {
+    let mut package_jsons = find_files_by_name(&file_tree, PathBuf::from("package.json").as_path());
+
+    let package_json = match package_jsons.len() {
+        0 => Err(NpmScaffoldingUtilsError::NoNpmPackagesFoundError)?,
+        1 => {
+            let package_json = package_jsons.pop_first().unwrap();
+            map_file(
+                &mut file_tree,
+                package_json.0.as_path(),
+                |_package_json_content| {
+                    add_npm_dependency_to_package(&package_json, &dependency, &dependency_source)
+                },
+            )?;
+            println!("Added dependency {dependency} to {:?}.", package_json.0);
+            package_json
+        }
+        _ => {
+            let package_jsons: Vec<(PathBuf, String)> = package_jsons.into_iter().collect();
+            let packages_names = package_jsons
+                .iter()
+                .map(|package_json| get_npm_package_name(package_json))
+                .collect::<Result<Vec<String>, NpmScaffoldingUtilsError>>()?;
+
+            let package_index = match package_to_add_the_dependency_to {
+                Some(package_to_add_to) => packages_names
+                    .iter()
+                    .position(|package_name| package_name.eq(&package_to_add_to))
+                    .ok_or(NpmScaffoldingUtilsError::NpmPackageNotFoundError(
+                        package_to_add_to.clone(),
+                    ))?,
+                None => {
+                    let default_ui_package_json_index = package_jsons
+                        .iter()
+                        .position(|(path, _)| path.eq(&PathBuf::from("ui/package.json")));
+
+                    if let Some(default_ui_package_index) = default_ui_package_json_index {
+                        default_ui_package_index
+                    } else {
+                        select_npm_package(dependency.clone(), packages_names)?
+                    }
+                }
+            };
+
+            let package_json = &package_jsons[package_index];
+
+            map_file(
+                &mut file_tree,
+                package_json.0.as_path(),
+                |_package_json_content| {
+                    add_npm_dependency_to_package(package_json, &dependency, &dependency_source)
+                },
+            )?;
+            println!("Added dependency {dependency} to {:?}.", package_json.0);
+            package_json.clone()
+        }
+    };
+
+    Ok((file_tree, package_json))
+}
+
+fn add_context_element(
+  mut  file_tree: FileTree,
+    npm_package: &(PathBuf, String),
+    context_element: String,
+) -> Result<FileTree, ScaffoldRemoteZomeError> {
+    let mut found = false;
+
+    map_all_files(&mut file_tree, |path,contents| {
+
+    let re = Regex::new(r"(?<before>.*)<app-client-context>(?<white1>\s*)=(?<white2>\s*)\{\n</app-client-context>(?<after>.*)")?;
+
+    if re.is_match(&contents) {
+        let new_contents = re.replace(&contents, |caps: &Captures| {
+            format!(
+                r#"{}inputs{}={}{{
+    {input_name}.url = "{input_ref}";
+{}"#,
+                &caps["before"], &caps["white1"], &caps["white2"], &caps["after"],
+            )
+        });
+        found = true;
+        Ok(new_contents.to_string())
+    }  else {
+        Ok(contents)
+        
+    }
+    } )?;
+
+    
+    Ok(file_tree)
 }
 
 #[derive(Debug, Clone)]
@@ -343,9 +445,9 @@ fn find_nixified_dnas(file_tree: &FileTree) -> Result<Vec<NixifiedDna>, Scaffold
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
     use build_fs_tree::{dir, file};
     use file_tree_utils::file_content;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn multiple_package_test() {
@@ -359,7 +461,8 @@ mod tests {
             "package.json" => file!(empty_package_json("root")),
             "packages" => dir! {
                 "package1" => dir! {
-                    "package.json" => file!(empty_package_json("package1"))
+                    "package.json" => file!(empty_package_json("package1")),
+                    "app.js" => file!(empty_app_js())
                 },
                 "package2" => dir! {
                     "package.json" => file!(empty_package_json("package2"))
@@ -378,6 +481,7 @@ mod tests {
             PathBuf::from("ui"),
             None,
             Some("package1".into()),
+            Some("profiles-context".into()),
         )
         .unwrap();
 
@@ -493,6 +597,21 @@ coordinator:
 }
 "#
         );
+
+        assert_eq!(
+            file_content(&repo, PathBuf::from("packages/package1/app.js").as_path()).unwrap(),
+            r#"export class App {
+
+  render() {
+    return html`
+      <app-client-context>
+        <app-client-context>
+        </app-client-context>
+      </app-client-context>
+    `;
+  }
+}"#
+        );
     }
 
     fn empty_package_json(package_name: &str) -> String {
@@ -593,5 +712,19 @@ coordinator:
 }
 "#,
         )
+    }
+
+    fn empty_app_js() -> String {
+        r#"export class App {
+
+  render() {
+    return html`
+      <app-client-context>
+      </app-client-context>
+    `;
+  }
+}
+"#
+        .into()
     }
 }

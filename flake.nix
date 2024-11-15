@@ -278,10 +278,12 @@
           '';
         };
 
-        packages.hc-scaffold-happ = flake.lib.wrapCustomTemplate {
-          inherit pkgs system;
-          customTemplatePath = ./templates/app;
-        };
+        packages.hc-scaffold-happ = let
+          hcScaffold = flake.lib.wrapCustomTemplate {
+            inherit pkgs system;
+            customTemplatePath = ./templates/app;
+          };
+        in hcScaffold;
 
         packages.hc-scaffold-zome = flake.lib.wrapCustomTemplate {
           inherit pkgs system;
