@@ -39,6 +39,9 @@ pub enum ScaffoldRemoteZomeError {
     #[error("No nixified DNAs were found in this project.")]
     NoDnasFoundError,
 
+    #[error("custom_element and custom_element_import must either both be set or none be set.")]
+    ContextElementOrImportError,
+
     #[error("The dna {0} was not found in this project.")]
     DnaNotFoundError(String),
 
@@ -67,6 +70,7 @@ pub fn scaffold_remote_zome(
     local_dna_to_add_the_zome_to: Option<String>,
     local_npm_package_to_add_the_ui_to: Option<String>,
     context_element: Option<String>,
+    context_element_import: Option<String>,
 ) -> Result<FileTree, ScaffoldRemoteZomeError> {
     let nix_git_url = format!(
         "{remote_zome_git_url}{}",
@@ -81,7 +85,7 @@ pub fn scaffold_remote_zome(
 
     add_zome_to_nixified_dna(
         &mut file_tree,
-        dna,
+        dna.clone(),
         &module_name,
         integrity_zome_name,
         coordinator_zome_name,
@@ -97,8 +101,17 @@ pub fn scaffold_remote_zome(
 
     let (mut file_tree , package_json)= add_npm_dependency(file_tree, remote_npm_package_name, npm_dependency_source, local_npm_package_to_add_the_ui_to)?;
 
-    if let Some(context_element) = context_element {
-        file_tree = add_context_element(file_tree, &package_json, context_element)?;
+    match (context_element, context_element_import) {
+        (Some(context_element), Some(context_element_import)) =>{
+        file_tree = add_context_element(file_tree,dna.name, &package_json, context_element, context_element_import)?;
+            
+        }
+        (None, None)=> {
+            
+        },
+        _ => {
+            return Err(ScaffoldRemoteZomeError::ContextElementOrImportError);
+        }
     }
 
     Ok(file_tree)
@@ -195,31 +208,39 @@ pub fn add_npm_dependency(
 }
 
 fn add_context_element(
-  mut  file_tree: FileTree,
+    mut file_tree: FileTree,
+    dna_role_name: String,
     npm_package: &(PathBuf, String),
     context_element: String,
+    context_element_import: String,
 ) -> Result<FileTree, ScaffoldRemoteZomeError> {
     let mut found = false;
 
+    let mut npm_package_folder = npm_package.0.clone();
+    npm_package_folder.pop();
+
     map_all_files(&mut file_tree, |path,contents| {
+        // if !path.starts_with(&npm_package_folder) {
+        //     return Ok(contents)
+        // }
 
-    let re = Regex::new(r"(?<before>.*)<app-client-context>(?<white1>\s*)=(?<white2>\s*)\{\n</app-client-context>(?<after>.*)")?;
+        let re = Regex::new(
+            r"(?<before>[.\s]*)<app-client-context(?<appclientcontextprops>[^>]*)>(?<middle>[.\s]*)</app-client-context>(?<after>[.\s]*)"
+        )?;
 
-    if re.is_match(&contents) {
-        let new_contents = re.replace(&contents, |caps: &Captures| {
-            format!(
-                r#"{}inputs{}={}{{
-    {input_name}.url = "{input_ref}";
-{}"#,
-                &caps["before"], &caps["white1"], &caps["white2"], &caps["after"],
-            )
-        });
-        found = true;
-        Ok(new_contents.to_string())
-    }  else {
-        Ok(contents)
-        
-    }
+        if re.is_match(&contents) {
+            let new_contents = re.replace(&contents, |caps: &Captures| {
+                format!(
+                    r#"{}<app-client-context{}>
+  <{context_element} role="{dna_role_name}">{}  </{context_element}>
+</app-client-context>{}"#,
+                    &caps["before"], &caps["appclientcontextprops"], &caps["middle"], &caps["after"],
+                )
+            });
+            Ok(new_contents.to_string())
+        }  else {
+            Ok(contents)
+        }
     } )?;
 
     
@@ -482,6 +503,7 @@ mod tests {
             None,
             Some("package1".into()),
             Some("profiles-context".into()),
+            Some("@darksoil-studio/profiles-zome/dist/elements/profiles-context.js".into()),
         )
         .unwrap();
 
@@ -600,13 +622,182 @@ coordinator:
 
         assert_eq!(
             file_content(&repo, PathBuf::from("packages/package1/app.js").as_path()).unwrap(),
-            r#"export class App {
+            r#"import "@darksoil-studio/profiles-zome/dist/elements/profiles-context.js";
+
+export class App {
 
   render() {
     return html`
-      <app-client-context>
-        <app-client-context>
-        </app-client-context>
+      <app-client-context .client=${this.client}>
+        <linked-devices-context role="my_dna">
+          <profiles-context role="my_dna">
+          </profiles-context>
+        <linked-devices-context>
+      </app-client-context>
+    `;
+  }
+}"#
+        );
+    }
+    
+    #[test]
+    fn single_package_test() {
+        let repo: FileTree = dir! {
+            "flake.nix" => file!(default_flake_nix()),
+            "dna.nix" => file!(empty_dna_nix()),
+            "workdir" => dir! {
+                "dna.yaml" => file!(empty_dna_yaml("another_dna"))
+            },
+            "dna.yaml" => file!(empty_dna_yaml("mydna")),
+            "package.json" => file!(empty_package_json("root")),
+            "ui" => dir! {
+                "package.json" => file!(empty_package_json("package1")),
+                "app.js" => file!(empty_app_js())
+            }
+        };
+
+        let repo = scaffold_remote_zome(
+            repo,
+            "profiles-zome".into(),
+            Some("profiles_integrity".into()),
+            Some("profiles".into()),
+            "github:darksoil-studio/profiles-zome".into(),
+            Some("main-0.3".into()),
+            "@darksoil-studio/profiles-zome".into(),
+            PathBuf::from("ui"),
+            None,
+            None,
+            Some("profiles-context".into()),
+            Some("@darksoil-studio/profiles-zome/dist/elements/profiles-context.js".into()),
+        )
+        .unwrap();
+
+        assert_eq!(
+            file_content(
+                &repo,
+                PathBuf::from("ui/package.json").as_path()
+            )
+            .unwrap(),
+            r#"{
+  "name": "package1",
+  "dependencies": {
+    "@darksoil-studio/profiles-zome": "github:darksoil-studio/profiles-zome#main-0.3&path:ui"
+  }
+}"#
+        );
+
+        assert_eq!(
+            file_content(&repo, PathBuf::from("dna.yaml").as_path()).unwrap(),
+            r#"manifest_version: '1'
+name: mydna
+integrity:
+  network_seed: null
+  properties: null
+  origin_time: 1709638576394039
+  zomes:
+  - name: profiles_integrity
+    hash: null
+    bundled: <NIX_PACKAGE>
+    dependencies: null
+    dylib: null
+coordinator:
+  zomes:
+  - name: profiles
+    hash: null
+    bundled: <NIX_PACKAGE>
+    dependencies:
+    - name: profiles_integrity
+    dylib: null
+"#
+        );
+
+        assert_eq!(
+            file_content(&repo, PathBuf::from("flake.nix").as_path()).unwrap(),
+            r#"{
+  description = "Template for Holochain app development";
+  
+  inputs = {
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.3";
+    nixpkgs.follows = "holonix/nixpkgs";
+
+    holonix.url = "github:holochain/holonix";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.3";
+  };
+
+  outputs = inputs @ { ... }:
+    inputs.holonix.inputs.flake-parts.lib.mkFlake
+    {
+      inherit inputs;
+    }
+    {
+      imports = [
+        ./dna.nix
+      ];
+
+      systems = builtins.attrNames inputs.holonix.devShells;
+      perSystem =
+        { inputs'
+        , config
+        , pkgs
+        , system
+        , lib
+        , self'
+        , ...
+        }: {
+          devShells.default = pkgs.mkShell {
+            inputsFrom = [ 
+              inputs'.tnesh-stack.devShells.synchronized-pnpm
+              inputs'.holonix.devShells.default
+            ];
+          };
+        };
+    };
+}
+"#
+        );
+
+        assert_eq!(
+            file_content(&repo, PathBuf::from("dna.nix").as_path()).unwrap(),
+            r#"{ inputs, ... }:
+
+{
+  perSystem =
+    { inputs'
+    , self'
+    , system
+    , ...
+    }: {
+  	  packages.my_dna = inputs.tnesh-stack.outputs.builders.${system}.dna {
+        dnaManifest = ./dna.yaml;
+        zomes = {
+          profiles_integrity = inputs'.profiles-zome.packages.profiles_integrity;
+          profiles = inputs'.profiles-zome.packages.profiles;
+        };
+      };
+
+  	  packages.another_dna = inputs.tnesh-stack.outputs.builders.${system}.dna {
+        dnaManifest = ./workdir/dna.yaml;
+        zomes = {
+        };
+      };
+    };
+}
+"#
+        );
+
+        assert_eq!(
+            file_content(&repo, PathBuf::from("ui/app.js").as_path()).unwrap(),
+            r#"import "@darksoil-studio/profiles-zome/dist/elements/profiles-context.js";
+
+export class App {
+
+  render() {
+    return html`
+      <app-client-context .client=${this.client}>
+        <linked-devices-context role="my_dna">
+          <profiles-context role="my_dna">
+          </profiles-context>
+        <linked-devices-context>
       </app-client-context>
     `;
   }
@@ -719,12 +910,54 @@ coordinator:
 
   render() {
     return html`
-      <app-client-context>
+      <app-client-context .client=${this.client}>
+        <profiles-context role="my_dna">
+        </profiles-context>
       </app-client-context>
     `;
   }
 }
 "#
         .into()
+    }
+
+    fn empty_svelte_app() -> String {
+        r#"<script>
+import { AppClient } from '@holochain/client';
+</script>
+<app-client-context client={this.client}>
+  <linked-devices-context role="my_dna">
+  <linked-devices-context>
+</app-client-context>
+"#
+        .into()
+    }
+
+    #[test]
+    fn add_context_to_svelte_app() {
+        let repo: FileTree = dir! {
+            "package.json" => file!(empty_package_json("package1")),
+            "app.svelte" => file!(empty_svelte_app()),
+        };
+        let result = add_context_element(repo, 
+            "my_dna".into(),
+            &(PathBuf::from("./package.json"), empty_package_json("package1")), 
+            "profiles-context".into(),
+             "@darksoil-studio/profiles-zome/dist/elements/profiles-context.js".into()
+         ).unwrap();
+
+        assert_eq!(
+            file_content(&result, PathBuf::from("app.svelte").as_path()).unwrap(),
+            r#"<script>
+import { AppClient } from '@holochain/client';
+</script>
+<app-client-context client={this.client}>
+  <linked-devices-context role="my_dna">
+    <profiles-context role="my_dna">
+    </profiles-context>
+  </linked-devices-context>
+</app-client-context>
+"#
+        );
     }
 }

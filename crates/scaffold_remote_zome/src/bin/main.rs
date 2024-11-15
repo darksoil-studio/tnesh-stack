@@ -53,6 +53,10 @@ struct Args {
     #[arg(long)]
     context_element: Option<String>,
 
+    /// JS import location for the context element that will be added to the top level context setting for the app's UI
+    #[arg(long)]
+    context_element_import: Option<String>,
+
     /// The path of the file tree to modify.
     #[clap(long, default_value = "./.")]
     pub path: PathBuf,
@@ -114,6 +118,7 @@ Are you ready to continue?"#,
         args.local_dna_to_add_the_zome_to,
         args.local_npm_package_to_add_the_ui_to,
         args.context_element,
+        args.context_element_import,
     )?;
 
     let file_tree = MergeableFileSystemTree::<OsString, String>::from(file_tree);
