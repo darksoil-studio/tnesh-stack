@@ -17,9 +17,9 @@ struct Args {
     /// Name of the module zome that's being scaffolded
     module_name: String,
 
-    /// Skip making the "Are you ready to continue?" question
+    /// Run the command in CI, skipping making questions to the users
     #[arg(long)]
-    skip_steps_check: bool,
+    ci: bool,
 
     /// Name of the integrity zome that's being scaffolded
     #[arg(long)]
@@ -88,7 +88,7 @@ fn internal_main() -> Result<()> {
         }
     };
 
-    let confirm = match args.skip_steps_check {
+    let confirm = match args.ci {
         true => true,
         false => Confirm::new()
         .with_prompt(format!(
