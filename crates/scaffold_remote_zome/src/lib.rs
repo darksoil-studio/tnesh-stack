@@ -342,10 +342,27 @@ fn add_zome_to_nixified_dna(
         },
     )?;
 
-    println!(
-        "Added the integrity zome {integrity_zome_name:?} and the coordinator zome {coordinator_zome_name:?} to {:?}.", 
-        nixified_dna.dna_nix.0
-    );
+    match (coordinator_zome_name, integrity_zome_name) {
+        (Some(coordinator), Some(integrity)) => {
+            println!(
+                "Added the integrity zome {integrity} and the coordinator zome {coordinator} to {:?}.", 
+                nixified_dna.dna_nix.0
+            );
+        }, 
+        (Some(coordinator), None) => {
+            println!(
+                "Added the coordinator zome {coordinator} to {:?}.", 
+                nixified_dna.dna_nix.0
+            );
+        }, 
+        (None, Some(integrity)) => {
+            println!(
+                "Added the integrity zome {integrity} to {:?}.", 
+                nixified_dna.dna_nix.0
+            );
+        }, 
+        _ => {}
+    };
 
     let dna_manifest: DnaManifest = serde_yaml::from_str(nixified_dna.dna_manifest.1.as_str())?;
 
