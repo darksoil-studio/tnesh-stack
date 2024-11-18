@@ -99,12 +99,22 @@ pub fn scaffold_remote_zome(
         remote_npm_package_path.to_str().unwrap()
     );
 
-    let (mut file_tree , package_json)= add_npm_dependency(file_tree, remote_npm_package_name, npm_dependency_source, local_npm_package_to_add_the_ui_to)?;
+    let (mut file_tree , package_json)= add_npm_dependency(
+        file_tree, 
+        remote_npm_package_name, 
+        npm_dependency_source, 
+        local_npm_package_to_add_the_ui_to
+    )?;
 
     match (context_element, context_element_import) {
-        (Some(context_element), Some(context_element_import)) =>{
-        file_tree = add_context_element(file_tree,dna.name, &package_json, context_element, context_element_import)?;
-            
+        (Some(context_element), Some(context_element_import)) => {
+          file_tree = add_context_element(
+              file_tree,
+              dna.name,
+               &package_json, 
+               context_element, 
+               context_element_import
+           )?;
         }
         (None, None)=> {
             
@@ -219,24 +229,45 @@ fn add_context_element(
     let mut npm_package_folder = npm_package.0.clone();
     npm_package_folder.pop();
 
+    let context_re = Regex::new(
+        r"(?<before>[\S\s]*)<app-client-context(?<appclientcontextprops>[^>]*)>(?<middle>[\S\s]*)</app-client-context>(?<after>[\S\s]*)"
+    )?;
+    let indent_before_context_re = Regex::new(
+        r"\n(?<indent>[\s]*)<app-client-context"
+    )?;
+    let import_re = Regex::new(
+        r"(?<before>[\S\s]*)import (?<importmiddle>[^\n;]*)[;|\n](?<after>[\S\s]*)"
+    )?;
+
     map_all_files(&mut file_tree, |path,contents| {
-        // if !path.starts_with(&npm_package_folder) {
-        //     return Ok(contents)
-        // }
+        if !path.starts_with(&npm_package_folder) {
+            return Ok(contents);
+        }
 
-        let re = Regex::new(
-            r"(?<before>[.\s]*)<app-client-context(?<appclientcontextprops>[^>]*)>(?<middle>[.\s]*)</app-client-context>(?<after>[.\s]*)"
-        )?;
+        if context_re.is_match(&contents) {
+            let indent_captures = indent_before_context_re.captures(&contents);
+            let indentation = match indent_captures {
+                Some(c) => c["indent"].to_string(),
+                None => "  ".to_string()
+            };
 
-        if re.is_match(&contents) {
-            let new_contents = re.replace(&contents, |caps: &Captures| {
+            let new_contents = context_re.replace(&contents, |caps: &Captures| {
+                let middle = caps["middle"].replace('\n', "\n  ");
                 format!(
                     r#"{}<app-client-context{}>
-  <{context_element} role="{dna_role_name}">{}  </{context_element}>
-</app-client-context>{}"#,
-                    &caps["before"], &caps["appclientcontextprops"], &caps["middle"], &caps["after"],
+{indentation}  <{context_element} role="{dna_role_name}">{middle}</{context_element}>
+{indentation}</app-client-context>{}"#,
+                    &caps["before"], &caps["appclientcontextprops"], &caps["after"],
                 )
             });
+            let new_contents = import_re.replace(&new_contents, |caps: &Captures| {
+                format!(
+                    r#"{}import {};
+import '{}';{}"#,
+                    &caps["before"], &caps["importmiddle"], &context_element_import, &caps["after"],
+                )
+            });
+            
             Ok(new_contents.to_string())
         }  else {
             Ok(contents)
@@ -312,7 +343,10 @@ fn add_zome_to_nixified_dna(
         },
     )?;
 
-    println!("Added the integrity zome {integrity_zome_name:?} and the coordinator zome {coordinator_zome_name:?} to {:?}.", nixified_dna.dna_nix.0);
+    println!(
+        "Added the integrity zome {integrity_zome_name:?} and the coordinator zome {coordinator_zome_name:?} to {:?}.", 
+        nixified_dna.dna_nix.0
+    );
 
     let dna_manifest: DnaManifest = serde_yaml::from_str(nixified_dna.dna_manifest.1.as_str())?;
 
@@ -358,7 +392,10 @@ fn add_zome_to_nixified_dna(
         &serde_yaml::to_string(&new_manifest)?,
     )?;
 
-    println!("Added the integrity zome {integrity_zome_name:?} and the coordinator zome {coordinator_zome_name:?} to {:?}.", nixified_dna.dna_manifest.0);
+    println!(
+        "Added the integrity zome {integrity_zome_name:?} and the coordinator zome {coordinator_zome_name:?} to {:?}.", 
+        nixified_dna.dna_manifest.0
+    );
 
     Ok(())
 }
@@ -478,7 +515,7 @@ mod tests {
             "workdir" => dir! {
                 "dna.yaml" => file!(empty_dna_yaml("another_dna"))
             },
-            "dna.yaml" => file!(empty_dna_yaml("mydna")),
+            "dna.yaml" => file!(empty_dna_yaml("my_dna")),
             "package.json" => file!(empty_package_json("root")),
             "packages" => dir! {
                 "package1" => dir! {
@@ -524,7 +561,7 @@ mod tests {
         assert_eq!(
             file_content(&repo, PathBuf::from("dna.yaml").as_path()).unwrap(),
             r#"manifest_version: '1'
-name: mydna
+name: my_dna
 integrity:
   network_seed: null
   properties: null
@@ -622,17 +659,18 @@ coordinator:
 
         assert_eq!(
             file_content(&repo, PathBuf::from("packages/package1/app.js").as_path()).unwrap(),
-            r#"import "@darksoil-studio/profiles-zome/dist/elements/profiles-context.js";
+            r#"import '@tnesh-stack/elements/dist/elements/app-client-context.js';
+import '@darksoil-studio/profiles-zome/dist/elements/profiles-context.js';
 
 export class App {
 
   render() {
     return html`
       <app-client-context .client=${this.client}>
-        <linked-devices-context role="my_dna">
-          <profiles-context role="my_dna">
-          </profiles-context>
-        <linked-devices-context>
+        <profiles-context role="my_dna">
+          <linked-devices-context role="my_dna">
+          </linked-devices-context>
+        </profiles-context>
       </app-client-context>
     `;
   }
@@ -648,7 +686,7 @@ export class App {
             "workdir" => dir! {
                 "dna.yaml" => file!(empty_dna_yaml("another_dna"))
             },
-            "dna.yaml" => file!(empty_dna_yaml("mydna")),
+            "dna.yaml" => file!(empty_dna_yaml("my_dna")),
             "package.json" => file!(empty_package_json("root")),
             "ui" => dir! {
                 "package.json" => file!(empty_package_json("package1")),
@@ -689,7 +727,7 @@ export class App {
         assert_eq!(
             file_content(&repo, PathBuf::from("dna.yaml").as_path()).unwrap(),
             r#"manifest_version: '1'
-name: mydna
+name: my_dna
 integrity:
   network_seed: null
   properties: null
@@ -787,17 +825,18 @@ coordinator:
 
         assert_eq!(
             file_content(&repo, PathBuf::from("ui/app.js").as_path()).unwrap(),
-            r#"import "@darksoil-studio/profiles-zome/dist/elements/profiles-context.js";
+            r#"import '@tnesh-stack/elements/dist/elements/app-client-context.js';
+import '@darksoil-studio/profiles-zome/dist/elements/profiles-context.js';
 
 export class App {
 
   render() {
     return html`
       <app-client-context .client=${this.client}>
-        <linked-devices-context role="my_dna">
-          <profiles-context role="my_dna">
-          </profiles-context>
-        <linked-devices-context>
+        <profiles-context role="my_dna">
+          <linked-devices-context role="my_dna">
+          </linked-devices-context>
+        </profiles-context>
       </app-client-context>
     `;
   }
@@ -906,18 +945,19 @@ coordinator:
     }
 
     fn empty_app_js() -> String {
-        r#"export class App {
+        r#"import '@tnesh-stack/elements/dist/elements/app-client-context.js';
+
+export class App {
 
   render() {
     return html`
       <app-client-context .client=${this.client}>
-        <profiles-context role="my_dna">
-        </profiles-context>
+        <linked-devices-context role="my_dna">
+        </linked-devices-context>
       </app-client-context>
     `;
   }
-}
-"#
+}"#
         .into()
     }
 
@@ -927,7 +967,7 @@ import { AppClient } from '@holochain/client';
 </script>
 <app-client-context client={this.client}>
   <linked-devices-context role="my_dna">
-  <linked-devices-context>
+  </linked-devices-context>
 </app-client-context>
 "#
         .into()
@@ -941,7 +981,7 @@ import { AppClient } from '@holochain/client';
         };
         let result = add_context_element(repo, 
             "my_dna".into(),
-            &(PathBuf::from("./package.json"), empty_package_json("package1")), 
+            &(PathBuf::from("package.json"), empty_package_json("package1")), 
             "profiles-context".into(),
              "@darksoil-studio/profiles-zome/dist/elements/profiles-context.js".into()
          ).unwrap();
@@ -950,12 +990,13 @@ import { AppClient } from '@holochain/client';
             file_content(&result, PathBuf::from("app.svelte").as_path()).unwrap(),
             r#"<script>
 import { AppClient } from '@holochain/client';
+import '@darksoil-studio/profiles-zome/dist/elements/profiles-context.js';
 </script>
 <app-client-context client={this.client}>
-  <linked-devices-context role="my_dna">
-    <profiles-context role="my_dna">
-    </profiles-context>
-  </linked-devices-context>
+  <profiles-context role="my_dna">
+    <linked-devices-context role="my_dna">
+    </linked-devices-context>
+  </profiles-context>
 </app-client-context>
 "#
         );
