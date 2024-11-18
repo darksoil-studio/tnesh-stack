@@ -6,112 +6,32 @@
 1. Run this to scaffold this zome in your hApp:
 
 ```bash
-nix run github:{{github_organization}}{{kebab_case zome_name}}-zome#scaffold
+nix run github:{{github_organization}}/{{kebab_case zome_name}}-zome#scaffold
 ```
 
 This will do the following:
   - Add the flake input for that repository in your `flake.nix`.
   - Add the appropriate zome packages to the `dna.nix` that you select.
-  - Add the UI package for that zome in the local NPM package that you select.
+  - Add the UI package for @{{npm_organization}}/{{kebab_case zome_name}}-zome as a dependency of your UI package.
+  - Add the `<{{kebab_case zome_name}}-context>` element at the top level of your application.
 
-Now you only need to integrate the zome's frontend in your web-app.
+> [!NOTE]
+> You can read more about the context pattern [here](https://darksoil.studio/tnesh-stack/guides/custom-elements#context).
 
-2. Connect to Holochain with the `AppClient`, and create the `{{pascal_case zome_name}}Store` with it:
+That's it! You have now integrated the `linked-devices` coordinator and integrity zomes and their UI into your app!
 
-```js
-import { {{pascal_case zome_name}}Store, {{pascal_case zome_name}}Client } from "@{{npm_organization}}/{{kebab_case zome_name}}-zome";
-import { AppWebsocket } from "@holochain/client";
-
-async function setup{{pascal_case zome_name}}Store() {
-  // TODO: change "MY_zome_name" for the roleId that you can find in your "happ.yaml"
-  const client = await AppWebsocket.connect();
-
-  // TODO: change "MY_CELL_ROLE" for the roleId that you can find in your "happ.yaml"
-  return new {{pascal_case zome_name}}Store(new {{pascal_case zome_name}}Client(client, '<MY_CELL_ROLE>'));
-}
-```
-
-3. Import the `<{{kebab_case zome_name}}-context>` element and add it to your html **wrapping the whole section of your page in which you are going to be placing** the other elements from `@{{npm_organization}}/{{kebab_case zome_name}}-zome`:
-
-```js
-// This can be placed in the index.js, at the top level of your web-app.
-import "@{{npm_organization}}/{{kebab_case zome_name}}-zome/dist/elements/{{kebab_case zome_name}}-context.js";
-```
-
-And then add the `<{{kebab_case zome_name}}-context>` element in your html:
-
-```html
-<{{kebab_case zome_name}}-context>
-  <!-- Add here other elements from @{{npm_organization}}/{{kebab_case zome_name}}-zome -->
-</{{kebab_case zome_name}}-context>
-```
-
-4. Attach the `{{camel_case zome_name}}Store` to the `<{{kebab_case zome_name}}-context>` element:
-
-- Go to [this page](https://darksoil.studio/tnesh-stack/), select the framework you are using, and follow its example.
-
-You need to set the `store` property of it to your already instantiated `{{pascal_case zome_name}}Store` object:
-
-- If you **are using some JS framework**:
-
-::: code-group
-```html [React]
-<{{kebab_case zome_name}}-context store={ {{camel_case zome_name}}Store}><!-- ... --></{{kebab_case zome_name}}-context>
-```
-
-```html [Angular]
-<{{kebab_case zome_name}}-context [store]="{{camel_case zome_name}}Store"><!-- ... --></{{kebab_case zome_name}}-context>
-```
-
-```html [Vue]
-<{{kebab_case zome_name}}-context :store="{{camel_case zome_name}}Store"><!-- ... --></{{kebab_case zome_name}}-context>
-```
-
-```html [Svelte]
-<{{kebab_case zome_name}}-context store={ {{camel_case zome_name}}Store}><!-- ... --></{{kebab_case zome_name}}-context>
-```
-
-```html [Lit]
-<{{kebab_case zome_name}}-context .store=${ {{camel_case zome_name}}Store}><!-- ... --></{{kebab_case zome_name}}-context>
-```
-:::
-
-OR
-
-- If you **are not using any framework**:
-
-```js
-const contextElement = document.querySelector("{{kebab_case zome_name}}-context");
-contextElement.store = store;
-```
-
-> You can read more about the context pattern [here](https://darksoil.studio/tnesh-stack).
-
-5. [Choose which elements you need](?path=/docs/frontend-elements) and import them like this:
+Now, [choose which elements you need](/elements/{{kebab_case zome_name}}-context.md) and import them like this:
 
 ```js
 import "@{{npm_organization}}/{{kebab_case zome_name}}-zome/dist/elements/{{kebab_case zome_name}}-context.js";
 ```
 
-And then they are ready be used inside the `<{{kebab_case zome_name}}-context>` just like any other HTML tag.
+And then they are ready be used just like any other HTML tag. 
 
-This will define all the elements from this module in the global `CustomElementsRegistry`. You can read more about Custom Elements [here](https://developers.google.com/web/fundamentals/web-components/customelements).
-
-6. Add your preferred shoelace theme in your `<head>` tag:
-
-```html
-  <head>
-    <link rel="stylesheet" href="path/to/shoelace/dist/themes/light.css" />
-  </head>
-```
-
-You can read more about how to initialize the shoelace theme [here](https://shoelace.style/getting-started/themes?id=activating-themes).
-
----
-
-That's it! You have now integrated both the backend and the frontend for the profiles module.
+> [!NOTE]
+> Importing the elements from the UI package will define them in the global `CustomElementsRegistry`, which makes them available to be used like any normal HTML tag. You can read more about custom elements [here](https://darksoil.studio/tnesh-stack/guides/custom-elements).
 
 # Example
 
-You can see a full working example of the UI working in [here](https://github.com/{{github_organization}}/{{kebab_case zome_name}}/blob/main/ui/demo/index.html).
+You can see a full working example of the UI working in [here](https://github.com/{{github_organization}}/{{kebab_case zome_name}}-zome/blob/main/ui/demo/index.html).
 
