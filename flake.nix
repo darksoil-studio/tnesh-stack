@@ -283,7 +283,7 @@
             inherit pkgs system;
             customTemplatePath = ./templates/app;
           };
-        in pkgs.writeShellScriptBin "cp" ''
+        in pkgs.writeShellScriptBin "hc-scaffold" ''
           if [[ "$@" == *"web-app"* ]]; then
             ${hcScaffold}/bin/hc-scaffold "$@" --package-manager pnpm --setup-nix true -F 
           else
