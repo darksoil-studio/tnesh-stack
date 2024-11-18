@@ -19,7 +19,7 @@ import { sample{{pascal_case to_referenceable.name}} } from '../../ui/src/mocks.
 
 test('link a {{pascal_case from_referenceable.name}} to a {{pascal_case to_referenceable.name}}', async () => {
   await runScenario(async scenario => {
-    const { alice, bob } = await setup(scenario);
+    const [ alice, bob ] = await setup(scenario);
 
 {{#if (eq from_referenceable.hash_type "AgentPubKey")}}
     const baseAddress = alice.player.agentPubKey;
