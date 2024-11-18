@@ -286,8 +286,9 @@
         in pkgs.writeShellScriptBin "hc-scaffold" ''
           if [[ "$@" == *"web-app"* ]]; then
             ${hcScaffold}/bin/hc-scaffold "$@" --package-manager pnpm --setup-nix -F  
-          else
+          elif [[ "$@" == *"zome"* ]]; then
             ${hcScaffold}/bin/hc-scaffold "$@"
+            git add Cargo.lock
           fi
         '';
 
