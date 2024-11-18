@@ -38,7 +38,7 @@ async function setupStore(player: Player) {
   await player.conductor
   	.adminWs()
   	.authorizeSigningCredentials(player.cells[0].cell_id);
-  const {{pascal_case zome_manifest.name}}Store = new {{pascal_case zome_manifest.name}}Store(
+  const store = new {{pascal_case zome_manifest.name}}Store(
   	new {{pascal_case zome_manifest.name}}Client(player.appWs as any, '{{dna_role_name}}'),
   );
   return {
