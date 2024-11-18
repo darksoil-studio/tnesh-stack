@@ -7,7 +7,7 @@ nix shell --accept-flake-config .#hc-scaffold-happ --command bash -c "
 cd /tmp
 rm -rf forum-lit-open-dev
 
-hc-scaffold web-app forum-lit-open-dev --setup-nix true -F --package-manager pnpm
+hc-scaffold web-app forum-lit-open-dev
 "
 
 cd /tmp/forum-lit-open-dev
@@ -36,7 +36,7 @@ hc-scaffold link-type agent:creator post --delete false --bidirectional false
 
 git add .
 
-nix run github:darksoil-studio/profiles-zome/main-0.3#scaffold --refresh -- --local-dna-to-add-the-zome-to forum
+nix run github:darksoil-studio/profiles-zome/main-0.3#scaffold --refresh
 
 pnpm i
 
