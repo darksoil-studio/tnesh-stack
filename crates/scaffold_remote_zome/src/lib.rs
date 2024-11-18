@@ -342,7 +342,7 @@ fn add_zome_to_nixified_dna(
         },
     )?;
 
-    match (coordinator_zome_name, integrity_zome_name) {
+    match (&coordinator_zome_name, &integrity_zome_name) {
         (Some(coordinator), Some(integrity)) => {
             println!(
                 "Added the integrity zome {integrity} and the coordinator zome {coordinator} to {:?}.", 
