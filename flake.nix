@@ -283,7 +283,13 @@
             inherit pkgs system;
             customTemplatePath = ./templates/app;
           };
-        in hcScaffold;
+        in pkgs.writeShellScriptBin "cp" ''
+          if [[ "$@" == *"web-app"* ]]; then
+            ${hcScaffold}/bin/hc-scaffold "$@" --package-manager pnpm --setup-nix true 
+          else
+            ${hcScaffold}/bin/hc-scaffold "$@"
+          fi
+        '';
 
         packages.hc-scaffold-zome = flake.lib.wrapCustomTemplate {
           inherit pkgs system;
