@@ -27,10 +27,21 @@ export class {{pascal_case app_name}}Context extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    if (this.store) return;
     if (!this.role) {
-      throw new Error(`<{{kebab_case app_name}}-context> must have a role="YOUR_DNA_ROLE" property, eg: <{{kebab_case app_name}}-context role="role1">`)
+      throw new Error(`<{{kebab_case app_name}}-context> must have a role="YOUR_DNA_ROLE" property, eg: <{{kebab_case app_name}}-context role="role1">`);
     }
-    this.store = new {{pascal_case app_name}}Store(new {{pascal_case app_name}}Client(this.role, this.zome));
+    if (!this.client) {
+      throw new Error(`<{{kebab_case app_name}}-context> must either:
+        a) be placed inside <app-client-context>
+          or 
+        b) receive an AppClient property (eg. <{{kebab_case app_name}}-context .client=\${client}>) 
+          or 
+        c) receive a store property (eg. <{{kebab_case app_name}}-context .store=\${store}>)
+      `);
+    }
+
+    this.store = new {{pascal_case app_name}}Store(new {{pascal_case app_name}}Client(this.client, this.role, this.zome));
   }
   
   render() {

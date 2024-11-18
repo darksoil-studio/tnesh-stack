@@ -1,0 +1,56 @@
+import { css, html, LitElement } from 'lit';
+import { provide } from '@lit/context';
+import { customElement, property } from 'lit/decorators.js';
+import { AppClient } from '@holochain/client';
+import { appClientContext } from '@tnesh-stack/elements';
+
+import { {{camel_case zome_manifest.name}}StoreContext } from '../context.js';
+import { {{pascal_case zome_manifest.name}}Store } from '../{{kebab_case zome_manifest.name}}-store.js';
+
+/**
+ * @element {{kebab_case zome_manifest.name}}-context
+ */
+@customElement('{{kebab_case zome_manifest.name}}-context')
+export class {{pascal_case zome_manifest.name}}Context extends LitElement {
+  @consume({ context: appClientContext })
+  private client!: AppClient;
+
+  @provide({ context: {{camel_case zome_manifest.name}}StoreContext })
+  @property({ type: Object })
+  store!: {{pascal_case zome_manifest.name}}Store;
+
+  @property()
+  role!: string;
+
+  @property()
+  zome = {{snake_case zome_manifest.name}};
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.store) return;
+    if (!this.role) {
+      throw new Error(`<{{kebab_case zome_manifest.name}}-context> must have a role="YOUR_DNA_ROLE" property, eg: <{{kebab_case zome_manifest.name}}-context role="role1">`);
+    }
+    if (!this.client) {
+      throw new Error(`<{{kebab_case zome_manifest.name}}-context> must either:
+        a) be placed inside <app-client-context>
+          or 
+        b) receive an AppClient property (eg. <{{kebab_case zome_manifest.name}}-context .client=\${client}>) 
+          or 
+        c) receive a store property (eg. <{{kebab_case zome_manifest.name}}-context .store=\${store}>)
+      `);
+    }
+
+    this.store = new {{pascal_case zome_manifest.name}}Store(new {{pascal_case zome_manifest.name}}Client(this.client, this.role, this.zome));
+  }
+  
+  render() {
+    return html`<slot></slot>`;
+  }
+
+  static styles = css`
+    :host {
+      display: contents;
+    }
+  `;
+}
