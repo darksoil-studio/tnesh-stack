@@ -289,6 +289,8 @@
           elif [[ "$@" == *"zome"* ]]; then
             ${hcScaffold}/bin/hc-scaffold "$@"
             git add Cargo.lock
+          else
+            ${hcScaffold}/bin/hc-scaffold "$@"
           fi
         '';
 
