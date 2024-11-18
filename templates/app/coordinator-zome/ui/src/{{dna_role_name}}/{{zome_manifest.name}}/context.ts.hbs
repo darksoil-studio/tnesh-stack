@@ -1,7 +1,7 @@
 import { createContext } from '@lit/context';
-import { {{pascal_case zome_name}}Store } from './{{kebab_case zome_name}}-store.js';
+import { {{pascal_case zome_manifest.name}}Store } from './{{kebab_case zome_manifest.name}}-store.js';
 
-export const {{camel_case zome_name}}StoreContext = createContext<{{pascal_case zome_name}}Store>(
-  '{{snake_case zome_name}}/store'
+export const {{camel_case zome_manifest.name}}StoreContext = createContext<{{pascal_case zome_manifest.name}}Store>(
+  '{{snake_case zome_manifest.name}}/store'
 );
 

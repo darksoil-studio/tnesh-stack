@@ -285,7 +285,7 @@
           };
         in pkgs.writeShellScriptBin "hc-scaffold" ''
           if [[ "$@" == *"web-app"* ]]; then
-            ${hcScaffold}/bin/hc-scaffold "$@" --package-manager pnpm --setup-nix true -F 
+            ${hcScaffold}/bin/hc-scaffold --package-manager pnpm --setup-nix true -F "$@" 
           else
             ${hcScaffold}/bin/hc-scaffold "$@"
           fi
