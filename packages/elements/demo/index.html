@@ -5,6 +5,7 @@
 		<style>
 			body {
 				background: black;
+				color: white;
 			}
 		</style>
 		<link rel="stylesheet" href="" />
@@ -24,6 +25,8 @@
 
 		<form-test></form-test>
 
+		<app-client-context> </app-client-context>
+
 		<script type="module">
 			import '@shoelace-style/shoelace/dist/components/alert/alert.js';
 			import '@shoelace-style/shoelace/dist/components/icon/icon.js';
@@ -34,6 +37,7 @@
 			import { repeat } from 'lit/directives/repeat.js';
 
 			import { formatDateForInput } from '../src/date-utils.ts';
+			import '../src/elements/app-client-context.ts';
 			import '../src/elements/display-error.ts';
 			import '../src/elements/holo-identicon.ts';
 			import '../src/elements/select-avatar.ts';
