@@ -17,6 +17,10 @@ struct Args {
     /// Name of the module zome that's being scaffolded
     module_name: String,
 
+    /// Skip making the "Are you ready to continue?" question
+    #[arg(long)]
+    skip_steps_check: bool,
+
     /// Name of the integrity zome that's being scaffolded
     #[arg(long)]
     integrity_zome_name: Option<String>,
@@ -84,7 +88,9 @@ fn internal_main() -> Result<()> {
         }
     };
 
-    let confirm = Confirm::new()
+    let confirm = match args.skip_steps_check {
+        true => true,
+        false => Confirm::new()
         .with_prompt(format!(
             r#"You are about to add the profiles zome to your hApp.
 
@@ -98,7 +104,8 @@ These are the steps that will be taken:
 Are you ready to continue?"#,
             args.remote_zome_git_url, zomes_prompt, args.module_name, args.remote_npm_package_name
         ))
-        .interact()?;
+        .interact()?
+    };
 
     if !confirm {
         return Ok(());
