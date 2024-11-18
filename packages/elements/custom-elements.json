@@ -4,6 +4,26 @@
   "modules": [
     {
       "kind": "javascript-module",
+      "path": "src/context.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "appClientContext"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "appClientContext",
+          "declaration": {
+            "name": "appClientContext",
+            "module": "src/context.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/date-utils.ts",
       "declarations": [
         {
@@ -357,6 +377,14 @@
             "name": "*",
             "package": "./router.js"
           }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "package": "./context.js"
+          }
         }
       ]
     },
@@ -658,6 +686,91 @@
           "declaration": {
             "name": "sharedStyles",
             "module": "src/shared-styles.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/app-client-context.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AppClientContext",
+          "members": [
+            {
+              "kind": "field",
+              "name": "client",
+              "type": {
+                "text": "AppClient"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AppClientContext",
+          "declaration": {
+            "name": "AppClientContext",
+            "module": "src/elements/app-client-context.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/app-websocket-context.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AppWebsocketContext",
+          "members": [
+            {
+              "kind": "field",
+              "name": "client",
+              "type": {
+                "text": "AppClient"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_loading",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "_error",
+              "type": {
+                "text": "unknown | undefined"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AppWebsocketContext",
+          "declaration": {
+            "name": "AppWebsocketContext",
+            "module": "src/elements/app-websocket-context.ts"
           }
         }
       ]
