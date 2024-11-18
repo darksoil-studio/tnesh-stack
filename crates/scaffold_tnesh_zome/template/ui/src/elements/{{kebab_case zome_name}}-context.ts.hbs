@@ -1,11 +1,12 @@
 import { css, html, LitElement } from 'lit';
-import { provide } from '@lit/context';
+import { provide, consume } from '@lit/context';
 import { customElement, property } from 'lit/decorators.js';
 import { AppClient } from '@holochain/client';
 import { appClientContext } from '@tnesh-stack/elements';
 
 import { {{camel_case zome_name}}StoreContext } from '../context.js';
 import { {{pascal_case zome_name}}Store } from '../{{kebab_case zome_name}}-store.js';
+import { {{pascal_case zome_name}}Client } from '../{{kebab_case zome_name}}-client.js';
 
 /**
  * @element {{kebab_case zome_name}}-context
@@ -23,7 +24,7 @@ export class {{pascal_case zome_name}}Context extends LitElement {
   role!: string;
 
   @property()
-  zome = {{snake_case zome_name}};
+  zome = '{{snake_case zome_name}}';
 
   connectedCallback() {
     super.connectedCallback();
