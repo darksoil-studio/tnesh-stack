@@ -224,7 +224,6 @@ fn add_context_element(
     context_element: String,
     context_element_import: String,
 ) -> Result<FileTree, ScaffoldRemoteZomeError> {
-    let mut found = false;
 
     let mut npm_package_folder = npm_package.0.clone();
     npm_package_folder.pop();
@@ -239,7 +238,7 @@ fn add_context_element(
         r"(?<before>[\S\s]*)import (?<importmiddle>[^\n;]*)[;|\n](?<after>[\S\s]*)"
     )?;
 
-    map_all_files(&mut file_tree, |path,contents| {
+    map_all_files(&mut file_tree, move |path,contents| {
         if !path.starts_with(&npm_package_folder) {
             return Ok(contents);
         }
