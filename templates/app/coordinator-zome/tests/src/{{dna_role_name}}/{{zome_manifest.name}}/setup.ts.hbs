@@ -21,10 +21,8 @@ import { {{pascal_case zome_manifest.name}}Client } from '../../../../ui/src/{{d
 import { {{pascal_case zome_manifest.name}}Store } from '../../../../ui/src/{{dna_role_name}}/{{zome_manifest.name}}/{{kebab_case zome_manifest.name}}-store.js';
 
 export async function setup(scenario: Scenario, numPlayers = 2) {
-  const testHappUrl =
-    dirname(fileURLToPath(import.meta.url)) + '/../../workdir/{{zome_name}}_test.happ';
   const players = await scenario.addPlayersWithApps(
-    new Array(numPlayers).fill({ appBundleSource: { path: testHappUrl } }),
+    new Array(numPlayers).fill({ appBundleSource: { path: appPath } }),
   );
   const playersAndStores = await Promise.all(players.map(setupStore));
 
