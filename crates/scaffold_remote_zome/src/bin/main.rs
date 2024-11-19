@@ -77,34 +77,58 @@ fn main() -> ExitCode {
 fn internal_main() -> Result<()> {
     let args = Args::parse();
 
-    let zomes_prompt = match (args.integrity_zome_name.clone(), args.coordinator_zome_name.clone()) {
+    let zomes_prompt = match (
+        args.integrity_zome_name.clone(),
+        args.coordinator_zome_name.clone(),
+    ) {
         (Some(integrity), Some(coordinator)) => format!(
-                "Add the {integrity} integrity zome and the {coordinator} coordinator zome to the dna.nix that you select."
-            ),
-        (Some(integrity), None) => format!("Add the {integrity} integrity zome to the dna.nix that you select."),
-        (None, Some(coordinator)) => format!("Add the {coordinator} coordinator zome to the dna.nix that you select."),
+            r#"Add the "{integrity}" integrity zome and the "{coordinator}" coordinator zome to the dna.nix that you select."#
+        ),
+        (Some(integrity), None) => {
+            format!(r#"Add the "{integrity}" integrity zome to the dna.nix that you select."#)
+        }
+        (None, Some(coordinator)) => {
+            format!(r#"Add the "{coordinator}" coordinator zome to the dna.nix that you select."#)
+        }
         (None, None) => {
             return Err(ScaffoldRemoteZomeError::NoZomesSpecifiedError)?;
         }
     };
 
+    let context_prompt = match &args.context_element {
+        Some(ce) => format!(
+            r#"- Set up the "<{ce}>" element in your top level app component so that you can directly import the UI elements you need from the {} package.
+"#,
+            args.remote_npm_package_name
+        ),
+        None => format!(""),
+    };
+
     let confirm = match args.ci {
         true => true,
-        false => Confirm::new()
-        .with_prompt(format!(
-            r#"You are about to add the {} zome to your hApp.
+        false => {
+            println!(
+                r#"
+You are about to add the {} zome to your hApp.
 
 These are the steps that will be taken:
 
 - Add the flake input "{}" to your flake.nix.
 - {}
-- Add the UI package for that zome as a dependency of your UI package.
-- Set up the "<{}-context>" element in your top level app component so that you can directly import the UI elements you need from the {} package.
+- Add the UI package "{}" as a dependency of your UI package.
+{}
+"#,
+                args.module_name,
+                args.remote_zome_git_url,
+                zomes_prompt,
+                args.remote_npm_package_name,
+                context_prompt,
+            );
 
-Are you ready to continue?"#,
-            args.module_name, args.remote_zome_git_url, zomes_prompt, args.module_name, args.remote_npm_package_name
-        ))
-        .interact()?
+            Confirm::new()
+                .with_prompt("Are you ready to continue?")
+                .interact()?
+        }
     };
 
     if !confirm {
