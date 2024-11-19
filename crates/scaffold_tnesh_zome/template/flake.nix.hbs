@@ -64,11 +64,11 @@
               buildInputs = [ pkgs.makeWrapper ];
               postBuild = ''
                 wrapProgram $out/bin/scaffold-remote-zome \
-                  --add-flags "{{kebab_case zome_name}} \
+                  --add-flags "{{kebab_case zome_name}}-zome \
                     --integrity-zome-name {{snake_case zome_name}}_integrity \
                     --coordinator-zome-name {{snake_case zome_name}} \
-                    --remote-zome-git-url github:{{github_organization}}-zome{kebab_case zome_name}} \
-                    --remote-npm-package-name {{kebab_case zome_name}} \
+                    --remote-zome-git-url github:{{github_organization}}/{{kebab_case zome_name}}-zome \
+                    --remote-npm-package-name @{{npm_organization}}/{{kebab_case zome_name}}-zome \
                     --remote-npm-package-path ui \
                     --remote-zome-git-branch main-0.3 \
                     --context-element {{kebab_case zome_name}}-context \
