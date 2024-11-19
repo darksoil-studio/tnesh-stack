@@ -2,7 +2,8 @@ import { LitElement, css, html } from 'lit';
 import { property, state, customElement } from 'lit/decorators.js';
 import { AppWebsocket, AppClient, ActionHash } from '@holochain/client';
 import { SignalWatcher } from '@tnesh-stack/signals';
-import { Router, hashState } from '@tnesh-stack/elements';
+import { Router, hashState, wrapPathInSvg } from '@tnesh-stack/elements';
+import { mdiArrowLeft } from '@mdi/js';
 import { provide } from '@lit/context';
 import { localized, msg } from '@lit/localize';
 import { EntryRecord } from '@tnesh-stack/utils';
@@ -39,7 +40,9 @@ export class HolochainApp extends SignalWatcher(LitElement) {
     },
     {
       path: "/home/*",
-      render: () => html`<home-page></home-page>`,
+      render: () => html`<home-page
+          @profile-clicked=${() => this.router.goto('/my-profile')}
+        ></home-page>`,
     },
     {
       path: "/my-profile",
@@ -62,13 +65,16 @@ export class HolochainApp extends SignalWatcher(LitElement) {
       <div class="column fill">
         <div class="row top-bar">
           <sl-icon-button
-            name="arrow-left"
-            @click=${() => this.router.pop()}
+            style="color: black"
+            .src=${wrapPathInSvg(mdiArrowLeft)}
+            @click=${() => this.router.goto('/home/')}
           ></sl-icon-button>
-          <span class="title" style="flex: 1">${msg("{{title_case app_name}}")}</span>
+          <span class="title" style="flex: 1">${msg("My Profile")}</span>
         </div>
 
-        <my-profile style="margin: 16px"></my-profile>
+        <sl-card style="width: 600px; margin: 24px; align-self: center">
+          <my-profile style="margin: 16px; flex: 1"></my-profile>
+        </sl-card>
       </div>
     `;
   }
