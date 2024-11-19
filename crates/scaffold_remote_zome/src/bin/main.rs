@@ -92,7 +92,7 @@ fn internal_main() -> Result<()> {
         true => true,
         false => Confirm::new()
         .with_prompt(format!(
-            r#"You are about to add the profiles zome to your hApp.
+            r#"You are about to add the {} zome to your hApp.
 
 These are the steps that will be taken:
 
@@ -102,7 +102,7 @@ These are the steps that will be taken:
 - Set up the "<{}-context>" element in your top level app component so that you can directly import the UI elements you need from the {} package.
 
 Are you ready to continue?"#,
-            args.remote_zome_git_url, zomes_prompt, args.module_name, args.remote_npm_package_name
+            args.module_name, args.remote_zome_git_url, zomes_prompt, args.module_name, args.remote_npm_package_name
         ))
         .interact()?
     };
