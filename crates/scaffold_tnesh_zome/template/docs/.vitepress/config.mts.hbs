@@ -4,8 +4,7 @@ import { defineConfig } from 'vitepress';
 
 // https://vitepress.dev/reference/site-config
 // Uncomment this to enable mermaid inside your site when this is solved: https://github.com/mermaid-js/mermaid/issues/4320
-// export default withMermaid({
-export default defineConfig({
+export default withMermaid({
   vue: {
     template: {
       compilerOptions: {
@@ -16,13 +15,11 @@ export default defineConfig({
   },
   vite: {
     optimizeDeps: {
-      include: [
-        'mermaid'
-      ]
-    }
+      include: ['mermaid', 'dayjs', '@braintree/sanitize-url'],
+    },
   },
-  base: "/{{kebab_case zome_name}}",
-  title: "@{{npm_organization}}/{{kebab_case zome_name}}-zome",
+  base: "/{{kebab_case zome_name}}-zome",
+  title: "{{title_case zome_name}} Zome",
   description: "{{title_case zome_name}} zome for holochain apps",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
