@@ -22,7 +22,7 @@ As such, the need for modular and battle tested building blocks is much greater 
 ### Existing Modules
 
 - [profiles-zome](https://darksoil.studio/profiles-zome)
-- [linked-devices-zome](https://darksoil.studio/linked-devices)
+- [linked-devices-zome](https://darksoil.studio/linked-devices-zome)
 - [file-storage-zome](https://darksoil.studio/file-storage)
 - [notifications-zome](https://darksoil.studio/notifications-zome)
 - [roles-zome](https://darksoil.studio/roles-zome)
