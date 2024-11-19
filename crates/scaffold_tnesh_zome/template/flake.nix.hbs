@@ -70,7 +70,9 @@
                     --remote-zome-git-url github:{{github_organization}}-zome{kebab_case zome_name}} \
                     --remote-npm-package-name {{kebab_case zome_name}} \
                     --remote-npm-package-path ui \
-                    --remote-zome-git-branch main-0.3" 
+                    --remote-zome-git-branch main-0.3 \
+                    --context-element {{kebab_case zome_name}}-context \
+                    --context-element-import @{{npm_organization}}/{{kebab_case zome_name}}-zome/dist/elements/{{kebab_case zome_name}}-context.js" 
               '';
             };
           };
