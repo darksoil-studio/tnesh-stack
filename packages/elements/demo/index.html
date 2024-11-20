@@ -15,7 +15,11 @@
 			hash="uhCEkBsnnW9JSVhGQx4AE2m0lSlWLrioEHP-7Uj4ZnbI0W-M"
 		></holo-identicon>
 		<form>
-			<select-avatar required></select-avatar>
+			<select-avatar
+				avatar-width="20"
+				avatar-height="20"
+				required
+			></select-avatar>
 			<input type="submit" />
 		</form>
 		<display-error headline="Error getting the things" error="some full error">
@@ -46,6 +50,10 @@
 			import { onSubmit } from '../src/on-submit.ts';
 
 			notifyError('eeeee');
+
+			document
+				.querySelector('select-avatar')
+				.addEventListener('avatar-selected', console.log);
 
 			customElements.define(
 				'form-field',
