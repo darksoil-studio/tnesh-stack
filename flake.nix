@@ -278,10 +278,21 @@
           '';
         };
 
-        packages.hc-scaffold-app = flake.lib.wrapCustomTemplate {
-          inherit pkgs system;
-          customTemplatePath = ./templates/app;
-        };
+        packages.hc-scaffold-happ = let
+          hcScaffold = flake.lib.wrapCustomTemplate {
+            inherit pkgs system;
+            customTemplatePath = ./templates/app;
+          };
+        in pkgs.writeShellScriptBin "hc-scaffold" ''
+          if [[ "$@" == *"web-app"* ]]; then
+            ${hcScaffold}/bin/hc-scaffold "$@" --package-manager pnpm --setup-nix -F  
+          elif [[ "$@" == *"zome"* ]]; then
+            ${hcScaffold}/bin/hc-scaffold "$@"
+            git add Cargo.lock
+          else
+            ${hcScaffold}/bin/hc-scaffold "$@"
+          fi
+        '';
 
         packages.hc-scaffold-zome = flake.lib.wrapCustomTemplate {
           inherit pkgs system;

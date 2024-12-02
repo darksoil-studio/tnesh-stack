@@ -12,7 +12,7 @@ import { setup } from './setup.js';
 
 test('create a {{pascal_case referenceable.name}} and get {{lower_case collection_name}}', async () => {
   await runScenario(async scenario => {
-    const { alice, bob } = await setup(scenario);
+    const [ alice, bob ] = await setup(scenario);
 
     // Bob gets {{lower_case collection_name}}
     let collectionOutput = await toPromise(bob.store.{{camel_case collection_name}}{{#if (eq collection_type.type "ByAuthor")}}.get(alice.player.agentPubKey){{else}}{{/if}});

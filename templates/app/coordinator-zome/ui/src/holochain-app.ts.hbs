@@ -1,18 +1,3 @@
-import { {{camel_case zome_manifest.name}}StoreContext } from './{{dna_role_name}}/{{kebab_case zome_manifest.name}}/context.js';
-import { {{pascal_case zome_manifest.name}}Client } from './{{dna_role_name}}/{{kebab_case zome_manifest.name}}/{{kebab_case zome_manifest.name}}-client.js';
-import { {{pascal_case zome_manifest.name}}Store } from './{{dna_role_name}}/{{kebab_case zome_manifest.name}}/{{kebab_case zome_manifest.name}}-store.js';
+import './{{dna_role_name}}/{{kebab_case zome_manifest.name}}/elements/{{kebab_case zome_manifest.name}}-context.js';
 
-{{#merge previous_file_content}}
-  {{#match_scope "export class HolochainApp extends SignalWatcher(LitElement) {"}}
-  @provide({ context: {{camel_case zome_manifest.name}}StoreContext })
-  @property()
-  _{{camel_case zome_manifest.name}}Store!: {{pascal_case zome_manifest.name}}Store;
-
-    {{#merge previous_scope_content}}
-      {{#match_scope "async initStores(appClient: AppClient) {"}}
-    {{previous_scope_content}}
-    this._{{camel_case zome_manifest.name}}Store = new {{pascal_case zome_manifest.name}}Store(new {{pascal_case zome_manifest.name}}Client(appClient, '{{dna_role_name}}'));
-      {{/match_scope}}
-    {{/merge}}
-  {{/match_scope}}
-{{/merge}}
+{{replace (replace previous_file_content "</app-client-context>" (concat "</" (kebab_case zome_manifest.name) "-context>\n</app-client-context>") ) "<app-client-context .client=${this._client}>" (concat "<app-client-context .client=${this._client}>\n      <" (kebab_case zome_manifest.name) "-context role=\"" dna_role_name "\">") }}

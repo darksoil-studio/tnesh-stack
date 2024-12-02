@@ -5,6 +5,7 @@
 		<style>
 			body {
 				background: black;
+				color: white;
 			}
 		</style>
 		<link rel="stylesheet" href="" />
@@ -14,7 +15,11 @@
 			hash="uhCEkBsnnW9JSVhGQx4AE2m0lSlWLrioEHP-7Uj4ZnbI0W-M"
 		></holo-identicon>
 		<form>
-			<select-avatar required></select-avatar>
+			<select-avatar
+				avatar-width="20"
+				avatar-height="20"
+				required
+			></select-avatar>
 			<input type="submit" />
 		</form>
 		<display-error headline="Error getting the things" error="some full error">
@@ -23,6 +28,8 @@
 		<display-error error="a tooltip error" tooltip> </display-error>
 
 		<form-test></form-test>
+
+		<app-client-context> </app-client-context>
 
 		<script type="module">
 			import '@shoelace-style/shoelace/dist/components/alert/alert.js';
@@ -34,6 +41,7 @@
 			import { repeat } from 'lit/directives/repeat.js';
 
 			import { formatDateForInput } from '../src/date-utils.ts';
+			import '../src/elements/app-client-context.ts';
 			import '../src/elements/display-error.ts';
 			import '../src/elements/holo-identicon.ts';
 			import '../src/elements/select-avatar.ts';
@@ -42,6 +50,10 @@
 			import { onSubmit } from '../src/on-submit.ts';
 
 			notifyError('eeeee');
+
+			document
+				.querySelector('select-avatar')
+				.addEventListener('avatar-selected', console.log);
 
 			customElements.define(
 				'form-field',

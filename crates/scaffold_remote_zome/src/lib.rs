@@ -1,12 +1,15 @@
-use nix_scaffolding_utils::{add_flake_input, NixScaffoldingUtilsError};
-use npm_scaffolding_utils::{add_npm_dependency, NpmScaffoldingUtilsError};
 use anyhow::Result;
 use dialoguer::{theme::ColorfulTheme, Select};
 use file_tree_utils::{
-    find_files_by_extension, find_files_by_name, insert_file, map_file, FileTree, FileTreeError,
+    find_files_by_extension, find_files_by_name, insert_file, map_all_files, map_file, FileTree, FileTreeError
 };
 use holochain_types::prelude::{
     DnaManifest, DnaManifestCurrentBuilder, ZomeDependency, ZomeLocation,
+};
+use nix_scaffolding_utils::{add_flake_input, NixScaffoldingUtilsError};
+use npm_scaffolding_utils::{
+     add_npm_dependency_to_package,  get_npm_package_name,
+    NpmScaffoldingUtilsError,
 };
 use path_clean::PathClean;
 use regex::{Captures, Regex};
@@ -36,6 +39,9 @@ pub enum ScaffoldRemoteZomeError {
     #[error("No nixified DNAs were found in this project.")]
     NoDnasFoundError,
 
+    #[error("custom_element and custom_element_import must either both be set or none be set.")]
+    ContextElementOrImportError,
+
     #[error("The dna {0} was not found in this project.")]
     DnaNotFoundError(String),
 
@@ -63,6 +69,8 @@ pub fn scaffold_remote_zome(
     remote_npm_package_path: PathBuf,
     local_dna_to_add_the_zome_to: Option<String>,
     local_npm_package_to_add_the_ui_to: Option<String>,
+    context_element: Option<String>,
+    context_element_import: Option<String>,
 ) -> Result<FileTree, ScaffoldRemoteZomeError> {
     let nix_git_url = format!(
         "{remote_zome_git_url}{}",
@@ -77,7 +85,7 @@ pub fn scaffold_remote_zome(
 
     add_zome_to_nixified_dna(
         &mut file_tree,
-        dna,
+        dna.clone(),
         &module_name,
         integrity_zome_name,
         coordinator_zome_name,
@@ -91,16 +99,35 @@ pub fn scaffold_remote_zome(
         remote_npm_package_path.to_str().unwrap()
     );
 
-    let m = module_name.clone();
+    let (mut file_tree , package_json)= add_npm_dependency(
+        file_tree, 
+        remote_npm_package_name, 
+        npm_dependency_source, 
+        local_npm_package_to_add_the_ui_to
+    )?;
 
-    let clo = move |packages| select_npm_package(m.clone(), packages);
-
-    let file_tree = add_npm_dependency(file_tree, remote_npm_package_name, npm_dependency_source, local_npm_package_to_add_the_ui_to, Some(Box::new(clo)))?;
+    match (context_element, context_element_import) {
+        (Some(context_element), Some(context_element_import)) => {
+          file_tree = add_context_element(
+              file_tree,
+              dna.name,
+               &package_json, 
+               context_element, 
+               context_element_import
+           )?;
+        }
+        (None, None)=> {
+            
+        },
+        _ => {
+            return Err(ScaffoldRemoteZomeError::ContextElementOrImportError);
+        }
+    }
 
     Ok(file_tree)
 }
 
-fn select_npm_package(module_name: String, npm_packages: Vec<String>) -> Result<usize, NpmScaffoldingUtilsError> {
+fn select_npm_package(npm_dependency_package_name: String, npm_packages: Vec<String>) -> Result<usize, NpmScaffoldingUtilsError> {
     let mut i = 0;
     let mut found = false;
 
@@ -118,10 +145,136 @@ fn select_npm_package(module_name: String, npm_packages: Vec<String>) -> Result<
     Ok(Select::with_theme(&ColorfulTheme::default())
         .with_prompt(
         format!(    
-"Multiple NPM packages were found in this project, choose one to add the UI package for the {module_name} zome:"))
+"Multiple NPM packages were found in this project. Choose one to which to add the {npm_dependency_package_name} dependency:"))
         .default(default)
         .items(&npm_packages[..])
         .interact()?)
+}
+
+pub fn add_npm_dependency(
+    mut file_tree: FileTree,
+    dependency: String,
+    dependency_source: String,
+    package_to_add_the_dependency_to: Option<String>,
+) -> Result<(FileTree, (PathBuf, String)), NpmScaffoldingUtilsError> {
+    let mut package_jsons = find_files_by_name(&file_tree, PathBuf::from("package.json").as_path());
+
+    let package_json = match package_jsons.len() {
+        0 => Err(NpmScaffoldingUtilsError::NoNpmPackagesFoundError)?,
+        1 => {
+            let package_json = package_jsons.pop_first().unwrap();
+            map_file(
+                &mut file_tree,
+                package_json.0.as_path(),
+                |_package_json_content| {
+                    add_npm_dependency_to_package(&package_json, &dependency, &dependency_source)
+                },
+            )?;
+            println!("Added dependency {dependency} to {:?}.", package_json.0);
+            package_json
+        }
+        _ => {
+            let package_jsons: Vec<(PathBuf, String)> = package_jsons.into_iter().collect();
+            let packages_names = package_jsons
+                .iter()
+                .map(|package_json| get_npm_package_name(package_json))
+                .collect::<Result<Vec<String>, NpmScaffoldingUtilsError>>()?;
+
+            let package_index = match package_to_add_the_dependency_to {
+                Some(package_to_add_to) => packages_names
+                    .iter()
+                    .position(|package_name| package_name.eq(&package_to_add_to))
+                    .ok_or(NpmScaffoldingUtilsError::NpmPackageNotFoundError(
+                        package_to_add_to.clone(),
+                    ))?,
+                None => {
+                    let default_ui_package_json_index = package_jsons
+                        .iter()
+                        .position(|(path, _)| path.eq(&PathBuf::from("ui/package.json")));
+
+                    if let Some(default_ui_package_index) = default_ui_package_json_index {
+                        default_ui_package_index
+                    } else {
+                        select_npm_package(dependency.clone(), packages_names)?
+                    }
+                }
+            };
+
+            let package_json = &package_jsons[package_index];
+
+            map_file(
+                &mut file_tree,
+                package_json.0.as_path(),
+                |_package_json_content| {
+                    add_npm_dependency_to_package(package_json, &dependency, &dependency_source)
+                },
+            )?;
+            println!("Added dependency {dependency} to {:?}.", package_json.0);
+            package_json.clone()
+        }
+    };
+
+    Ok((file_tree, package_json))
+}
+
+fn add_context_element(
+    mut file_tree: FileTree,
+    dna_role_name: String,
+    npm_package: &(PathBuf, String),
+    context_element: String,
+    context_element_import: String,
+) -> Result<FileTree, ScaffoldRemoteZomeError> {
+
+    let mut npm_package_folder = npm_package.0.clone();
+    npm_package_folder.pop();
+
+    let context_re = Regex::new(
+        r"(?<before>[\S\s]*)<app-client-context(?<appclientcontextprops>[^>]*)>(?<middle>[\S\s]*)</app-client-context>(?<after>[\S\s]*)"
+    )?;
+    let indent_before_context_re = Regex::new(
+        r"\n(?<indent>[\s]*)<app-client-context"
+    )?;
+    let import_re = Regex::new(
+        r"(?<before>[\S\s]*)import (?<importmiddle>[^\n;]*)[;|\n](?<after>[\S\s]*)"
+    )?;
+
+    map_all_files(&mut file_tree, move |path,contents| {
+        if !path.starts_with(&npm_package_folder) {
+            return Ok(contents);
+        }
+
+        if context_re.is_match(&contents) {
+            let indent_captures = indent_before_context_re.captures(&contents);
+            let indentation = match indent_captures {
+                Some(c) => c["indent"].to_string(),
+                None => "  ".to_string()
+            };
+
+            let new_contents = context_re.replace(&contents, |caps: &Captures| {
+                let middle = caps["middle"].replace('\n', "\n  ");
+                format!(
+                    r#"{}<app-client-context{}>
+{indentation}  <{context_element} role="{dna_role_name}">{middle}</{context_element}>
+{indentation}</app-client-context>{}"#,
+                    &caps["before"], &caps["appclientcontextprops"], &caps["after"],
+                )
+            });
+            let new_contents = import_re.replace(&new_contents, |caps: &Captures| {
+                format!(
+                    r#"{}import {};
+import '{}';{}"#,
+                    &caps["before"], &caps["importmiddle"], &context_element_import, &caps["after"],
+                )
+            });
+            
+            Ok(new_contents.to_string())
+        }  else {
+            Ok(contents)
+        }
+    } )?;
+
+    
+    Ok(file_tree)
 }
 
 #[derive(Debug, Clone)]
@@ -189,7 +342,27 @@ fn add_zome_to_nixified_dna(
         },
     )?;
 
-    println!("Added the integrity zome {integrity_zome_name:?} and the coordinator zome {coordinator_zome_name:?} to {:?}.", nixified_dna.dna_nix.0);
+    match (&coordinator_zome_name, &integrity_zome_name) {
+        (Some(coordinator), Some(integrity)) => {
+            println!(
+                "Added the integrity zome {integrity} and the coordinator zome {coordinator} to {:?}.", 
+                nixified_dna.dna_nix.0
+            );
+        }, 
+        (Some(coordinator), None) => {
+            println!(
+                "Added the coordinator zome {coordinator} to {:?}.", 
+                nixified_dna.dna_nix.0
+            );
+        }, 
+        (None, Some(integrity)) => {
+            println!(
+                "Added the integrity zome {integrity} to {:?}.", 
+                nixified_dna.dna_nix.0
+            );
+        }, 
+        _ => {}
+    };
 
     let dna_manifest: DnaManifest = serde_yaml::from_str(nixified_dna.dna_manifest.1.as_str())?;
 
@@ -235,7 +408,10 @@ fn add_zome_to_nixified_dna(
         &serde_yaml::to_string(&new_manifest)?,
     )?;
 
-    println!("Added the integrity zome {integrity_zome_name:?} and the coordinator zome {coordinator_zome_name:?} to {:?}.", nixified_dna.dna_manifest.0);
+    println!(
+        "Added the integrity zome {integrity_zome_name:?} and the coordinator zome {coordinator_zome_name:?} to {:?}.", 
+        nixified_dna.dna_manifest.0
+    );
 
     Ok(())
 }
@@ -343,9 +519,9 @@ fn find_nixified_dnas(file_tree: &FileTree) -> Result<Vec<NixifiedDna>, Scaffold
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
     use build_fs_tree::{dir, file};
     use file_tree_utils::file_content;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn multiple_package_test() {
@@ -355,11 +531,12 @@ mod tests {
             "workdir" => dir! {
                 "dna.yaml" => file!(empty_dna_yaml("another_dna"))
             },
-            "dna.yaml" => file!(empty_dna_yaml("mydna")),
+            "dna.yaml" => file!(empty_dna_yaml("my_dna")),
             "package.json" => file!(empty_package_json("root")),
             "packages" => dir! {
                 "package1" => dir! {
-                    "package.json" => file!(empty_package_json("package1"))
+                    "package.json" => file!(empty_package_json("package1")),
+                    "app.js" => file!(empty_app_js())
                 },
                 "package2" => dir! {
                     "package.json" => file!(empty_package_json("package2"))
@@ -378,6 +555,8 @@ mod tests {
             PathBuf::from("ui"),
             None,
             Some("package1".into()),
+            Some("profiles-context".into()),
+            Some("@darksoil-studio/profiles-zome/dist/elements/profiles-context.js".into()),
         )
         .unwrap();
 
@@ -398,7 +577,7 @@ mod tests {
         assert_eq!(
             file_content(&repo, PathBuf::from("dna.yaml").as_path()).unwrap(),
             r#"manifest_version: '1'
-name: mydna
+name: my_dna
 integrity:
   network_seed: null
   properties: null
@@ -492,6 +671,192 @@ coordinator:
     };
 }
 "#
+        );
+
+        assert_eq!(
+            file_content(&repo, PathBuf::from("packages/package1/app.js").as_path()).unwrap(),
+            r#"import '@tnesh-stack/elements/dist/elements/app-client-context.js';
+import '@darksoil-studio/profiles-zome/dist/elements/profiles-context.js';
+
+export class App {
+
+  render() {
+    return html`
+      <app-client-context .client=${this.client}>
+        <profiles-context role="my_dna">
+          <linked-devices-context role="my_dna">
+          </linked-devices-context>
+        </profiles-context>
+      </app-client-context>
+    `;
+  }
+}"#
+        );
+    }
+    
+    #[test]
+    fn single_package_test() {
+        let repo: FileTree = dir! {
+            "flake.nix" => file!(default_flake_nix()),
+            "dna.nix" => file!(empty_dna_nix()),
+            "workdir" => dir! {
+                "dna.yaml" => file!(empty_dna_yaml("another_dna"))
+            },
+            "dna.yaml" => file!(empty_dna_yaml("my_dna")),
+            "package.json" => file!(empty_package_json("root")),
+            "ui" => dir! {
+                "package.json" => file!(empty_package_json("package1")),
+                "app.js" => file!(empty_app_js())
+            }
+        };
+
+        let repo = scaffold_remote_zome(
+            repo,
+            "profiles-zome".into(),
+            Some("profiles_integrity".into()),
+            Some("profiles".into()),
+            "github:darksoil-studio/profiles-zome".into(),
+            Some("main-0.3".into()),
+            "@darksoil-studio/profiles-zome".into(),
+            PathBuf::from("ui"),
+            None,
+            None,
+            Some("profiles-context".into()),
+            Some("@darksoil-studio/profiles-zome/dist/elements/profiles-context.js".into()),
+        )
+        .unwrap();
+
+        assert_eq!(
+            file_content(
+                &repo,
+                PathBuf::from("ui/package.json").as_path()
+            )
+            .unwrap(),
+            r#"{
+  "name": "package1",
+  "dependencies": {
+    "@darksoil-studio/profiles-zome": "github:darksoil-studio/profiles-zome#main-0.3&path:ui"
+  }
+}"#
+        );
+
+        assert_eq!(
+            file_content(&repo, PathBuf::from("dna.yaml").as_path()).unwrap(),
+            r#"manifest_version: '1'
+name: my_dna
+integrity:
+  network_seed: null
+  properties: null
+  origin_time: 1709638576394039
+  zomes:
+  - name: profiles_integrity
+    hash: null
+    bundled: <NIX_PACKAGE>
+    dependencies: null
+    dylib: null
+coordinator:
+  zomes:
+  - name: profiles
+    hash: null
+    bundled: <NIX_PACKAGE>
+    dependencies:
+    - name: profiles_integrity
+    dylib: null
+"#
+        );
+
+        assert_eq!(
+            file_content(&repo, PathBuf::from("flake.nix").as_path()).unwrap(),
+            r#"{
+  description = "Template for Holochain app development";
+  
+  inputs = {
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.3";
+    nixpkgs.follows = "holonix/nixpkgs";
+
+    holonix.url = "github:holochain/holonix";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.3";
+  };
+
+  outputs = inputs @ { ... }:
+    inputs.holonix.inputs.flake-parts.lib.mkFlake
+    {
+      inherit inputs;
+    }
+    {
+      imports = [
+        ./dna.nix
+      ];
+
+      systems = builtins.attrNames inputs.holonix.devShells;
+      perSystem =
+        { inputs'
+        , config
+        , pkgs
+        , system
+        , lib
+        , self'
+        , ...
+        }: {
+          devShells.default = pkgs.mkShell {
+            inputsFrom = [ 
+              inputs'.tnesh-stack.devShells.synchronized-pnpm
+              inputs'.holonix.devShells.default
+            ];
+          };
+        };
+    };
+}
+"#
+        );
+
+        assert_eq!(
+            file_content(&repo, PathBuf::from("dna.nix").as_path()).unwrap(),
+            r#"{ inputs, ... }:
+
+{
+  perSystem =
+    { inputs'
+    , self'
+    , system
+    , ...
+    }: {
+  	  packages.my_dna = inputs.tnesh-stack.outputs.builders.${system}.dna {
+        dnaManifest = ./dna.yaml;
+        zomes = {
+          profiles_integrity = inputs'.profiles-zome.packages.profiles_integrity;
+          profiles = inputs'.profiles-zome.packages.profiles;
+        };
+      };
+
+  	  packages.another_dna = inputs.tnesh-stack.outputs.builders.${system}.dna {
+        dnaManifest = ./workdir/dna.yaml;
+        zomes = {
+        };
+      };
+    };
+}
+"#
+        );
+
+        assert_eq!(
+            file_content(&repo, PathBuf::from("ui/app.js").as_path()).unwrap(),
+            r#"import '@tnesh-stack/elements/dist/elements/app-client-context.js';
+import '@darksoil-studio/profiles-zome/dist/elements/profiles-context.js';
+
+export class App {
+
+  render() {
+    return html`
+      <app-client-context .client=${this.client}>
+        <profiles-context role="my_dna">
+          <linked-devices-context role="my_dna">
+          </linked-devices-context>
+        </profiles-context>
+      </app-client-context>
+    `;
+  }
+}"#
         );
     }
 
@@ -593,5 +958,63 @@ coordinator:
 }
 "#,
         )
+    }
+
+    fn empty_app_js() -> String {
+        r#"import '@tnesh-stack/elements/dist/elements/app-client-context.js';
+
+export class App {
+
+  render() {
+    return html`
+      <app-client-context .client=${this.client}>
+        <linked-devices-context role="my_dna">
+        </linked-devices-context>
+      </app-client-context>
+    `;
+  }
+}"#
+        .into()
+    }
+
+    fn empty_svelte_app() -> String {
+        r#"<script>
+import { AppClient } from '@holochain/client';
+</script>
+<app-client-context client={this.client}>
+  <linked-devices-context role="my_dna">
+  </linked-devices-context>
+</app-client-context>
+"#
+        .into()
+    }
+
+    #[test]
+    fn add_context_to_svelte_app() {
+        let repo: FileTree = dir! {
+            "package.json" => file!(empty_package_json("package1")),
+            "app.svelte" => file!(empty_svelte_app()),
+        };
+        let result = add_context_element(repo, 
+            "my_dna".into(),
+            &(PathBuf::from("package.json"), empty_package_json("package1")), 
+            "profiles-context".into(),
+             "@darksoil-studio/profiles-zome/dist/elements/profiles-context.js".into()
+         ).unwrap();
+
+        assert_eq!(
+            file_content(&result, PathBuf::from("app.svelte").as_path()).unwrap(),
+            r#"<script>
+import { AppClient } from '@holochain/client';
+import '@darksoil-studio/profiles-zome/dist/elements/profiles-context.js';
+</script>
+<app-client-context client={this.client}>
+  <profiles-context role="my_dna">
+    <linked-devices-context role="my_dna">
+    </linked-devices-context>
+  </profiles-context>
+</app-client-context>
+"#
+        );
     }
 }

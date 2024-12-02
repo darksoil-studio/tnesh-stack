@@ -21,45 +21,44 @@ import { fileURLToPath } from 'url';
 import { {{pascal_case zome_name}}Client } from '../../ui/src/{{kebab_case zome_name}}-client.js';
 import { {{pascal_case zome_name}}Store } from '../../ui/src/{{kebab_case zome_name}}-store.js';
 
-export async function setup(scenario: Scenario) {
+export async function setup(scenario: Scenario, numPlayers = 2) {
   const testHappUrl =
     dirname(fileURLToPath(import.meta.url)) + '/../../workdir/{{zome_name}}_test.happ';
-
-  // Add 2 players with the test hApp to the Scenario. The returned players
-  // can be destructured.
-  const [alice, bob] = await scenario.addPlayersWithApps([
-    { appBundleSource: { path: testHappUrl } },
-    { appBundleSource: { path: testHappUrl } },
-  ]);
-
-  patchCallZome(alice.appWs as AppWebsocket);
-  patchCallZome(bob.appWs as AppWebsocket);
+  const players = await scenario.addPlayersWithApps(
+    new Array(numPlayers).fill({ appBundleSource: { path: testHappUrl } }),
+  );
+  const playersAndStores = await Promise.all(players.map(setupStore));
 
   // Shortcut peer discovery through gossip and register all agents in every
   // conductor of the scenario.
   await scenario.shareAllAgents();
 
-  const aliceStore = new {{pascal_case zome_name}}Store(
-    new {{pascal_case zome_name}}Client(alice.appWs as any, '{{snake_case zome_name}}_test', '{{snake_case zome_name}}')
+  return playersAndStores;
+}
+
+async function setupStore(player: Player) {
+  patchCallZome(player.appWs as AppWebsocket);
+  await player.conductor
+  	.adminWs()
+  	.authorizeSigningCredentials(player.cells[0].cell_id);
+  const store = new {{pascal_case zome_name}}Store(
+  	new {{pascal_case zome_name}}Client(player.appWs as any, '{{snake_case zome_name}}_test'),
   );
-
-  const bobStore = new {{pascal_case zome_name}}Store(
-    new {{pascal_case zome_name}}Client(bob.appWs as any, '{{snake_case zome_name}}_test', '{{snake_case zome_name}}')
-  );
-
-  // Shortcut peer discovery through gossip and register all agents in every
-  // conductor of the scenario.
-  await scenario.shareAllAgents();
-
   return {
-    alice: {
-      player: alice,
-      store: aliceStore,
-    },
-    bob: {
-      player: bob,
-      store: bobStore,
-    },
+  	store,
+  	player,
+  	startUp: async () => {
+  	  await player.conductor.startUp();
+  	  const port = await player.conductor.attachAppInterface();
+  	  const issued = await player.conductor
+  	    .adminWs()
+  	    .issueAppAuthenticationToken({
+  	      installed_app_id: player.appId,
+  	    });
+  	  const appWs = await player.conductor.connectAppWs(issued.token, port);
+  	  patchCallZome(appWs);
+  	  store.client.client = appWs;
+  	},
   };
 }
 
@@ -78,4 +77,16 @@ function patchCallZome(appWs: AppWebsocket) {
       }
     }
   };
+}
+
+export async function waitUntil(
+  condition: () => Promise<boolean>,
+  timeout: number,
+) {
+  const start = Date.now();
+  const isDone = await condition();
+  if (isDone) return;
+  if (timeout <= 0) throw new Error('timeout');
+  await pause(1000);
+  return waitUntil(condition, timeout - (Date.now() - start));
 }

@@ -13,7 +13,7 @@ import { setup } from './setup.js';
 
 test('create {{pascal_case entry_type.name}}', async () => {
   await runScenario(async scenario => {
-    const { alice, bob } = await setup(scenario);
+    const [ alice, bob ] = await setup(scenario);
 
     // Alice creates a {{pascal_case entry_type.name}}
     const {{camel_case entry_type.name}}: EntryRecord<{{pascal_case entry_type.name}}> = await alice.store.client.create{{pascal_case entry_type.name}}(await sample{{pascal_case entry_type.name}}(alice.store.client));
@@ -23,7 +23,7 @@ test('create {{pascal_case entry_type.name}}', async () => {
 
 test('create and read {{pascal_case entry_type.name}}', async () => {
   await runScenario(async scenario => {
-    const { alice, bob } = await setup(scenario);
+    const [ alice, bob ] = await setup(scenario);
 
     const sample = await sample{{pascal_case entry_type.name}}(alice.store.client);
 
@@ -46,7 +46,7 @@ test('create and read {{pascal_case entry_type.name}}', async () => {
 {{#if crud.update}}
 test('create and update {{pascal_case entry_type.name}}', async () => {
   await runScenario(async scenario => {
-    const { alice, bob } = await setup(scenario);
+    const [ alice, bob ] = await setup(scenario);
 
     // Alice creates a {{pascal_case entry_type.name}}
     const {{camel_case entry_type.name}}: EntryRecord<{{pascal_case entry_type.name}}> = await alice.store.client.create{{pascal_case entry_type.name}}(await sample{{pascal_case entry_type.name}}(alice.store.client));
@@ -92,7 +92,7 @@ test('create and update {{pascal_case entry_type.name}}', async () => {
 {{#if crud.delete}}
 test('create and delete {{pascal_case entry_type.name}}', async () => {
   await runScenario(async scenario => {
-    const { alice, bob } = await setup(scenario);
+    const [ alice, bob ] = await setup(scenario);
 
     // Alice creates a {{pascal_case entry_type.name}}
     const {{camel_case entry_type.name}}: EntryRecord<{{pascal_case entry_type.name}}> = await alice.store.client.create{{pascal_case entry_type.name}}(await sample{{pascal_case entry_type.name}}(alice.store.client));

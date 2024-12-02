@@ -19,6 +19,9 @@ pub enum FileTreeError {
 
     #[error("Path was not found: {0}")]
     PathNotFound(PathBuf),
+
+    #[error(transparent)]
+    RegexError(#[from] regex::Error),
 }
 
 pub type FileTree = FileSystemTree<OsString, String>;

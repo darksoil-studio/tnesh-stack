@@ -918,6 +918,7 @@ dependencies = [
  "build-fs-tree",
  "ignore",
  "include_dir",
+ "regex",
  "serde",
  "thiserror",
 ]
