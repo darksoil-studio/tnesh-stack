@@ -18,6 +18,7 @@
 	"scripts": {
 		"build": "pnpm lint && tsc --incremental",
 		"build:watch": "tsc --watch --preserveWatchOutput",
+		"prepare": "tsc",
 		"lint": "eslint src",
 		"test": "vitest run"
 	},
