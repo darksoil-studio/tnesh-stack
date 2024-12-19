@@ -3,6 +3,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
 
     holonix.url = "github:holochain/holonix/main-0.4";
+    holonix.inputs.nixpkgs.follows = "nixpkgs";
     rust-overlay.follows = "holonix/rust-overlay";
     crane.follows = "holonix/crane";
   };
