@@ -4,9 +4,7 @@
   perSystem = { inputs', pkgs, self', lib, ... }: {
 
     packages.sync-npm-git-dependencies-with-nix = let
-      # Uncomment this line when holonix gets updated to 24.11
-      # craneLib = inputs.crane.mkLib inputs'.pnpmnixpkgs.legacyPackages;
-      craneLib = inputs.crane.mkLib inputs'.pnpmnixpkgs.legacyPackages;
+      craneLib = inputs.crane.mkLib pkgs;
 
       cratePath = ./.;
 
