@@ -1,7 +1,6 @@
 {
   inputs = {
-    nixpkgs.follows = "holonix/nixpkgs";
-    pnpmnixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
 
     holonix.url = "github:holochain/holonix/main-0.4";
     rust-overlay.follows = "holonix/rust-overlay";
@@ -142,7 +141,8 @@
               deterministicCraneLib = let
                 rustToolchain =
                   inputs.holonix.outputs.packages."x86_64-linux".rust;
-              in (inputs.crane.mkLib inputs.nixpkgs.outputs.legacyPackages.${
+              in (inputs.crane.mkLib
+                inputs.holonix.inputs.nixpkgs.outputs.legacyPackages.${
                   "x86_64-linux"
                 }).overrideToolchain rustToolchain;
 
@@ -231,7 +231,7 @@
 
         packages.synchronized-pnpm = pkgs.symlinkJoin {
           name = "synchronized-pnpm";
-          paths = [ inputs'.pnpmnixpkgs.legacyPackages.pnpm ];
+          paths = [ inputs'.nixpkgs.legacyPackages.pnpm ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
             wrapProgram $out/bin/pnpm  --run ${self'.packages.sync-npm-git-dependencies-with-nix}/bin/sync-npm-git-dependencies-with-nix

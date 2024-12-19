@@ -1,6 +1,6 @@
 {
   "name": "@tnesh-stack/utils",
-  "version": "0.400.0-rc.1",
+  "version": "0.400.0",
   "description": "Common utilities to build Holochain web applications",
   "author": "guillem.cordoba@gmail.com",
   "main": "dist/index.js",
@@ -25,7 +25,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@holochain/client": "^0.18.0-rc",
+    "@holochain/client": "^0.18.0",
     "@msgpack/msgpack": "^2.8.0",
     "blakejs": "^1.2.1",
     "emittery": "^1.0.1",
