@@ -408,11 +408,6 @@ fn add_zome_to_nixified_dna(
         &serde_yaml::to_string(&new_manifest)?,
     )?;
 
-    println!(
-        "Added the integrity zome {integrity_zome_name:?} and the coordinator zome {coordinator_zome_name:?} to {:?}.", 
-        nixified_dna.dna_manifest.0
-    );
-
     Ok(())
 }
 
