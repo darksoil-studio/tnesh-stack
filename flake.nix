@@ -1,11 +1,9 @@
 {
   inputs = {
-    pnpmnixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
-
     holonix.url = "github:holochain/holonix/main-0.4";
     nixpkgs.follows = "holonix/nixpkgs";
     rust-overlay.follows = "holonix/rust-overlay";
-    crane.url = "github:ipetkov/crane/9ed3180f45c2d1499e5af98c4ab7ffee8e886f5f";
+    crane.follows = "holonix/crane";
   };
 
   nixConfig = {
@@ -232,10 +230,10 @@
 
         packages.synchronized-pnpm = pkgs.symlinkJoin {
           name = "synchronized-pnpm";
-          paths = [ inputs'.pnpmnixpkgs.legacyPackages.pnpm ];
+          paths = [ pkgs.pnpm ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
-            wrapProgram $out/bin/pnpm  --run ${self'.packages.sync-npm-git-dependencies-with-nix}/bin/sync-npm-git-dependencies-with-nix
+            wrapProgram $out/bin/pnpm --run ${self'.packages.sync-npm-git-dependencies-with-nix}/bin/sync-npm-git-dependencies-with-nix
           '';
         };
 
