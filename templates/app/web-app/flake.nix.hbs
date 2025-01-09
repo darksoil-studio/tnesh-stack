@@ -46,9 +46,7 @@
                 inputs'.holonix.devShells.default
               ];
               packages = [
-                (inputs'.holonix.packages.holochain.override {
-                  cargoExtraArgs = " --features unstable-functions";
-                })
+                inputs'.tnesh-stack.packages.holochain
                 inputs'.tnesh-stack.packages.hc-scaffold-happ
                 inputs'.playground.packages.hc-playground
               ];
