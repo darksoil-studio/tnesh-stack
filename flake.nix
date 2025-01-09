@@ -228,6 +228,10 @@
           in cargoArtifacts;
         };
 
+        packages.holochain = inputs'.holonix.packages.holochain.override {
+          cargoExtraArgs = " --features unstable-functions";
+        };
+
         packages.synchronized-pnpm = pkgs.symlinkJoin {
           name = "synchronized-pnpm";
           paths = [ pkgs.pnpm ];
