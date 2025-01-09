@@ -48,12 +48,12 @@
           }: {
             devShells.default = pkgs.mkShell {
               inputsFrom = [ 
-                inputs'.tnesh-stack.packages.holochain
                 inputs'.tnesh-stack.devShells.synchronized-pnpm
                 inputs'.holonix.devShells.default
               ];
 
               packages = [
+                inputs'.tnesh-stack.packages.holochain
                 inputs'.tnesh-stack.packages.hc-scaffold-zome
                 inputs'.playground.packages.hc-playground
               ];
