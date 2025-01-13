@@ -229,7 +229,7 @@
         };
 
         packages.holochain = inputs'.holonix.packages.holochain.override {
-          cargoExtraArgs = " --features unstable-functions";
+          cargoExtraArgs = " --features unstable-functions,unstable-sharding";
         };
 
         packages.synchronized-pnpm = pkgs.symlinkJoin {
