@@ -11,8 +11,6 @@ jobs:
   testbuild:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
         with:
@@ -21,6 +19,8 @@ jobs:
           remove-codeql: 'true'
           remove-docker-images: 'true'
           remove-haskell: 'true'
+
+      - uses: actions/checkout@v3
 
       - name: Install nix
         uses: cachix/install-nix-action@v27
