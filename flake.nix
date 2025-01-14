@@ -113,26 +113,9 @@
       systems = builtins.attrNames inputs.holonix.devShells;
 
       perSystem = { inputs', self', config, pkgs, system, lib, ... }: rec {
-        dependencies.holochain.buildInputs = (with pkgs; [ perl openssl ])
-          ++ (lib.optionals pkgs.stdenv.isLinux [ pkgs.pkg-config pkgs.go ])
-          ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin [
-            pkgs.libiconv
-
-            pkgs.darwin.apple_sdk.frameworks.AppKit
-            pkgs.darwin.apple_sdk.frameworks.WebKit
-            (if pkgs.system == "x86_64-darwin" then
-              (pkgs.darwin.apple_sdk_11_0.stdenv.mkDerivation {
-                name = "go";
-                nativeBuildInputs = with pkgs; [ makeBinaryWrapper go ];
-                dontBuild = true;
-                dontUnpack = true;
-                installPhase = ''
-                  makeWrapper ${pkgs.go}/bin/go $out/bin/go
-                '';
-              })
-            else
-              pkgs.go)
-          ]);
+        dependencies.holochain.buildInputs = (with pkgs; [ perl openssl go ])
+          ++ (pkgs.lib.optionals (system == "x86_64-darwin")
+            [ pkgs.apple-sdk_10_15 ]);
         builders = {
           rustZome = { crateCargoToml, workspacePath, cargoArtifacts ? null
             , matchingZomeHash ? null, meta ? { }, zomeEnvironmentVars ? { } }:
