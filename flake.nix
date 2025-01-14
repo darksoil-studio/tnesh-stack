@@ -114,6 +114,7 @@
 
       perSystem = { inputs', self', config, pkgs, system, lib, ... }: rec {
         dependencies.holochain.buildInputs = (with pkgs; [ perl openssl go ])
+          ++ (pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.pkg-config ])
           ++ (pkgs.lib.optionals (system == "x86_64-darwin")
             [ pkgs.apple-sdk_10_15 ]);
         builders = {
