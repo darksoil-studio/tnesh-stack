@@ -964,9 +964,9 @@
               "kind": "field",
               "name": "shape",
               "type": {
-                "text": "\"square\" | \"circle\""
+                "text": "'square' | 'circle'"
               },
-              "default": "\"circle\"",
+              "default": "'circle'",
               "description": "Shape of the identicon."
             },
             {
