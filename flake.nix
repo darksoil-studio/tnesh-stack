@@ -160,6 +160,11 @@
               inherit dnas happManifest meta;
               holochain = inputs'.holonix.packages.holochain;
             };
+          webhapp = { name, ui, happ, meta ? { } }:
+            pkgs.callPackage ./nix/webhapp.nix {
+              inherit name happ ui meta;
+              holochain = inputs'.holonix.packages.holochain;
+            };
         };
 
         devShells.holochainDev = pkgs.mkShell {
