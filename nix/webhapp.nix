@@ -1,6 +1,5 @@
 # Build a hApp
-{ name, happ, ui, runCommandNoCC, holochain, writeText, json2yaml, callPackage
-, runCommandLocal, meta }:
+{ name, happ, ui, runCommandNoCC, holochain, runCommandLocal, meta }:
 
 let
   manifestYaml = ''
