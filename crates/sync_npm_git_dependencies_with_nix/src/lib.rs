@@ -30,8 +30,8 @@ pub enum SynchronizeNpmGitDependenciesWithNixError {
     #[error("Error parsing git {0} for dependency {1}")]
     ParseGitRepositoryError(String, String),
 
-    #[error("Error parsing the rev-tag. dependency {0}")]
-    RevTagDependencyError(String),
+    #[error("Error parsing the rev. dependency {0}")]
+    RevDependencyError(String),
 
     #[error("Error getting the NPM repo for dependency {0}: {1}")]
     NpmRepoError(String, String),
@@ -60,17 +60,27 @@ pub fn synchronize_npm_git_dependencies_with_nix(
             let mut package_json_contents: Value = serde_json::from_reader(reader)?;
 
             if let Some(Value::Object(deps)) = package_json_contents.get_mut("dependencies") {
-                let re = Regex::new(r#"rev-tag\.(.*)$"#)?;
+                let re = Regex::new(r#"^(.*)-rev\.(.*)$"#)?;
 
                 for (package, dependency_source) in deps {
                     if let Value::String(dependency_source_str) = dependency_source.clone() {
                         if let Some(captures) = re.captures(&dependency_source_str) {
                             let git_repo = get_repo(package, &dependency_source_str)?;
-                            let revision= captures
+                            let version = captures
                                 .get(1)
                                 .ok_or(
-                                    SynchronizeNpmGitDependenciesWithNixError::RevTagDependencyError(dependency_source_str.clone())
-)?
+                                    SynchronizeNpmGitDependenciesWithNixError::RevDependencyError(
+                                        dependency_source_str.clone(),
+                                    ),
+                                )?
+                                .as_str();
+                            let revision = captures
+                                .get(2)
+                                .ok_or(
+                                    SynchronizeNpmGitDependenciesWithNixError::RevDependencyError(
+                                        dependency_source_str.clone(),
+                                    ),
+                                )?
                                 .as_str();
 
                             for root_node in flake_lock.root.values() {
@@ -81,7 +91,7 @@ pub fn synchronize_npm_git_dependencies_with_nix(
                                         && revision != repo_node.locked.rev
                                     {
                                         *dependency_source = Value::String(format!(
-                                            "rev-tag.{}",
+                                            "{version}-rev.{}",
                                             repo_node.locked.rev
                                         ));
 
