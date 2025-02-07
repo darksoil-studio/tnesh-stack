@@ -3,6 +3,7 @@ use colored::Colorize;
 use ignore::Walk;
 use parse_flake_lock::{FlakeLock, FlakeLockParseError, Node};
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{
     env::current_dir,
@@ -28,6 +29,12 @@ pub enum SynchronizeNpmGitDependenciesWithNixError {
 
     #[error("Error parsing git {0} for dependency {1}")]
     ParseGitRepositoryError(String, String),
+
+    #[error("Error parsing the rev-tag. dependency {0}")]
+    RevTagDependencyError(String),
+
+    #[error("Error getting the NPM repo for dependency {0}: {1}")]
+    NpmRepoError(String, String),
 }
 
 pub fn synchronize_npm_git_dependencies_with_nix(
@@ -53,46 +60,28 @@ pub fn synchronize_npm_git_dependencies_with_nix(
             let mut package_json_contents: Value = serde_json::from_reader(reader)?;
 
             if let Some(Value::Object(deps)) = package_json_contents.get_mut("dependencies") {
-                let re = Regex::new(r#"(github|gitlab):([^/]+)/([^#]+)#([^&"]+)(&.*)?$"#)?;
+                let re = Regex::new(r#"rev-tag\.(.*)$"#)?;
 
-                for (_package, dependency_source) in deps {
+                for (package, dependency_source) in deps {
                     if let Value::String(dependency_source_str) = dependency_source.clone() {
                         if let Some(captures) = re.captures(&dependency_source_str) {
-                            let git_host = captures
+                            let git_repo = get_repo(package, &dependency_source_str)?;
+                            let revision= captures
                                 .get(1)
                                 .ok_or(
-                                    SynchronizeNpmGitDependenciesWithNixError::ParseGitRepositoryError("username".into(), dependency_source_str.clone())
+                                    SynchronizeNpmGitDependenciesWithNixError::RevTagDependencyError(dependency_source_str.clone())
 )?
                                 .as_str();
-                            let git_owner = captures
-                                .get(2)
-                                .ok_or(
-                                    SynchronizeNpmGitDependenciesWithNixError::ParseGitRepositoryError("owner".into(), dependency_source_str.clone())
-)?
-                                .as_str();
-                            let git_repo = captures
-                                .get(3)
-                                .ok_or(
-                                    SynchronizeNpmGitDependenciesWithNixError::ParseGitRepositoryError("repository".into(), dependency_source_str.clone())
-)?
-                                .as_str();
-                            let revision = captures
-                                .get(4)
-                                .ok_or(
-                                    SynchronizeNpmGitDependenciesWithNixError::ParseGitRepositoryError("revision".into(), dependency_source_str.clone())
-)?
-                                .as_str();
-                            let query_arguments =
-                                captures.get(5).map(|c| c.as_str()).unwrap_or_default();
 
                             for root_node in flake_lock.root.values() {
                                 if let Node::Repo(repo_node) = root_node {
-                                    if repo_node.locked.owner == git_owner
-                                        && repo_node.locked.repo == git_repo
+                                    if repo_node.locked.node_type == git_repo.git_type
+                                        && repo_node.locked.owner == git_repo.owner
+                                        && repo_node.locked.repo == git_repo.repo
                                         && revision != repo_node.locked.rev
                                     {
                                         *dependency_source = Value::String(format!(
-                                            "{git_host}:{git_owner}/{git_repo}#{}{query_arguments}",
+                                            "rev-tag.{}",
                                             repo_node.locked.rev
                                         ));
 
@@ -105,7 +94,7 @@ pub fn synchronize_npm_git_dependencies_with_nix(
                                         }
 
                                         println!(
-                                    "  - Setting dependency \"{git_host}:{git_owner}/{git_repo}\" in file {:?} to rev \"{}\"",
+                                    "  - Setting dependency \"{package}\" in file {:?} to rev \"{}\"",
                                     entry.path(), repo_node.locked.rev
                                 );
                                         replaced_some_dep = true;
@@ -137,4 +126,70 @@ pub fn synchronize_npm_git_dependencies_with_nix(
     }
 
     Ok(())
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct GitRepo {
+    owner: String,
+    repo: String,
+    git_type: String,
+}
+
+fn get_repo(
+    npm_package: &String,
+    tag: &String,
+) -> Result<GitRepo, SynchronizeNpmGitDependenciesWithNixError> {
+    let output = Command::new("npm")
+        .args(["repo", npm_package, "--no-browser"])
+        .stderr(Stdio::null())
+        .output()?;
+    let npm_repo_output = String::from_utf8(output.stdout).map_err(|err| {
+        SynchronizeNpmGitDependenciesWithNixError::NpmRepoError(
+            npm_package.clone(),
+            format!("{err:?}"),
+        )
+    })?;
+
+    let re = Regex::new(r#"https://(github|gitlab).com/([^/]+)/([^\n]+)"#)?;
+    let Some(captures) = re.captures(&npm_repo_output) else {
+        return Err(SynchronizeNpmGitDependenciesWithNixError::NpmRepoError(
+            npm_package.clone(),
+            format!("Unrecognized repo URL from the output of npm repo: {npm_repo_output}"),
+        ));
+    };
+    let git_type = captures
+        .get(1)
+        .ok_or(
+            SynchronizeNpmGitDependenciesWithNixError::ParseGitRepositoryError(
+                "type".into(),
+                npm_repo_output.clone(),
+            ),
+        )?
+        .as_str()
+        .to_string();
+    let owner = captures
+        .get(2)
+        .ok_or(
+            SynchronizeNpmGitDependenciesWithNixError::ParseGitRepositoryError(
+                "owner".into(),
+                npm_repo_output.clone(),
+            ),
+        )?
+        .as_str()
+        .to_string();
+    let repo = captures
+        .get(3)
+        .ok_or(
+            SynchronizeNpmGitDependenciesWithNixError::ParseGitRepositoryError(
+                "repo".into(),
+                npm_repo_output.clone(),
+            ),
+        )?
+        .as_str()
+        .to_string();
+    Ok(GitRepo {
+        owner,
+        repo,
+        git_type,
+    })
 }
