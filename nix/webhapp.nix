@@ -1,30 +1,30 @@
 # Build a hApp
-{ name, happ, ui, runCommandNoCC, holochain, runCommandLocal, meta }:
+{ name, happ, ui, zip, writeText, runCommandNoCC, holochain, runCommandLocal
+, meta }:
 
 let
-  manifestYaml = ''
-    ---
-    manifest_version: "1"
-    name: ${name}
-    ui:
-      bundled: ${ui}
-    happ_manifest:
-      bundled: ${happ}
+  uiZip = runCommandNoCC "ui-zip" { } ''
+    mkdir $out
+    mkdir $out/share
+    cd ${ui}
+    ${zip}/bin/zip -r $out/share/ui.zip .
   '';
-  manifestYamlDebug = ''
+  manifestYaml = writeText "webhapp.yaml" ''
     ---
     manifest_version: "1"
     name: ${name}
     ui:
-      bundled: ${ui}
+      bundled: ./ui.zip
     happ_manifest:
-      bundled: ${happ.meta.debug}
+      bundled: ./happ.happ
   '';
 
   debug = runCommandLocal "${name}-debug" { srcs = [ happ.meta.debug ui ]; } ''
       mkdir workdir
-        
-      cp ${manifestYamlDebug} workdir/web-happ.yaml
+
+      cp ${uiZip}/share/ui.zip workdir
+      cp ${happ.meta.debug} workdir/happ.happ
+      cp ${manifestYaml} workdir/web-happ.yaml
 
     	${holochain}/bin/hc web-app pack workdir
     	mv workdir/${name}.webhapp $out
@@ -36,7 +36,9 @@ in runCommandNoCC "${name}-webhapp" {
   outputs = [ "out" ];
 } ''
     mkdir workdir
-      
+
+    cp ${uiZip}/share/ui.zip workdir
+    cp ${happ} workdir/happ.happ
     cp ${manifestYaml} workdir/web-happ.yaml
 
   	${holochain}/bin/hc web-app pack workdir
