@@ -56,7 +56,7 @@ export class {{pascal_case (plural ../entry_type.name)}}For{{pascal_case linked_
       </div>`;
 
     return html`
-      <div style="display: flex; flex-direction: column">
+      <div class="column" style="gap: 8px">
         ${hashes.map(hash =>
           html`<{{kebab_case ../entry_type.name}}-summary .{{camel_case ../entry_type.name}}Hash=${hash}></{{kebab_case ../entry_type.name}}-summary>`
         )}
