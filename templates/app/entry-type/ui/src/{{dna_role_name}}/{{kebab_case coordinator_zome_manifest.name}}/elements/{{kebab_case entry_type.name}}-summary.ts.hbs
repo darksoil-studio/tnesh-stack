@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, html, css } from 'lit';
 import { state, property, customElement } from 'lit/decorators.js';
 import { EntryHash, Record, ActionHash } from '@holochain/client';
 import { EntryRecord } from '@tnesh-stack/utils';
@@ -98,5 +98,9 @@ export class {{pascal_case entry_type.name}}Summary extends SignalWatcher(LitEle
   }
 
   
-  static styles = appStyles;
+  static styles = [appStyles, css`
+    :host {
+      display: flex;
+    }
+  `];
 }
