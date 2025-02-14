@@ -5,17 +5,18 @@ use npm_scaffolding_utils::guess_or_choose_package_manager;
 use parse_flake_lock::{FlakeLock, FlakeLockParseError, Node};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{Map, Value};
 use std::{
     env::current_dir,
     fs::File,
     io::BufReader,
+    path::PathBuf,
     process::{Command, Stdio},
 };
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum SynchronizeNpmGitDependenciesWithNixError {
+pub enum SynchronizeNpmRevDependenciesWithNixError {
     #[error(transparent)]
     FlakeLockParseError(#[from] FlakeLockParseError),
 
@@ -40,6 +41,9 @@ pub enum SynchronizeNpmGitDependenciesWithNixError {
     #[error("Error parsing the rev. dependency {0}")]
     RevDependencyError(String),
 
+    #[error("The flake.lock file is in a directory without parent")]
+    FlakeLockHasNoParentError,
+
     #[error("Error getting the NPM repo for dependency {0}: {1}")]
     NpmRepoError(String, String),
 
@@ -47,22 +51,41 @@ pub enum SynchronizeNpmGitDependenciesWithNixError {
     NpmShowError(String, String),
 }
 
-pub fn synchronize_npm_rev_dependencies_with_nix(
-) -> Result<(), SynchronizeNpmGitDependenciesWithNixError> {
-    let current_dir = current_dir()?;
+fn find_flake_lock() -> Result<Option<PathBuf>, SynchronizeNpmRevDependenciesWithNixError> {
+    let mut current_dir = current_dir()?;
     let flake_lock = current_dir.join("flake.lock");
-
-    // Return silently if no "flake.lock" file exists
-    if !flake_lock.exists() {
-        return Ok(());
+    if flake_lock.exists() {
+        return Ok(Some(flake_lock));
     }
+
+    while let Some(parent) = current_dir.parent() {
+        current_dir = parent.into();
+        let flake_lock = current_dir.join("flake.lock");
+        if flake_lock.exists() {
+            return Ok(Some(flake_lock));
+        }
+    }
+
+    Ok(None)
+}
+
+pub fn synchronize_npm_rev_dependencies_with_nix(
+) -> Result<(), SynchronizeNpmRevDependenciesWithNixError> {
+    // Return silently if no "flake.lock" file exists
+    let Some(flake_lock) = find_flake_lock()? else {
+        return Ok(());
+    };
+
+    let Some(project_root) = flake_lock.parent() else {
+        return Err(SynchronizeNpmRevDependenciesWithNixError::FlakeLockHasNoParentError);
+    };
 
     let flake_lock = FlakeLock::new(flake_lock.as_path())?;
 
     let mut announced = false;
     let mut replaced_some_dep = false;
 
-    for entry in Walk::new(".").into_iter().filter_map(|e| e.ok()) {
+    for entry in Walk::new(project_root).into_iter().filter_map(|e| e.ok()) {
         let f_name = entry.file_name().to_string_lossy();
 
         if f_name == "package.json" {
@@ -72,61 +95,17 @@ pub fn synchronize_npm_rev_dependencies_with_nix(
             let mut package_json_contents: Value = serde_json::from_reader(reader)?;
 
             if let Some(Value::Object(deps)) = package_json_contents.get_mut("dependencies") {
-                let re = Regex::new(r#"^(.*)-rev\.(.*)$"#)?;
+                let replaced = sync_deps(&flake_lock, entry.path().into(), deps, announced)?;
+                announced = announced || replaced;
+                replaced_some_dep = replaced_some_dep || replaced;
+                replaced_some_dep_in_this_file = replaced_some_dep_in_this_file || replaced;
+            }
 
-                for (package, dependency_source) in deps {
-                    if let Value::String(dependency_source_str) = dependency_source.clone() {
-                        if let Some(captures) = re.captures(&dependency_source_str) {
-                            let git_repo = get_repo(package)?;
-                            let _version = captures
-                                .get(1)
-                                .ok_or(
-                                    SynchronizeNpmGitDependenciesWithNixError::RevDependencyError(
-                                        dependency_source_str.clone(),
-                                    ),
-                                )?
-                                .as_str();
-                            let revision = captures
-                                .get(2)
-                                .ok_or(
-                                    SynchronizeNpmGitDependenciesWithNixError::RevDependencyError(
-                                        dependency_source_str.clone(),
-                                    ),
-                                )?
-                                .as_str();
-
-                            for root_node in flake_lock.root.values() {
-                                if let Node::Repo(repo_node) = root_node {
-                                    if repo_node.locked.node_type == git_repo.git_type
-                                        && repo_node.locked.owner == git_repo.owner
-                                        && repo_node.locked.repo == git_repo.repo
-                                        && revision != repo_node.locked.rev
-                                    {
-                                        let new_version =
-                                            get_version(package, &repo_node.locked.rev)?;
-                                        *dependency_source =
-                                            Value::String(format!("{new_version}"));
-
-                                        if !announced {
-                                            announced = true;
-                                            println!("");
-                                            println!(
-                                                "Synchronizing npm git dependencies with the upstream nix sources..."
-                                            );
-                                        }
-
-                                        println!(
-                                            "  - Setting dependency \"{package}\" in file {:?} to rev \"{}\"",
-                                            entry.path(), new_version
-                                        );
-                                        replaced_some_dep = true;
-                                        replaced_some_dep_in_this_file = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            if let Some(Value::Object(deps)) = package_json_contents.get_mut("devDependencies") {
+                let replaced = sync_deps(&flake_lock, entry.path().into(), deps, announced)?;
+                announced = announced || replaced;
+                replaced_some_dep = replaced_some_dep || replaced;
+                replaced_some_dep_in_this_file = replaced_some_dep_in_this_file || replaced;
             }
 
             if replaced_some_dep_in_this_file {
@@ -137,25 +116,90 @@ pub fn synchronize_npm_rev_dependencies_with_nix(
         }
     }
 
-    let file_tree = file_tree_utils::load_directory_into_memory(&current_dir)?;
+    let file_tree = file_tree_utils::load_directory_into_memory(project_root)?;
     let package_manager = guess_or_choose_package_manager(&file_tree)?
         .to_string()
         .to_lowercase();
 
     if replaced_some_dep {
-        println!("Running {package_manager} install...");
         println!("");
+        println!("Running {package_manager} install...");
         Command::new(package_manager)
             .arg("install")
+            .current_dir(project_root)
             .stdout(Stdio::inherit())
             .output()?;
         println!(
-            "{}",
+            "
+{}",
             "Successfully synchronized npm dependencies with nix".green()
         );
     }
 
     Ok(())
+}
+
+fn sync_deps(
+    flake_lock: &FlakeLock,
+    package_json_path: PathBuf,
+    deps: &mut Map<String, Value>,
+    announced: bool,
+) -> Result<bool, SynchronizeNpmRevDependenciesWithNixError> {
+    let mut replaced_some_dep = false;
+    let re = Regex::new(r#"^(.*)-rev\.(.*)$"#)?;
+
+    for (package, dependency_source) in deps {
+        if let Value::String(dependency_source_str) = dependency_source.clone() {
+            if let Some(captures) = re.captures(&dependency_source_str) {
+                let git_repo = get_repo(package)?;
+                let _version = captures
+                    .get(1)
+                    .ok_or(
+                        SynchronizeNpmRevDependenciesWithNixError::RevDependencyError(
+                            dependency_source_str.clone(),
+                        ),
+                    )?
+                    .as_str();
+                let revision = captures
+                    .get(2)
+                    .ok_or(
+                        SynchronizeNpmRevDependenciesWithNixError::RevDependencyError(
+                            dependency_source_str.clone(),
+                        ),
+                    )?
+                    .as_str();
+
+                for root_node in flake_lock.root.values() {
+                    if let Node::Repo(repo_node) = root_node {
+                        if repo_node.locked.node_type == git_repo.git_type
+                            && repo_node.locked.owner == git_repo.owner
+                            && repo_node.locked.repo == git_repo.repo
+                            && revision != repo_node.locked.rev
+                        {
+                            let new_version = get_version(package, &repo_node.locked.rev)?;
+                            *dependency_source = Value::String(format!("{new_version}"));
+
+                            if !announced && !replaced_some_dep {
+                                println!("");
+                                println!(
+                                                "Synchronizing npm git dependencies with the upstream nix sources...
+"
+                                            );
+                            }
+
+                            println!(
+                                "  - Setting dependency \"{package}\" in file {:?} to rev \"{}\"",
+                                package_json_path, new_version
+                            );
+                            replaced_some_dep = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Ok(replaced_some_dep)
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -165,13 +209,13 @@ struct GitRepo {
     git_type: String,
 }
 
-fn get_repo(npm_package: &String) -> Result<GitRepo, SynchronizeNpmGitDependenciesWithNixError> {
+fn get_repo(npm_package: &String) -> Result<GitRepo, SynchronizeNpmRevDependenciesWithNixError> {
     let output = Command::new("npm")
         .args(["repo", npm_package, "--no-browser"])
         .stderr(Stdio::null())
         .output()?;
     let npm_repo_output = String::from_utf8(output.stdout).map_err(|err| {
-        SynchronizeNpmGitDependenciesWithNixError::NpmRepoError(
+        SynchronizeNpmRevDependenciesWithNixError::NpmRepoError(
             npm_package.clone(),
             format!("{err:?}"),
         )
@@ -179,7 +223,7 @@ fn get_repo(npm_package: &String) -> Result<GitRepo, SynchronizeNpmGitDependenci
 
     let re = Regex::new(r#"https://(github|gitlab).com/([^/]+)/([^\n]+)"#)?;
     let Some(captures) = re.captures(&npm_repo_output) else {
-        return Err(SynchronizeNpmGitDependenciesWithNixError::NpmRepoError(
+        return Err(SynchronizeNpmRevDependenciesWithNixError::NpmRepoError(
             npm_package.clone(),
             format!("Unrecognized repo URL from the output of npm repo: {npm_repo_output}"),
         ));
@@ -187,7 +231,7 @@ fn get_repo(npm_package: &String) -> Result<GitRepo, SynchronizeNpmGitDependenci
     let git_type = captures
         .get(1)
         .ok_or(
-            SynchronizeNpmGitDependenciesWithNixError::ParseGitRepositoryError(
+            SynchronizeNpmRevDependenciesWithNixError::ParseGitRepositoryError(
                 "type".into(),
                 npm_repo_output.clone(),
             ),
@@ -197,7 +241,7 @@ fn get_repo(npm_package: &String) -> Result<GitRepo, SynchronizeNpmGitDependenci
     let owner = captures
         .get(2)
         .ok_or(
-            SynchronizeNpmGitDependenciesWithNixError::ParseGitRepositoryError(
+            SynchronizeNpmRevDependenciesWithNixError::ParseGitRepositoryError(
                 "owner".into(),
                 npm_repo_output.clone(),
             ),
@@ -207,7 +251,7 @@ fn get_repo(npm_package: &String) -> Result<GitRepo, SynchronizeNpmGitDependenci
     let repo = captures
         .get(3)
         .ok_or(
-            SynchronizeNpmGitDependenciesWithNixError::ParseGitRepositoryError(
+            SynchronizeNpmRevDependenciesWithNixError::ParseGitRepositoryError(
                 "repo".into(),
                 npm_repo_output.clone(),
             ),
@@ -224,13 +268,13 @@ fn get_repo(npm_package: &String) -> Result<GitRepo, SynchronizeNpmGitDependenci
 fn get_version(
     npm_package: &String,
     rev: &String,
-) -> Result<String, SynchronizeNpmGitDependenciesWithNixError> {
+) -> Result<String, SynchronizeNpmRevDependenciesWithNixError> {
     let output = Command::new("npm")
         .args(["show", npm_package, "--json"])
         .stderr(Stdio::null())
         .output()?;
     let npm_version_output = String::from_utf8(output.stdout).map_err(|err| {
-        SynchronizeNpmGitDependenciesWithNixError::NpmShowError(
+        SynchronizeNpmRevDependenciesWithNixError::NpmShowError(
             npm_package.clone(),
             format!("{err:?}"),
         )
@@ -239,7 +283,7 @@ fn get_version(
     let mut package_json_contents: Value = serde_json::from_str(npm_version_output.as_str())?;
 
     let Some(Value::Array(versions)) = package_json_contents.get_mut("versions") else {
-        return Err(SynchronizeNpmGitDependenciesWithNixError::NpmShowError(
+        return Err(SynchronizeNpmRevDependenciesWithNixError::NpmShowError(
             npm_package.clone(),
             format!("No versions returned for npm show"),
         ));
@@ -254,7 +298,7 @@ fn get_version(
         }
     }
 
-    Err(SynchronizeNpmGitDependenciesWithNixError::NpmShowError(
+    Err(SynchronizeNpmRevDependenciesWithNixError::NpmShowError(
         npm_package.clone(),
         format!("No version found for the revision {rev}"),
     ))

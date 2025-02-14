@@ -1,6 +1,6 @@
 {
 	"author": "",
-	"dependencies": {
+	"devDependencies": {
 		"@darksoil-studio/file-storage-zome": "^0.400.0-rev.*"
 	},
 	"description": "",

@@ -540,7 +540,6 @@ mod tests {
             "github:darksoil-studio/profiles-zome".into(),
             Some("main-0.4".into()),
             "@darksoil-studio/profiles-zome".into(),
-            PathBuf::from("ui"),
             None,
             Some("package1".into()),
             Some("profiles-context".into()),
@@ -557,7 +556,7 @@ mod tests {
             r#"{
   "name": "package1",
   "dependencies": {
-    "@darksoil-studio/profiles-zome": "github:darksoil-studio/profiles-zome#main-0.4&path:ui"
+    "@darksoil-studio/profiles-zome": "*-rev.*"
   }
 }"#
         );
@@ -706,7 +705,6 @@ export class App {
             "github:darksoil-studio/profiles-zome".into(),
             Some("main-0.3".into()),
             "@darksoil-studio/profiles-zome".into(),
-            PathBuf::from("ui"),
             None,
             None,
             Some("profiles-context".into()),
@@ -723,7 +721,7 @@ export class App {
             r#"{
   "name": "package1",
   "dependencies": {
-    "@darksoil-studio/profiles-zome": "github:darksoil-studio/profiles-zome#main-0.3&path:ui"
+    "@darksoil-studio/profiles-zome": "*-rev.*"
   }
 }"#
         );
