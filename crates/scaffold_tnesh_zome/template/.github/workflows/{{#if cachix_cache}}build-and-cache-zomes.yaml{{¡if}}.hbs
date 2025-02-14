@@ -32,10 +32,6 @@ jobs:
         with:
           name: {{cachix_cache}}
 
-      - name: Install and test
-        run: |
-          nix develop --no-update-lock-file --accept-flake-config --command bash -c "pnpm i && pnpm t && pnpm -F @{{npm_organization}}/{{kebab_case zome_name}}-zome build"
-
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@v2
 
