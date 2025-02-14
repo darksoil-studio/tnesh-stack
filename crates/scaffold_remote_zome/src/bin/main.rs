@@ -153,8 +153,6 @@ These are the steps that will be taken:
 
     // Run nix flake update
 
-    // Run nix develop -c bash "pnpm install"
-
     println!(
         "{}",
         format!("Successfully scaffolded zome {}", args.module_name.bold()).green()
@@ -164,7 +162,9 @@ These are the steps that will be taken:
     println!("");
     Command::new("nix").args(["flake", "update"]).output()?;
 
-    synchronize_npm_rev_dependencies_with_nix()?;
+    // Run nix develop -c bash "pnpm install"
+
+    synchronize_npm_rev_dependencies_with_nix(None)?;
 
     Ok(())
 }

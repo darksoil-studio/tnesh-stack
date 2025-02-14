@@ -1,7 +1,7 @@
 use anyhow::Result;
 use colored::Colorize;
 use ignore::Walk;
-use npm_scaffolding_utils::guess_or_choose_package_manager;
+use npm_scaffolding_utils::{guess_or_choose_package_manager, PackageManager};
 use parse_flake_lock::{FlakeLock, FlakeLockParseError, Node};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -70,6 +70,7 @@ fn find_flake_lock() -> Result<Option<PathBuf>, SynchronizeNpmRevDependenciesWit
 }
 
 pub fn synchronize_npm_rev_dependencies_with_nix(
+    package_manager: Option<PackageManager>,
 ) -> Result<(), SynchronizeNpmRevDependenciesWithNixError> {
     // Return silently if no "flake.lock" file exists
     let Some(flake_lock) = find_flake_lock()? else {
@@ -117,14 +118,17 @@ pub fn synchronize_npm_rev_dependencies_with_nix(
     }
 
     let file_tree = file_tree_utils::load_directory_into_memory(project_root)?;
-    let package_manager = guess_or_choose_package_manager(&file_tree)?
-        .to_string()
-        .to_lowercase();
+    let package_manager = match package_manager {
+        Some(p) => p,
+        None => guess_or_choose_package_manager(&file_tree)?,
+    };
+
+    let package_manager_str = package_manager.to_string().to_lowercase();
 
     if replaced_some_dep {
         println!("");
-        println!("Running {package_manager} install...");
-        Command::new(package_manager)
+        println!("Running {package_manager_str} install...");
+        Command::new(package_manager_str)
             .arg("install")
             .current_dir(project_root)
             .stdout(Stdio::inherit())

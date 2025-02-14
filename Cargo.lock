@@ -2588,7 +2588,7 @@ dependencies = [
  "file_tree_utils",
  "ignore",
  "regex",
- "rnix",
+ "rnix 0.11.0",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -3414,6 +3414,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rnix"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6f15e00b0ab43abd70d50b6f8cd021290028f9b7fdd7cdfa6c35997173bc1ba9"
+dependencies = [
+ "rowan",
+]
+
+[[package]]
 name = "rowan"
 version = "0.15.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4093,6 +4102,7 @@ name = "sync_npm_rev_dependencies_with_nix"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "clap 4.5.29",
  "colored",
  "file_tree_utils",
  "ignore",
@@ -4196,7 +4206,7 @@ dependencies = [
  "handlebars",
  "ignore",
  "regex",
- "rnix",
+ "rnix 0.12.0",
  "serde",
  "serde_json",
  "thiserror 1.0.69",

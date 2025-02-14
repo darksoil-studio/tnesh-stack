@@ -282,6 +282,18 @@ impl ToString for PackageManager {
   }
 }
 
+impl TryFrom<String> for PackageManager {
+    type Error = String;
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.as_str() {
+            "npm" => Ok(PackageManager::Npm),
+            "pnpm" => Ok(PackageManager::Pnpm),
+            "yarn" => Ok(PackageManager::Yarn),
+            _ => Err(String::from("Unrecognized package manager"))
+        }
+    }
+}
+
 impl PackageManager {
 	pub fn all_package_managers() -> Vec<PackageManager> {
 		vec![PackageManager::Npm, PackageManager::Pnpm, PackageManager::Yarn]

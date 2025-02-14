@@ -226,7 +226,7 @@
           paths = [ pkgs.pnpm ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
-            wrapProgram $out/bin/pnpm --run ${self'.packages.sync-npm-rev-dependencies-with-nix}/bin/sync-npm-rev-dependencies-with-nix
+            wrapProgram $out/bin/pnpm --run "${self'.packages.sync-npm-rev-dependencies-with-nix}/bin/sync-npm-rev-dependencies-with-nix --package-manager pnpm"
           '';
         };
 

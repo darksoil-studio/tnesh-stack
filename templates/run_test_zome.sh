@@ -34,6 +34,8 @@ hc-scaffold link-type --zome posts_integrity agent:creator post --delete false -
 
 git add .
 
+nix flake lock
+
 pnpm i
 
 pnpm -F @darksoil-studio/posts format

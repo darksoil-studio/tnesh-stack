@@ -37,6 +37,8 @@ git add .
 
 nix run github:darksoil-studio/profiles-zome/main-0.4#scaffold --refresh -- --ci
 
+nix flake lock
+
 pnpm i
 
 pnpm -F ui format

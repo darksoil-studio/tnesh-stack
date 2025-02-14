@@ -21,6 +21,7 @@ serde_json = {version ="1", features = ["std", "preserve_order"]}
 serde = "1"
 regex = "1"
 thiserror = "1.0.58"
+clap = { version = "4.5.4", features = ["derive"] }
 colored = "2.1.0"
 npm_scaffolding_utils = { path = "../npm_scaffolding_utils" }
 file_tree_utils = { path = "../file_tree_utils" }
