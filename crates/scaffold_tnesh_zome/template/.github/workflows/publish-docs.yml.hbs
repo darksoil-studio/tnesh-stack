@@ -1,7 +1,7 @@
 name: Publish docs
 on:
   push:
-    branches: [ main, main-0.4 ]
+    branches: [ main, 'main-**' ]
 permissions: 
   contents: write
 jobs:
@@ -15,7 +15,7 @@ jobs:
       - uses: cachix/install-nix-action@v27
         with:
           github_access_token: $\{{ secrets.GITHUB_TOKEN }}
-          nix_path: nixpkgs=channel:nixos-24.05
+          nix_path: nixpkgs=channel:nixos-24.11
 
       - uses: cachix/cachix-action@v15
         with:

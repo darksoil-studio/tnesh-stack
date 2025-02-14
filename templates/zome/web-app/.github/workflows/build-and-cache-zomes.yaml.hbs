@@ -1,9 +1,9 @@
 name: "Build and cache zomes"
 on:
   push: 
-    branches: [ main, main-0.4 ]
+    branches: [ main, 'main-**' ]
   pull_request: 
-    branches: [ main, main-0.4 ]
+    branches: [ main, 'main-**' ]
 
 jobs:
   build-and-cache-zomes:
@@ -18,7 +18,7 @@ jobs:
       - uses: cachix/install-nix-action@v27
         with:
           github_access_token: $\{{ secrets.GITHUB_TOKEN }}
-          nix_path: nixpkgs=channel:nixos-24.05
+          nix_path: nixpkgs=channel:nixos-24.11
 
       - uses: cachix/cachix-action@v15
         with:
