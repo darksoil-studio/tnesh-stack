@@ -3,12 +3,12 @@ on:
   # Trigger the workflow on push or pull request,
   # but only for the main branch
   push: 
-    branches: [ main, develop ]
+    branches: [ main, develop, 'main-**' ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'main-**' ]
 
 jobs:
-  test-and-build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,7 +16,7 @@ jobs:
       - uses: cachix/install-nix-action@v27
         with:
           github_access_token: $\{{ secrets.GITHUB_TOKEN }}
-          nix_path: nixpkgs=channel:nixos-24.05
+          nix_path: nixpkgs=channel:nixos-24.11
 
       - uses: cachix/cachix-action@v15
         with:

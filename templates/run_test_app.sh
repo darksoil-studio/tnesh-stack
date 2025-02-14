@@ -15,7 +15,6 @@ cd /tmp/forum-lit-open-dev
 nix develop --no-update-lock-file --accept-flake-config --override-input tnesh-stack "path:$DIR" --command bash -c "
 set -e
 
-cat package.json | nix run nixpkgs#jq -- 'del(.hcScaffold)' > package-tmp.json && mv package-tmp.json package.json
 hc-scaffold dna forum 
 
 hc-scaffold zome posts --integrity dnas/forum/zomes/integrity/ --coordinator dnas/forum/zomes/coordinator/
@@ -36,7 +35,9 @@ hc-scaffold link-type agent:creator post --delete false --bidirectional false
 
 git add .
 
-nix run github:darksoil-studio/profiles-zome/main-0.3#scaffold --refresh -- --ci
+nix run github:darksoil-studio/profiles-zome/main-0.4#scaffold --refresh -- --ci
+
+nix flake lock
 
 pnpm i
 

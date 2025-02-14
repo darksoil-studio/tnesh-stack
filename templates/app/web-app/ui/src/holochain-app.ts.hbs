@@ -15,7 +15,6 @@ import '@tnesh-stack/elements/dist/elements/app-client-context.js';
 import '@darksoil-studio/profiles-zome/dist/elements/profile-prompt.js';
 import '@darksoil-studio/profiles-zome/dist/elements/my-profile.js';
 
-import { rootRouterContext } from './context.js';
 import { appStyles } from './app-styles.js';
 import './home-page.js';
 
@@ -28,7 +27,6 @@ export class HolochainApp extends SignalWatcher(LitElement) {
 
   _client!: AppClient;
 
-  @provide({ context: rootRouterContext })
   router = new Router(this, [
     {
       path: "/",
@@ -63,7 +61,7 @@ export class HolochainApp extends SignalWatcher(LitElement) {
   renderMyProfilePage() {
     return html`
       <div class="column fill">
-        <div class="row top-bar">
+        <div class="row top-bar" style="gap: 8px">
           <sl-icon-button
             style="color: black"
             .src=${wrapPathInSvg(mdiArrowLeft)}

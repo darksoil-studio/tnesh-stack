@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, html, css } from 'lit';
 import { state, property, customElement } from 'lit/decorators.js';
 import { EntryHash, Record, ActionHash } from '@holochain/client';
 import { EntryRecord } from '@tnesh-stack/utils';
@@ -46,7 +46,7 @@ export class {{pascal_case entry_type.name}}Summary extends SignalWatcher(LitEle
 
   renderSummary(entryRecord: EntryRecord<{{pascal_case entry_type.name}}>) {
     return html`
-      <div class="column" style="gap: 16px;">
+      <div class="column" style="gap: 16px; flex: 1;">
 
 	{{#each entry_type.fields}}
           {{#if widget}}	  
@@ -97,5 +97,9 @@ export class {{pascal_case entry_type.name}}Summary extends SignalWatcher(LitEle
   }
 
   
-  static styles = [sharedStyles];
+  static styles = [sharedStyles, css`
+    :host {
+      display: flex;
+    }
+  `];
 }

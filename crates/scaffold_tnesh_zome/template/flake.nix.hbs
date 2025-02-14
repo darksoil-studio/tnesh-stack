@@ -2,15 +2,15 @@
   description = "Template for Holochain app development";
 
   inputs = {
-    holonix.url = "github:holochain/holonix/main-0.3";
+    holonix.url = "github:holochain/holonix/main-0.4";
 
     nixpkgs.follows = "holonix/nixpkgs";
     flake-parts.follows = "holonix/flake-parts";
 
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.3";
-    playground.url = "github:darksoil-studio/holochain-playground/main-0.3";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
+    playground.url = "github:darksoil-studio/holochain-playground/main-0.4";
 
-    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.3";
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.4";
   };
 
   nixConfig = {
@@ -53,10 +53,12 @@
               ];
 
               packages = [
+                inputs'.tnesh-stack.packages.holochain
                 inputs'.tnesh-stack.packages.hc-scaffold-zome
                 inputs'.playground.packages.hc-playground
               ];
             };
+            devShells.npm-ci = inputs'.tnesh-stack.devShells.synchronized-pnpm;
 
             packages.scaffold = pkgs.symlinkJoin {
               name = "scaffold-remote-zome";
@@ -69,8 +71,7 @@
                     --coordinator-zome-name {{snake_case zome_name}} \
                     --remote-zome-git-url github:{{github_organization}}/{{kebab_case zome_name}}-zome \
                     --remote-npm-package-name @{{npm_organization}}/{{kebab_case zome_name}}-zome \
-                    --remote-npm-package-path ui \
-                    --remote-zome-git-branch main-0.3 \
+                    --remote-zome-git-branch main-0.4 \
                     --context-element {{kebab_case zome_name}}-context \
                     --context-element-import @{{npm_organization}}/{{kebab_case zome_name}}-zome/dist/elements/{{kebab_case zome_name}}-context.js" 
               '';

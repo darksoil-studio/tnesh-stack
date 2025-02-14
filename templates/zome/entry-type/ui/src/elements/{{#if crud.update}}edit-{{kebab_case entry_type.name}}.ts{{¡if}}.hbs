@@ -131,7 +131,6 @@ export class Edit{{pascal_case entry_type.name}} extends SignalWatcher(LitElemen
   renderEditForm(currentRecord: EntryRecord<{{pascal_case entry_type.name}}>) {
     return html`
       <sl-card>
-        <span slot="header">${msg("Edit {{title_case entry_type.name}}")}</span>
 
         <form
           id="form"
@@ -139,6 +138,8 @@ export class Edit{{pascal_case entry_type.name}} extends SignalWatcher(LitElemen
           style="flex: 1; gap: 16px;"
           ${onSubmit(fields => this.update{{pascal_case entry_type.name}}(currentRecord, fields))}
         >  
+        <span class="title">${msg("Edit {{title_case entry_type.name}}")}</span>
+
         {{#each entry_type.fields}}
           {{#if widget}}
             {{#if (not (eq cardinality "vector") )}}

@@ -6,7 +6,7 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "@darksoil-studio/profiles-zome": "github:darksoil-studio/profiles-zome#main-0.3&path:ui"
+    "@darksoil-studio/profiles-zome": "github:darksoil-studio/profiles-zome#main-0.4&path:ui"
   },
   "exports": {
     ".": "./index.js"

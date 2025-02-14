@@ -1,12 +1,13 @@
 {
   "name": "@tnesh-stack/elements",
-  "version": "0.300.6",
+  "version": "0.400.1",
   "description": "Common utilities and elements to build Holochain web applications",
   "author": "guillem.cordoba@gmail.com",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
+    "src",
     "dist"
   ],
   "repository": {
@@ -25,7 +26,8 @@
   },
   "dependencies": {
     "@holo-host/identicon": "^0.1.0",
-    "@holochain/client": "^0.17.1",
+    "@holochain/client": "^0.18.0",
+    "@tnesh-stack/utils": "workspace:^0.400.0",
     "@lit/localize": "^0.12.0",
     "@lit/context": "^1.0.0",
     "@lit-labs/router": "^0.1.3",

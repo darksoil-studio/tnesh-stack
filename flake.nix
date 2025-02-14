@@ -1,9 +1,7 @@
 {
   inputs = {
+    holonix.url = "github:holochain/holonix/main-0.4";
     nixpkgs.follows = "holonix/nixpkgs";
-    pnpmnixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
-
-    holonix.url = "github:holochain/holonix/main-0.3";
     rust-overlay.follows = "holonix/rust-overlay";
     crane.follows = "holonix/crane";
   };
@@ -105,7 +103,7 @@
         ./crates/scaffold_remote_zome/default.nix
         ./crates/compare_dnas_integrity/default.nix
         ./crates/zome_wasm_hash/default.nix
-        ./crates/sync_npm_git_dependencies_with_nix/default.nix
+        ./crates/sync_npm_rev_dependencies_with_nix/default.nix
         ./crates/dna_hash/default.nix
         ./crates/scaffold_tnesh_zome/default.nix
         ./nix/builders-option.nix
@@ -115,26 +113,10 @@
       systems = builtins.attrNames inputs.holonix.devShells;
 
       perSystem = { inputs', self', config, pkgs, system, lib, ... }: rec {
-        dependencies.holochain.buildInputs = (with pkgs; [ perl openssl ])
-          ++ (lib.optionals pkgs.stdenv.isLinux [ pkgs.pkg-config pkgs.go ])
-          ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin [
-            pkgs.libiconv
-
-            pkgs.darwin.apple_sdk.frameworks.AppKit
-            pkgs.darwin.apple_sdk.frameworks.WebKit
-            (if pkgs.system == "x86_64-darwin" then
-              (pkgs.darwin.apple_sdk_11_0.stdenv.mkDerivation {
-                name = "go";
-                nativeBuildInputs = with pkgs; [ makeBinaryWrapper go ];
-                dontBuild = true;
-                dontUnpack = true;
-                installPhase = ''
-                  makeWrapper ${pkgs.go}/bin/go $out/bin/go
-                '';
-              })
-            else
-              pkgs.go)
-          ]);
+        dependencies.holochain.buildInputs = (with pkgs; [ perl openssl go ])
+          ++ (pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.pkg-config ])
+          ++ (pkgs.lib.optionals (system == "x86_64-darwin")
+            [ pkgs.apple-sdk_10_15 ]);
         builders = {
           rustZome = { crateCargoToml, workspacePath, cargoArtifacts ? null
             , matchingZomeHash ? null, meta ? { }, zomeEnvironmentVars ? { } }:
@@ -142,7 +124,8 @@
               deterministicCraneLib = let
                 rustToolchain =
                   inputs.holonix.outputs.packages."x86_64-linux".rust;
-              in (inputs.crane.mkLib inputs.nixpkgs.outputs.legacyPackages.${
+              in (inputs.crane.mkLib
+                inputs.holonix.inputs.nixpkgs.outputs.legacyPackages.${
                   "x86_64-linux"
                 }).overrideToolchain rustToolchain;
 
@@ -177,6 +160,11 @@
               inherit dnas happManifest meta;
               holochain = inputs'.holonix.packages.holochain;
             };
+          webhapp = { name, ui, happ, meta ? { } }:
+            pkgs.callPackage ./nix/webhapp.nix {
+              inherit name happ ui meta;
+              holochain = inputs'.holonix.packages.holochain;
+            };
         };
 
         devShells.holochainDev = pkgs.mkShell {
@@ -204,7 +192,7 @@
             };
             cargoArtifacts = craneLib.buildDepsOnly (commonArgs // {
               pname = "zome";
-              version = "for-holochain-0.3.2";
+              version = "for-holochain-0.4.x";
             });
 
           in cargoArtifacts;
@@ -224,58 +212,38 @@
               # CARGO_PROFILE = "release";
               CARGO_PROFILE = "release";
               pname = "sweettest";
-              version = "for-holochain-0.3.2";
+              version = "for-holochain-0.4.x";
             };
           in cargoArtifacts;
         };
 
+        packages.holochain = inputs'.holonix.packages.holochain.override {
+          cargoExtraArgs = " --features unstable-functions,unstable-sharding";
+        };
+
         packages.synchronized-pnpm = pkgs.symlinkJoin {
           name = "synchronized-pnpm";
-          paths = [ inputs'.pnpmnixpkgs.legacyPackages.pnpm ];
+          paths = [ pkgs.pnpm ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
-            wrapProgram $out/bin/pnpm  --run ${self'.packages.sync-npm-git-dependencies-with-nix}/bin/sync-npm-git-dependencies-with-nix
+            wrapProgram $out/bin/pnpm --run "${self'.packages.sync-npm-rev-dependencies-with-nix}/bin/sync-npm-rev-dependencies-with-nix --package-manager pnpm"
+          '';
+        };
+
+        devShells.synchronized-npm-rev-dependencies-with-nix = pkgs.mkShell {
+          packages = [
+            self'.packages.sync-npm-rev-dependencies-with-nix
+            packages.npm-rev-version
+          ];
+
+          shellHook = ''
+            sync-npm-rev-dependencies-with-nix
           '';
         };
 
         devShells.synchronized-pnpm = pkgs.mkShell {
-          packages = let
-            npm-warning = pkgs.writeShellScriptBin "echo-npm-warning" ''
-              							echo "
-              -----------------
-
-              WARNING: this repository is not managed with npm, but pnpm.
-
-              Don't worry! They are really similar to each other. Here are some helpful reminders:
-                            
-              If you are trying to run \`npm install\`, you can run \`pnpm install\`
-              If you are trying to run \`npm install some_dependency\`, you can run \`pnpm add some_dependency\`
-              If you are trying to run a script like \`npm run build\`, you can run \`pnpm build\`
-              If you are trying to run a script for a certain workspace like \`npm run build -w ui\`, you can run \`pnpm -F ui build\`
-
-              The npm command that you just ran will continue now, but it is recommended that you do all commands in this repository with pnpm.
-
-              -----------------
-
-              "
-            '';
-            npm-with-warning = pkgs.symlinkJoin {
-              name = "npm";
-              paths = [ pkgs.nodejs_20 ];
-              buildInputs = [ pkgs.makeWrapper ];
-              postBuild =
-                "    wrapProgram $out/bin/npm \\\n		  --run ${npm-warning}/bin/echo-npm-warning\n  ";
-            };
-          in [
-            npm-with-warning
-            pkgs.nodejs_20
-            packages.synchronized-pnpm
-            self'.packages.sync-npm-git-dependencies-with-nix
-          ];
-
-          shellHook = ''
-            sync-npm-git-dependencies-with-nix
-          '';
+          inputsFrom = [ devShells.synchronized-npm-rev-dependencies-with-nix ];
+          packages = [ packages.synchronized-pnpm ];
         };
 
         packages.hc-scaffold-happ = let
@@ -285,7 +253,7 @@
           };
         in pkgs.writeShellScriptBin "hc-scaffold" ''
           if [[ "$@" == *"web-app"* ]]; then
-            ${hcScaffold}/bin/hc-scaffold "$@" --package-manager pnpm --setup-nix -F  
+            ${hcScaffold}/bin/hc-scaffold "$@" --setup-nix -F  
           elif [[ "$@" == *"zome"* ]]; then
             ${hcScaffold}/bin/hc-scaffold "$@"
             git add Cargo.lock
@@ -298,6 +266,14 @@
           inherit pkgs system;
           customTemplatePath = ./templates/zome;
         };
+
+        packages.npm-rev-version =
+          (pkgs.writeShellScriptBin "npm-rev-version" ''
+            commit=$(${pkgs.git}/bin/git rev-parse HEAD)
+            version=$(cat $1 | ${pkgs.jq}/bin/jq '.version' -r)
+            new_version=$version-rev.$commit
+            ${pkgs.nodejs_20}/bin/npm version $new_version
+          '');
       };
     };
 }

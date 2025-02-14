@@ -294,6 +294,18 @@
               "type": {
                 "text": "HTMLImageElement"
               }
+            },
+            {
+              "name": "maxWidth",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "maxHeight",
+              "type": {
+                "text": "number"
+              }
             }
           ]
         }
@@ -952,9 +964,9 @@
               "kind": "field",
               "name": "shape",
               "type": {
-                "text": "\"square\" | \"circle\""
+                "text": "'square' | 'circle'"
               },
-              "default": "\"circle\"",
+              "default": "'circle'",
               "description": "Shape of the identicon."
             },
             {
@@ -1052,7 +1064,7 @@
               "type": {
                 "text": "string"
               },
-              "default": "\"avatar\""
+              "default": "'avatar'"
             },
             {
               "kind": "field",
@@ -1066,9 +1078,9 @@
               "kind": "field",
               "name": "shape",
               "type": {
-                "text": "\"circle\" | \"square\" | \"rounded\""
+                "text": "'circle' | 'square' | 'rounded'"
               },
-              "default": "\"circle\""
+              "default": "'circle'"
             },
             {
               "kind": "field",
@@ -1091,6 +1103,22 @@
               "type": {
                 "text": "string | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "avatarWidth",
+              "type": {
+                "text": "number"
+              },
+              "default": "300"
+            },
+            {
+              "kind": "field",
+              "name": "avatarHeight",
+              "type": {
+                "text": "number"
+              },
+              "default": "300"
             },
             {
               "kind": "field",

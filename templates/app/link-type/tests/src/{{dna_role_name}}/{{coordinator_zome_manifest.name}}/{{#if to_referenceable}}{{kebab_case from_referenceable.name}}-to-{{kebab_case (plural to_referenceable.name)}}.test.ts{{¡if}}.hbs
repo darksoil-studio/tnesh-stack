@@ -78,7 +78,7 @@ test('link a {{pascal_case from_referenceable.name}} to a {{pascal_case to_refer
 {{/if}}
 
 {{#if delete}}
-    await alice.store.client.remove{{pascal_case to_referenceable.name}}For{{pascal_case from_referenceable.name}}(baseAddress, targetAddress);
+    await alice.store.client.delete{{pascal_case to_referenceable.name}}For{{pascal_case from_referenceable.name}}(baseAddress, targetAddress);
     
     // Wait for the created entry to be propagated to the other node.
     await dhtSync(
