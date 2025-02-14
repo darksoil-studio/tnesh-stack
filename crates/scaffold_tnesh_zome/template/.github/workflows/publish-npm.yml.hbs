@@ -1,12 +1,10 @@
 name: "Publish npm package"
 on:
   push: 
-    branches: [ main, main-0.4 ]
-  pull_request: 
-    branches: [ main, main-0.4 ]
+    branches: [ main, 'main-**' ]
 
 jobs:
-  build-and-cache-zomes:
+  publish-npm-package:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
