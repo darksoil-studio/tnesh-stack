@@ -583,6 +583,7 @@ coordinator:
     dependencies:
     - name: profiles_integrity
     dylib: null
+lineage: []
 "#
         );
 
@@ -703,7 +704,7 @@ export class App {
             Some("profiles_integrity".into()),
             Some("profiles".into()),
             "github:darksoil-studio/profiles-zome".into(),
-            Some("main-0.3".into()),
+            Some("main-0.4".into()),
             "@darksoil-studio/profiles-zome".into(),
             None,
             None,
@@ -748,6 +749,7 @@ coordinator:
     dependencies:
     - name: profiles_integrity
     dylib: null
+lineage: []
 "#
         );
 
@@ -757,11 +759,11 @@ coordinator:
   description = "Template for Holochain app development";
   
   inputs = {
-    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.3";
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.4";
     nixpkgs.follows = "holonix/nixpkgs";
 
     holonix.url = "github:holochain/holonix";
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.3";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
   };
 
   outputs = inputs @ { ... }:
@@ -869,6 +871,7 @@ integrity:
   zomes: []
 coordinator:
   zomes: []
+lineage: []
 "#
         )
     }
@@ -882,7 +885,7 @@ coordinator:
     nixpkgs.follows = "holonix/nixpkgs";
 
     holonix.url = "github:holochain/holonix";
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4;
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
   };
 
   outputs = inputs @ { ... }:
