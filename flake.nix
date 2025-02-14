@@ -103,7 +103,7 @@
         ./crates/scaffold_remote_zome/default.nix
         ./crates/compare_dnas_integrity/default.nix
         ./crates/zome_wasm_hash/default.nix
-        ./crates/sync_npm_git_dependencies_with_nix/default.nix
+        ./crates/sync_npm_rev_dependencies_with_nix/default.nix
         ./crates/dna_hash/default.nix
         ./crates/scaffold_tnesh_zome/default.nix
         ./nix/builders-option.nix
@@ -175,8 +175,9 @@
           inputsFrom = [
             devShells.holochainDev
             inputs'.holonix.devShells.default
-            devShells.synchronized-pnpm
+            devShells.synchronized-npm-rev-dependencies-with-nix
           ];
+          packages = [ pkgs.pnpm ];
         };
 
         packages = {
@@ -226,47 +227,15 @@
           paths = [ pkgs.pnpm ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
-            wrapProgram $out/bin/pnpm --run ${self'.packages.sync-npm-git-dependencies-with-nix}/bin/sync-npm-git-dependencies-with-nix
+            wrapProgram $out/bin/pnpm --run ${self'.packages.sync-npm-rev-dependencies-with-nix}/bin/sync-npm-rev-dependencies-with-nix
           '';
         };
 
-        devShells.synchronized-pnpm = pkgs.mkShell {
-          packages = let
-            npm-warning = pkgs.writeShellScriptBin "echo-npm-warning" ''
-              							echo "
-              -----------------
-
-              WARNING: this repository is not managed with npm, but pnpm.
-
-              Don't worry! They are really similar to each other. Here are some helpful reminders:
-                            
-              If you are trying to run \`npm install\`, you can run \`pnpm install\`
-              If you are trying to run \`npm install some_dependency\`, you can run \`pnpm add some_dependency\`
-              If you are trying to run a script like \`npm run build\`, you can run \`pnpm build\`
-              If you are trying to run a script for a certain workspace like \`npm run build -w ui\`, you can run \`pnpm -F ui build\`
-
-              The npm command that you just ran will continue now, but it is recommended that you do all commands in this repository with pnpm.
-
-              -----------------
-
-              "
-            '';
-            npm-with-warning = pkgs.symlinkJoin {
-              name = "npm";
-              paths = [ pkgs.nodejs_20 ];
-              buildInputs = [ pkgs.makeWrapper ];
-              postBuild =
-                "    wrapProgram $out/bin/npm \\\n		  --run ${npm-warning}/bin/echo-npm-warning\n  ";
-            };
-          in [
-            npm-with-warning
-            pkgs.nodejs_20
-            packages.synchronized-pnpm
-            self'.packages.sync-npm-git-dependencies-with-nix
-          ];
+        devShells.synchronized-npm-rev-dependencies-with-nix = pkgs.mkShell {
+          packages = [ self'.packages.sync-npm-rev-dependencies-with-nix ];
 
           shellHook = ''
-            sync-npm-git-dependencies-with-nix
+            sync-npm-rev-dependencies-with-nix
           '';
         };
 
@@ -277,7 +246,7 @@
           };
         in pkgs.writeShellScriptBin "hc-scaffold" ''
           if [[ "$@" == *"web-app"* ]]; then
-            ${hcScaffold}/bin/hc-scaffold "$@" --package-manager pnpm --setup-nix -F  
+            ${hcScaffold}/bin/hc-scaffold "$@" --setup-nix -F  
           elif [[ "$@" == *"zome"* ]]; then
             ${hcScaffold}/bin/hc-scaffold "$@"
             git add Cargo.lock

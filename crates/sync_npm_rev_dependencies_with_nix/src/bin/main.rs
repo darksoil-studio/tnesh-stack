@@ -11,7 +11,7 @@ fn main() -> ExitCode {
 }
 
 fn internal_main() -> Result<()> {
-    sync_npm_git_dependencies_with_nix::synchronize_npm_git_dependencies_with_nix()?;
+    sync_npm_rev_dependencies_with_nix::synchronize_npm_rev_dependencies_with_nix()?;
 
     Ok(())
 }

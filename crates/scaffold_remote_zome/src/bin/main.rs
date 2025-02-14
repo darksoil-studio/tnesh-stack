@@ -9,7 +9,7 @@ use std::{
     path::PathBuf,
     process::{Command, ExitCode},
 };
-use sync_npm_git_dependencies_with_nix::synchronize_npm_git_dependencies_with_nix;
+use sync_npm_rev_dependencies_with_nix::synchronize_npm_rev_dependencies_with_nix;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -169,7 +169,7 @@ These are the steps that will be taken:
     println!("");
     Command::new("nix").args(["flake", "update"]).output()?;
 
-    synchronize_npm_git_dependencies_with_nix()?;
+    synchronize_npm_rev_dependencies_with_nix()?;
 
     Ok(())
 }
