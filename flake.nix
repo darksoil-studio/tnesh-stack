@@ -175,9 +175,8 @@
           inputsFrom = [
             devShells.holochainDev
             inputs'.holonix.devShells.default
-            devShells.synchronized-npm-rev-dependencies-with-nix
+            devShells.synchronized-pnpm
           ];
-          packages = [ pkgs.pnpm ];
         };
 
         packages = {
@@ -232,11 +231,21 @@
         };
 
         devShells.synchronized-npm-rev-dependencies-with-nix = pkgs.mkShell {
-          packages = [ self'.packages.sync-npm-rev-dependencies-with-nix ];
+          packages = [
+            self'.packages.sync-npm-rev-dependencies-with-nix
+            packages.npm-rev-version
+          ];
 
           shellHook = ''
             sync-npm-rev-dependencies-with-nix
           '';
+        };
+
+        devShells.synchronized-pnpm = pkgs.mkShell {
+          inputsFrom = [
+            devShells.synchronized-npm-rev-dependencies-with-nix
+            packages.synchronized-pnpm
+          ];
         };
 
         packages.hc-scaffold-happ = let
@@ -259,6 +268,14 @@
           inherit pkgs system;
           customTemplatePath = ./templates/zome;
         };
+
+        packages.npm-rev-version =
+          (pkgs.writeShellScriptBin "npm-rev-version" ''
+            commit=$(${pkgs.git}/bin/git rev-parse HEAD)
+            version=$(cat $1 | ${pkgs.jq}/bin/jq '.version' -r)
+            new_version=$version-rev.$commit
+            ${pkgs.nodejs_20}/bin/npm version $new_version
+          '');
       };
     };
 }

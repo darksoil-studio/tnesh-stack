@@ -41,10 +41,6 @@ struct Args {
     #[arg(long)]
     remote_npm_package_name: String,
 
-    /// Internal path of the UI package
-    #[arg(long)]
-    remote_npm_package_path: PathBuf,
-
     /// DNA of the local repository in which the zome should be scaffolded
     #[arg(long)]
     local_dna_to_add_the_zome_to: Option<String>,
@@ -145,7 +141,6 @@ These are the steps that will be taken:
         args.remote_zome_git_url,
         args.remote_zome_git_branch,
         args.remote_npm_package_name,
-        args.remote_npm_package_path,
         args.local_dna_to_add_the_zome_to,
         args.local_npm_package_to_add_the_ui_to,
         args.context_element,

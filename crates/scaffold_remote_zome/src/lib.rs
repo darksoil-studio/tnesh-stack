@@ -66,7 +66,6 @@ pub fn scaffold_remote_zome(
     remote_zome_git_url: String,
     remote_zome_git_branch: Option<String>,
     remote_npm_package_name: String,
-    remote_npm_package_path: PathBuf,
     local_dna_to_add_the_zome_to: Option<String>,
     local_npm_package_to_add_the_ui_to: Option<String>,
     context_element: Option<String>,
@@ -91,13 +90,7 @@ pub fn scaffold_remote_zome(
         coordinator_zome_name,
     )?;
 
-    let npm_dependency_source = format!(
-        "{remote_zome_git_url}{}&path:{}",
-        remote_zome_git_branch
-            .map(|b| format!("#{b}"))
-            .unwrap_or_default(),
-        remote_npm_package_path.to_str().unwrap()
-    );
+    let npm_dependency_source = format!("*-rev.*");
 
     let (mut file_tree , package_json)= add_npm_dependency(
         file_tree, 
