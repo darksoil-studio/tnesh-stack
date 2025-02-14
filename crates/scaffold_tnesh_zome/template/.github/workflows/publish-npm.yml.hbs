@@ -30,7 +30,7 @@ jobs:
 
       - name: Install and test
         run: |
-          nix develop --no-update-lock-file --accept-flake-config --command bash -c "pnpm i && cd ui && pnpm build && npm-rev-version package.json"
+          nix develop .#npm-ci --no-update-lock-file --accept-flake-config --command bash -c "pnpm i && cd ui && pnpm build && npm-rev-version package.json"
 
       - uses: JS-DevTools/npm-publish@v3
         with:
