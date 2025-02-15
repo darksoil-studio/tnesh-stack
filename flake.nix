@@ -242,8 +242,15 @@
         };
 
         devShells.synchronized-pnpm = pkgs.mkShell {
-          inputsFrom = [ devShells.synchronized-npm-rev-dependencies-with-nix ];
-          packages = [ packages.synchronized-pnpm ];
+          packages = [
+            packages.synchronized-pnpm
+            self'.packages.sync-npm-rev-dependencies-with-nix
+            packages.npm-rev-version
+          ];
+
+          shellHook = ''
+            sync-npm-rev-dependencies-with-nix --package-manager pnpm
+          '';
         };
 
         packages.hc-scaffold-happ = let
