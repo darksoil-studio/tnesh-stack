@@ -221,12 +221,21 @@
           cargoExtraArgs = " --features unstable-functions,unstable-sharding";
         };
 
-        packages.synchronized-pnpm = pkgs.symlinkJoin {
+        packages.synchronized-pnpm = let
+          pnpm-sync-npm-rev-dependencies-with-nix = pkgs.symlinkJoin {
+            name = "pnpm-sync-npm-rev-dependencies-with-nix";
+            paths = [ self'.packages.sync-npm-rev-dependencies-with-nix ];
+            buildInputs = [ pkgs.makeWrapper ];
+            postBuild = ''
+              wrapProgram $out/bin/sync-npm-rev-dependencies-with-nix --add-flags "--package-manager pnpm"
+            '';
+          };
+        in pkgs.symlinkJoin {
           name = "synchronized-pnpm";
           paths = [ pkgs.pnpm ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
-            wrapProgram $out/bin/pnpm --run "${self'.packages.sync-npm-rev-dependencies-with-nix}/bin/sync-npm-rev-dependencies-with-nix --package-manager pnpm"
+            wrapProgram $out/bin/pnpm --run "${pnpm-sync-npm-rev-dependencies-with-nix}/bin/sync-npm-rev-dependencies-with-nix"
           '';
         };
 

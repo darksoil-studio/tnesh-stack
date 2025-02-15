@@ -39,8 +39,6 @@ nix flake lock
 
 pnpm i
 
-nix run github:darksoil-studio/profiles-zome/main-0.4#scaffold --refresh -- --ci
-
 pnpm -F ui format
 pnpm -F ui lint
 pnpm -F ui build
