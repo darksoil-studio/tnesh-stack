@@ -7,7 +7,7 @@ nix shell --accept-flake-config .#hc-scaffold-happ --command bash -c "
 cd /tmp
 rm -rf forum-lit-open-dev
 
-hc-scaffold web-app forum-lit-open-dev
+hc-scaffold web-app forum-lit-open-dev --package-manager pnpm
 "
 
 cd /tmp/forum-lit-open-dev
