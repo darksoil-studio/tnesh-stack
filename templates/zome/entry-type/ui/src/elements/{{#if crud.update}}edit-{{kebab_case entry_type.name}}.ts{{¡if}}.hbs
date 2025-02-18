@@ -151,22 +151,12 @@ export class Edit{{pascal_case entry_type.name}} extends SignalWatcher(LitElemen
           {{/if}}
         {{/each}}
 
-          <div class="row" style="gap: 8px;">
-            <sl-button
-              @click=${() => this.dispatchEvent(new CustomEvent('edit-canceled', {
-                bubbles: true,
-                composed: true
-              }))}
-              style="flex: 1;"
-            >${msg("Cancel")}</sl-button>
-            <sl-button
-              type="submit"
-              variant="primary"
-              style="flex: 1;"
-              .loading=${this.committing}
-            >${msg("Save")}</sl-button>
-
-          </div>
+          <sl-button
+            type="submit"
+            variant="primary"
+            style="flex: 1;"
+            .loading=${this.committing}
+          >${msg("Save")}</sl-button>
         </form>
       </sl-card>`;
   }
