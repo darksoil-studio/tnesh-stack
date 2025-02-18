@@ -331,6 +331,38 @@ class A {
     }
 
     #[test]
+    fn test_merge_match_scope_simple_with_array_scopes() {
+        let h = Handlebars::new();
+
+        let h = register_merge(h);
+
+        let code = r#"const a = [
+  1,
+];
+"#;
+        let value = json!({"previous_file_content": code});
+        let context = Context::from(value);
+        let template = r#"
+{{#merge previous_file_content}}
+  {{#match_scope "const a = ["}}
+  {{previous_scope_content}}
+  2
+  {{/match_scope}}
+{{/merge}}
+"#;
+
+        assert_eq!(
+            h.render_template_with_context(template, &context).unwrap(),
+            r#"
+const a = [
+  1,
+  2
+];
+"#,
+        );
+    }
+
+    #[test]
     fn test_merge_match_scope() {
         let h = Handlebars::new();
 
