@@ -10,17 +10,17 @@ import './{{dna_role_name}}/{{kebab_case coordinator_zome_manifest.name}}/elemen
     {
       path: "/create-{{kebab_case entry_type.name}}",
       render: () => html`<overlay-page
-          .title=${msg("Create {{title_case entry_type.name}}")}
-          icon="close"
-          @close-requested=${() => this.router.goto('/home/')}
-         >
-           <create-{{kebab_case entry_type.name}}
-            @{{kebab_case entry_type.name}}-created=${(e: CustomEvent) =>
-              this.router.goto(`/{{kebab_case entry_type.name}}/${encodeHashToBase64(e.detail.{{camel_case entry_type.name}}Hash)}`)
-            }
-          >
-          </create-{{kebab_case entry_type.name}}>
-        </overlay-page>`,
+        .title=${msg("Create {{title_case entry_type.name}}")}
+        icon="close"
+        @close-requested=${() => this.router.goto('/home/')}
+      >
+        <create-{{kebab_case entry_type.name}}
+          @{{kebab_case entry_type.name}}-created=${(e: CustomEvent) => {
+            this.router.goto(`/{{kebab_case entry_type.name}}/${encodeHashToBase64(e.detail.{{camel_case entry_type.name}}Hash)}`);
+          }}
+        >
+        </create-{{kebab_case entry_type.name}}>
+      </overlay-page>`,
     },
     {
       path: "/{{kebab_case entry_type.name}}/:{{camel_case entry_type.name}}Hash",
@@ -35,7 +35,7 @@ import './{{dna_role_name}}/{{kebab_case coordinator_zome_manifest.name}}/elemen
             icon="back"
             @close-requested=${() => this.router.goto('/home/')}
           >
-             <{{kebab_case entry_type.name}}-detail
+            <{{kebab_case entry_type.name}}-detail
               .{{camel_case entry_type.name}}Hash=${decodeHashFromBase64(params.{{camel_case entry_type.name}}Hash!)}
               @edit-selected=${() => {
                 this.router.goto(`/{{kebab_case entry_type.name}}/${params.{{camel_case entry_type.name}}Hash}/edit`);
@@ -48,17 +48,17 @@ import './{{dna_role_name}}/{{kebab_case coordinator_zome_manifest.name}}/elemen
     {
       path: "/{{kebab_case entry_type.name}}/:{{camel_case entry_type.name}}Hash/edit",
       render: (params) => html`<overlay-page
-          .title=${msg("Edit {{title_case entry_type.name}}")}
-          icon="close"
-          @close-requested=${() => this.router.goto(`/{{kebab_case entry_type.name}}/${params.{{camel_case entry_type.name}}Hash!}`)}
-         >
-          <edit-{{kebab_case entry_type.name}}
-            .{{camel_case entry_type.name}}Hash=${decodeHashFromBase64(params.{{camel_case entry_type.name}}Hash!)}
-            @{{kebab_case entry_type.name}}-updated=${() => {
-              this.router.goto(`/{{kebab_case entry_type.name}}/${params.{{camel_case entry_type.name}}Hash!}`);
-            }}
-      	  ></edit-{{kebab_case entry_type.name}}>
-        </overlay-page>`,
+        .title=${msg("Edit {{title_case entry_type.name}}")}
+        icon="close"
+        @close-requested=${() => this.router.goto(`/{{kebab_case entry_type.name}}/${params.{{camel_case entry_type.name}}Hash!}`)}
+      >
+        <edit-{{kebab_case entry_type.name}}
+          .{{camel_case entry_type.name}}Hash=${decodeHashFromBase64(params.{{camel_case entry_type.name}}Hash!)}
+          @{{kebab_case entry_type.name}}-updated=${() => {
+            this.router.goto(`/{{kebab_case entry_type.name}}/${params.{{camel_case entry_type.name}}Hash!}`);
+          }}
+        ></edit-{{kebab_case entry_type.name}}>
+      </overlay-page>`,
     },
   {{/match_scope}}
 {{/merge}}
