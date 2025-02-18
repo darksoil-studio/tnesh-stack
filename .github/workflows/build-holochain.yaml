@@ -3,9 +3,9 @@ on:
   # Trigger the workflow on push or pull request,
   # but only for the main branch
   push: 
-    branches: [ main, main-0.4 ]
-  pull_request:
-    branches: [ main, main-0.4 ]
+    branches: [ main, 'main-**' ]
+  pull_request: 
+    branches: [ main, 'main-**' ]
 
 jobs:
   build-holochain:
@@ -21,7 +21,7 @@ jobs:
         uses: cachix/install-nix-action@v27
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-          nix_path: nixpkgs=channel:nixos-24.05
+          nix_path: nixpkgs=channel:nixos-24.11
 
       - uses: cachix/cachix-action@v15
         with:
@@ -36,3 +36,4 @@ jobs:
           CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
           cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#holochain
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#hc-scaffold-happ

@@ -340,7 +340,7 @@ class A {
         let h = build_handlebars();
 
         let code = r#"router = new Router(this, [
-  {
+    {
       path: "/",
       enter: () => {
         // Redirect to "/home/"
@@ -354,19 +354,28 @@ class A {
           @profile-clicked=${() => this.router.goto('/my-profile')}
         ></home-page>`,
     },
-    {
-      path: "/my-profile",
-      render: () => this.renderMyProfilePage(),
-    },
   ]);
+
+  static styles = [
+    css`
+      :host {
+        display: flex;
+        flex: 1;
+      }
+    `,
+    ...appStyles,
+  ];
 "#;
         let value = json!({"previous_file_content": code});
         let context = Context::from(value);
         let template = r#"
 {{#merge previous_file_content}}
   {{#match_scope "router = new Router(this, ["}}
-  {{previous_scope_content}}
-    2
+    {{previous_scope_content}}
+    {
+      path: "/my-profile",
+      render: () => this.renderMyProfilePage(),
+    },
   {{/match_scope}}
 {{/merge}}
 "#;
@@ -375,7 +384,7 @@ class A {
             h.render_template_with_context(template, &context).unwrap(),
             r#"
 router = new Router(this, [
-  {
+    {
       path: "/",
       enter: () => {
         // Redirect to "/home/"
@@ -393,8 +402,17 @@ router = new Router(this, [
       path: "/my-profile",
       render: () => this.renderMyProfilePage(),
     },
-    2
   ]);
+
+  static styles = [
+    css`
+      :host {
+        display: flex;
+        flex: 1;
+      }
+    `,
+    ...appStyles,
+  ];
 "#,
         );
     }
