@@ -32,7 +32,7 @@ import { {{pascal_case entry_type.name}}{{#each entry_type.fields}}{{#if (eq fie
 
 /**
  * @element {{kebab_case entry_type.name}}-detail
- * @fires edit-selected: fired when the user clicks the edit icon button
+ * @fires edit-clicked: fired when the user clicks the edit icon button
  * @fires {{kebab_case entry_type.name}}-deleted: detail will contain { {{camel_case entry_type.name}}Hash }
  */
 @localized()
@@ -78,7 +78,7 @@ export class {{pascal_case entry_type.name}}Detail extends SignalWatcher(LitElem
             <span style="font-size: 18px; flex: 1;">${msg("{{title_case entry_type.name}}")}</span>
 
             {{#if crud.update}}
-            <sl-icon-button .src=${wrapPathInSvg(mdiPencil)} @click=${() => this.dispatchEvent(new CustomEvent("edit-selected", {
+            <sl-icon-button .src=${wrapPathInSvg(mdiPencil)} @click=${() => this.dispatchEvent(new CustomEvent("edit-clicked", {
               bubbles: true,
               composed: true,
             }))}></sl-icon-button>

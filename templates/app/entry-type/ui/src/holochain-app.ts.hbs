@@ -7,6 +7,7 @@ import './{{dna_role_name}}/{{kebab_case coordinator_zome_manifest.name}}/elemen
 {{#merge previous_file_content}}
   {{#match_scope "new Router(this, [" }}
   {{previous_scope_content}}
+
     {
       path: "/create-{{kebab_case entry_type.name}}",
       render: () => html`<overlay-page
@@ -35,7 +36,7 @@ import './{{dna_role_name}}/{{kebab_case coordinator_zome_manifest.name}}/elemen
           >
             <{{kebab_case entry_type.name}}-detail
               .{{camel_case entry_type.name}}Hash=${decodeHashFromBase64(params.{{camel_case entry_type.name}}Hash!)}
-              @edit-selected=${() => this.router.goto(`/{{kebab_case entry_type.name}}/${params.{{camel_case entry_type.name}}Hash}/edit`)}
+              @edit-clicked=${() => this.router.goto(`/{{kebab_case entry_type.name}}/${params.{{camel_case entry_type.name}}Hash}/edit`)}
             >
             </{{kebab_case entry_type.name}}-detail>
           </overlay-page>`;
