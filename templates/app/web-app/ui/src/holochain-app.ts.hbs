@@ -17,6 +17,7 @@ import '@darksoil-studio/profiles-zome/dist/elements/my-profile.js';
 
 import { appStyles } from './app-styles.js';
 import './home-page.js';
+import './overlay-page.js';
 
 @localized()
 @customElement('holochain-app')
@@ -60,20 +61,15 @@ export class HolochainApp extends SignalWatcher(LitElement) {
 
   renderMyProfilePage() {
     return html`
-      <div class="column fill">
-        <div class="row top-bar" style="gap: 8px">
-          <sl-icon-button
-            style="color: black"
-            .src=${wrapPathInSvg(mdiArrowLeft)}
-            @click=${() => this.router.goto('/home/')}
-          ></sl-icon-button>
-          <span class="title" style="flex: 1">${msg("My Profile")}</span>
-        </div>
-
-        <sl-card style="width: 600px; margin: 24px; align-self: center">
+      <overlay-page
+        .title=${msg("My Profile")}
+        icon="back"
+        @close-requested=${() => this.router.goto('/home/')}
+      >
+        <sl-card style="width: 600px;">
           <my-profile style="margin: 16px; flex: 1"></my-profile>
         </sl-card>
-      </div>
+      </overlay-page>
     `;
   }
 
