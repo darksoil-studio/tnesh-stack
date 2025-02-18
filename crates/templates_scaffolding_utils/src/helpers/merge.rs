@@ -254,7 +254,16 @@ mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
     use handlebars::Handlebars;
+    use pretty_assertions::assert_eq;
     use serde_json::json;
+
+    fn build_handlebars<'a>() -> Handlebars<'a> {
+        let mut h = Handlebars::new();
+        h.register_escape_fn(handlebars::no_escape);
+
+        let h = register_merge(h);
+        h
+    }
 
     #[test]
     fn test_get_scope_open_and_close_char_indexes() {
@@ -270,9 +279,7 @@ mod tests {
 
     #[test]
     fn test_merge_match_scope_empty() {
-        let h = Handlebars::new();
-
-        let h = register_merge(h);
+        let h = build_handlebars();
 
         let code = r#"
         class A {
@@ -294,9 +301,7 @@ mod tests {
 
     #[test]
     fn test_merge_match_scope_simple() {
-        let h = Handlebars::new();
-
-        let h = register_merge(h);
+        let h = build_handlebars();
 
         let code = r#"class A {
     // Multiline
@@ -332,21 +337,36 @@ class A {
 
     #[test]
     fn test_merge_match_scope_simple_with_array_scopes() {
-        let h = Handlebars::new();
+        let h = build_handlebars();
 
-        let h = register_merge(h);
-
-        let code = r#"const a = [
-  1,
-];
+        let code = r#"router = new Router(this, [
+  {
+      path: "/",
+      enter: () => {
+        // Redirect to "/home/"
+        this.router.goto("/home/");
+        return false;
+      },
+    },
+    {
+      path: "/home/*",
+      render: () => html`<home-page
+          @profile-clicked=${() => this.router.goto('/my-profile')}
+        ></home-page>`,
+    },
+    {
+      path: "/my-profile",
+      render: () => this.renderMyProfilePage(),
+    },
+  ]);
 "#;
         let value = json!({"previous_file_content": code});
         let context = Context::from(value);
         let template = r#"
 {{#merge previous_file_content}}
-  {{#match_scope "const a = ["}}
+  {{#match_scope "router = new Router(this, ["}}
   {{previous_scope_content}}
-  2
+    2
   {{/match_scope}}
 {{/merge}}
 "#;
@@ -354,19 +374,34 @@ class A {
         assert_eq!(
             h.render_template_with_context(template, &context).unwrap(),
             r#"
-const a = [
-  1,
-  2
-];
+router = new Router(this, [
+  {
+      path: "/",
+      enter: () => {
+        // Redirect to "/home/"
+        this.router.goto("/home/");
+        return false;
+      },
+    },
+    {
+      path: "/home/*",
+      render: () => html`<home-page
+          @profile-clicked=${() => this.router.goto('/my-profile')}
+        ></home-page>`,
+    },
+    {
+      path: "/my-profile",
+      render: () => this.renderMyProfilePage(),
+    },
+    2
+  ]);
 "#,
         );
     }
 
     #[test]
     fn test_merge_match_scope() {
-        let h = Handlebars::new();
-
-        let h = register_merge(h);
+        let h = build_handlebars();
 
         let code = r#"export class A {
     nestedFn1() {
