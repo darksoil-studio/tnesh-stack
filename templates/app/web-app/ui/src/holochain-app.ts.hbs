@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { property, state, customElement } from 'lit/decorators.js';
-import { AppWebsocket, AppClient, ActionHash } from '@holochain/client';
+import { AppWebsocket, AppClient, ActionHash, encodeHashToBase64, decodeHashFromBase64 } from '@holochain/client';
 import { SignalWatcher } from '@tnesh-stack/signals';
 import { Router, hashState, wrapPathInSvg } from '@tnesh-stack/elements';
 import { mdiArrowLeft } from '@mdi/js';

@@ -25,9 +25,6 @@ import '@shoelace-style/shoelace/dist/components/button/button.js';
 {{/uniq_lines}}
 
 import { appStyles } from '../../../app-styles.js';
-{{#if crud.update}}
-import './edit-{{kebab_case entry_type.name}}.js';
-{{/if}}
 
 import { {{pascal_case coordinator_zome_manifest.name}}Store } from '../{{kebab_case coordinator_zome_manifest.name}}-store.js';
 import { {{camel_case coordinator_zome_manifest.name}}StoreContext } from '../context.js';
@@ -52,14 +49,6 @@ export class {{pascal_case entry_type.name}}Detail extends SignalWatcher(LitElem
    */
   @consume({ context: {{camel_case coordinator_zome_manifest.name}}StoreContext, subscribe: true })
   {{camel_case coordinator_zome_manifest.name}}Store!: {{pascal_case coordinator_zome_manifest.name}}Store;
-
-  {{#if crud.update}}
-  /**
-   * @internal
-   */
-  @state()
-  _editing = false;
-  {{/if}}
 
   {{#if crud.delete}}
   async delete{{pascal_case entry_type.name}}() {
@@ -130,18 +119,7 @@ export class {{pascal_case entry_type.name}}Detail extends SignalWatcher(LitElem
           .error=${ {{camel_case entry_type.name}}.error}
         ></display-error>`;
       case 'completed':
-  {{#if crud.update}}
-        if (this._editing) {
-      	  return html`<edit-{{kebab_case entry_type.name}}
-      	    .{{camel_case entry_type.name}}Hash=${this.{{camel_case entry_type.name}}Hash}
-            @{{kebab_case entry_type.name}}-updated=${async () => { this._editing = false; } }
-    	    @edit-canceled=${() => { this._editing = false; } }
-      	    style="display: flex; flex: 1;"
-      	  ></edit-{{kebab_case entry_type.name}}>`;
-        }
-
-  {{/if}}
-          return this.renderDetail({{camel_case entry_type.name}}.value);
+        return this.renderDetail({{camel_case entry_type.name}}.value);
     }
   }
   
