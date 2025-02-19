@@ -15,6 +15,8 @@ cd /tmp/forum-lit-tnesh
 nix develop --no-update-lock-file --accept-flake-config --override-input tnesh-stack "path:$DIR" --command bash -c "
 set -e
 
+pnpm config set lockfile false
+
 hc-scaffold dna forum 
 
 hc-scaffold zome posts --integrity dnas/forum/zomes/integrity/ --coordinator dnas/forum/zomes/coordinator/
