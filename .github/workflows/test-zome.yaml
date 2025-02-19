@@ -2,13 +2,13 @@ name: Test zome custom template
 on:
   # Trigger the workflow on push or pull request,
   # but only for the main branch
-  push:
-    branches: [ main, main-0.4 ]
-  pull_request:
-    branches: [ main, main-0.4 ]
+  push: 
+    branches: [ main, 'main-**' ]
+  pull_request: 
+    branches: [ main, 'main-**' ]
 
 jobs:
-  test-app-template:
+  test-zome-template:
     runs-on: ubuntu-latest
     steps:
       - name: Maximize build space
@@ -39,4 +39,3 @@ jobs:
       - name: Test zome template
         run: |
           nix develop --no-update-lock-file --accept-flake-config --command bash -c "sh templates/run_test_zome.sh"
-

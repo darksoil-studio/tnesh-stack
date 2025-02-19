@@ -36,7 +36,10 @@ git add .
 
 nix flake lock
 
-pnpm i
+pnpm install
+pnpm config set lockfile false
+
+nix run github:darksoil-studio/file-storage/main-0.4#scaffold -- --ci
 
 pnpm -F @darksoil-studio/posts format
 pnpm -F @darksoil-studio/posts lint

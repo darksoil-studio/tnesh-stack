@@ -5,12 +5,12 @@ DIR=$(pwd)
 
 nix shell --accept-flake-config .#hc-scaffold-happ --command bash -c "
 cd /tmp
-rm -rf forum-lit-open-dev
+rm -rf forum-lit-tnesh
 
-hc-scaffold web-app forum-lit-open-dev --package-manager pnpm
+hc-scaffold web-app forum-lit-tnesh --package-manager pnpm
 "
 
-cd /tmp/forum-lit-open-dev
+cd /tmp/forum-lit-tnesh
 
 nix develop --no-update-lock-file --accept-flake-config --override-input tnesh-stack "path:$DIR" --command bash -c "
 set -e
@@ -37,7 +37,10 @@ git add .
 
 nix flake lock
 
-pnpm i
+pnpm install
+pnpm config set lockfile false
+
+nix run github:darksoil-studio/file-storage/main-0.4#scaffold -- --ci
 
 pnpm -F ui format
 pnpm -F ui lint
