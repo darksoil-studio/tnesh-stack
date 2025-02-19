@@ -17,8 +17,6 @@ cd /tmp/posts-tnesh/posts-zome
 nix develop --no-update-lock-file --accept-flake-config --override-input tnesh-stack "path:$DIR" --command bash -c "
 set -e
 
-pnpm config set lockfile false
-
 hc-scaffold entry-type post --zome posts_integrity --reference-entry-hash false --crud crud --link-from-original-to-each-update true --fields title:String:TextField,needs:Vec\<String\>:TextField
 hc-scaffold entry-type comment --zome posts_integrity  --reference-entry-hash false --crud crud --link-from-original-to-each-update false --fields post_hash:ActionHash::Post
 hc-scaffold entry-type like --zome posts_integrity  --reference-entry-hash false --crud crd --fields like_hash:Option\<ActionHash\>::Like,agent:AgentPubKey:SearchAgent
@@ -37,6 +35,9 @@ hc-scaffold link-type --zome posts_integrity agent:creator post --delete false -
 git add .
 
 nix flake lock
+
+pnpm install
+pnpm config set lockfile false
 
 nix run github:darksoil-studio/file-storage/main-0.4#scaffold -- --ci
 

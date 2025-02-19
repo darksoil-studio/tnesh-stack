@@ -15,8 +15,6 @@ cd /tmp/forum-lit-tnesh
 nix develop --no-update-lock-file --accept-flake-config --override-input tnesh-stack "path:$DIR" --command bash -c "
 set -e
 
-pnpm config set lockfile false
-
 hc-scaffold dna forum 
 
 hc-scaffold zome posts --integrity dnas/forum/zomes/integrity/ --coordinator dnas/forum/zomes/coordinator/
@@ -38,6 +36,9 @@ hc-scaffold link-type agent:creator post --delete false --bidirectional false
 git add .
 
 nix flake lock
+
+pnpm install
+pnpm config set lockfile false
 
 nix run github:darksoil-studio/file-storage/main-0.4#scaffold -- --ci
 
