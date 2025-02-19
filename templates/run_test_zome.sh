@@ -37,7 +37,7 @@ git add .
 nix flake lock
 
 pnpm install
-pnpm config set lockfile false
+echo 'lockfile=false' > .npmrc
 
 nix run github:darksoil-studio/file-storage/main-0.4#scaffold -- --ci
 
