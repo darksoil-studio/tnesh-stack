@@ -39,6 +39,8 @@ nix flake lock
 
 pnpm i
 
+nix run github:darksoil-studio/file-storage/main-0.4#scaffold -- --ci
+
 pnpm -F ui format
 pnpm -F ui lint
 pnpm -F ui build
