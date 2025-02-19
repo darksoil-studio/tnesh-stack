@@ -1,9 +1,7 @@
 name: Update flake inputs
 on:
-  push:
-    branches: [ main, main-0.4 ]
-  # schedule:
-  #   - cron: "0 7 * * *" # Run every day at 7AM
+  schedule:
+    - cron: "0 7 * * *" # Run every day at 7AM
 
 permissions:
   pull-requests: write
