@@ -2,10 +2,10 @@ name: Test app custom template
 on:
   # Trigger the workflow on push or pull request,
   # but only for the main branch
-  push:
-    branches: [ main, main-0.4 ]
-  pull_request:
-    branches: [ main, main-0.4 ]
+  push: 
+    branches: [ main, 'main-**' ]
+  pull_request: 
+    branches: [ main, 'main-**' ]
 
 jobs:
   test-app-template:

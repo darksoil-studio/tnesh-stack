@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { property, state, customElement } from 'lit/decorators.js';
-import { AppWebsocket, AppClient, ActionHash } from '@holochain/client';
+import { AppWebsocket, AppClient, ActionHash, encodeHashToBase64, decodeHashFromBase64 } from '@holochain/client';
 import { SignalWatcher } from '@tnesh-stack/signals';
 import { Router, hashState, wrapPathInSvg } from '@tnesh-stack/elements';
 import { mdiArrowLeft } from '@mdi/js';
@@ -17,6 +17,7 @@ import '@darksoil-studio/profiles-zome/dist/elements/my-profile.js';
 
 import { appStyles } from './app-styles.js';
 import './home-page.js';
+import './overlay-page.js';
 
 @localized()
 @customElement('holochain-app')
@@ -44,7 +45,15 @@ export class HolochainApp extends SignalWatcher(LitElement) {
     },
     {
       path: "/my-profile",
-      render: () => this.renderMyProfilePage(),
+      render: () => html`<overlay-page
+          .title=${msg("My Profile")}
+          icon="back"
+          @close-requested=${() => this.router.goto('/home/')}
+        >
+          <sl-card style="width: 600px;">
+            <my-profile style="margin: 16px; flex: 1"></my-profile>
+          </sl-card>
+        </overlay-page>`,
     },
   ]);
 
@@ -56,25 +65,6 @@ export class HolochainApp extends SignalWatcher(LitElement) {
     } finally {
       this._loading = false;
     }
-  }
-
-  renderMyProfilePage() {
-    return html`
-      <div class="column fill">
-        <div class="row top-bar" style="gap: 8px">
-          <sl-icon-button
-            style="color: black"
-            .src=${wrapPathInSvg(mdiArrowLeft)}
-            @click=${() => this.router.goto('/home/')}
-          ></sl-icon-button>
-          <span class="title" style="flex: 1">${msg("My Profile")}</span>
-        </div>
-
-        <sl-card style="width: 600px; margin: 24px; align-self: center">
-          <my-profile style="margin: 16px; flex: 1"></my-profile>
-        </sl-card>
-      </div>
-    `;
   }
 
   render() {

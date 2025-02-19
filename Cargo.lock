@@ -4205,6 +4205,7 @@ dependencies = [
  "file_tree_utils",
  "handlebars",
  "ignore",
+ "pretty_assertions",
  "regex",
  "rnix 0.12.0",
  "serde",
