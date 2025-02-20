@@ -22,9 +22,12 @@ import { {{pascal_case zome_manifest.name}}Store } from '../../../../ui/src/{{dn
 
 export async function setup(scenario: Scenario, numPlayers = 2) {
   const players = await scenario.addPlayersWithApps(
-    new Array(numPlayers).fill({ appBundleSource: { path: appPath } }),
+    Array.from(new Array(numPlayers)).fill({ appBundleSource: { path: appPath } }),
   );
-  const playersAndStores = await Promise.all(players.map(setupStore));
+  const playersAndStores = [];
+  for (const player of players) {
+    playersAndStores.push(await setupStore(player)); 
+  }
 
   // Shortcut peer discovery through gossip and register all agents in every
   // conductor of the scenario.

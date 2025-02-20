@@ -46,5 +46,5 @@ pnpm -F ui format
 pnpm -F ui lint
 pnpm -F ui build
 
-pnpm t
+pnpm test
 "
