@@ -24,6 +24,9 @@ import { {{pascal_case zome_name}}Store } from '../../ui/src/{{kebab_case zome_n
 export async function setup(scenario: Scenario, numPlayers = 2) {
   const testHappUrl =
     dirname(fileURLToPath(import.meta.url)) + '/../../workdir/{{zome_name}}_test.happ';
+  const players = await scenario.addPlayersWithApps(
+    Array.from(new Array(numPlayers)).fill({ appBundleSource: { path: testHappUrl } }),
+  );
   const playersAndStores = [];
   for (const player of players) {
     playersAndStores.push(await setupStore(player)); 
