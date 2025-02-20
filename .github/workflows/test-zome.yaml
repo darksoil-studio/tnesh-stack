@@ -38,4 +38,4 @@ jobs:
 
       - name: Test zome template
         run: |
-          nix develop --no-update-lock-file --accept-flake-config --command bash -c "sh templates/run_test_zome.sh"
+          sh templates/run_test_zome.sh
