@@ -31,22 +31,27 @@ test('create {{pascal_case entry_type.name}}', async () => {
 test('create and read {{pascal_case entry_type.name}}', async () => {
   await runScenario(async scenario => {
     const [ alice, bob ] = await setup(scenario);
+console.log('hey1');
 
     const sample = await sample{{pascal_case entry_type.name}}(alice.store.client);
+console.log('hey2');
 
     // Alice creates a {{pascal_case entry_type.name}}
     const {{camel_case entry_type.name}}: EntryRecord<{{pascal_case entry_type.name}}> = await alice.store.client.create{{pascal_case entry_type.name}}(sample);
     assert.ok({{camel_case entry_type.name}});
+console.log('hey3');
 
     // Wait for the created entry to be propagated to the other node.
     await dhtSync(
       [alice.player, bob.player],
       alice.player.cells[0].cell_id[0]
     );
+console.log('hey4');
 
     // Bob gets the created {{pascal_case entry_type.name}}
     const createReadOutput: EntryRecord<{{pascal_case entry_type.name}}> = await toPromise(bob.store.{{camel_case (plural entry_type.name)}}.get({{camel_case entry_type.name}}{{#if entry_type.reference_entry_hash}}.entryHash{{else}}.actionHash{{/if}}){{#if crud.update}}.original{{else}}.entry{{/if}});
     assert.deepEqual(sample, cleanNodeDecoding(createReadOutput.entry));
+console.log('hey5');
   });
 });
 
@@ -54,44 +59,54 @@ test('create and read {{pascal_case entry_type.name}}', async () => {
 test('create and update {{pascal_case entry_type.name}}', async () => {
   await runScenario(async scenario => {
     const [ alice, bob ] = await setup(scenario);
+console.log('hey6');
 
     // Alice creates a {{pascal_case entry_type.name}}
     const {{camel_case entry_type.name}}: EntryRecord<{{pascal_case entry_type.name}}> = await alice.store.client.create{{pascal_case entry_type.name}}(await sample{{pascal_case entry_type.name}}(alice.store.client));
     assert.ok({{camel_case entry_type.name}});
+console.log('hey7');
         
     const originalActionHash = {{camel_case entry_type.name}}.actionHash;
  
     // Alice updates the {{pascal_case entry_type.name}}
     let contentUpdate = await sample{{pascal_case entry_type.name}}(alice.store.client);
+console.log('hey8');
 
     let updated{{pascal_case entry_type.name}}: EntryRecord<{{pascal_case entry_type.name}}> = await alice.store.client.update{{pascal_case entry_type.name}}({{#if link_from_original_to_each_update}}originalActionHash, {{/if}}originalActionHash, contentUpdate);
     assert.ok(updated{{pascal_case entry_type.name}});
+console.log('hey9');
 
     // Wait for the created entry to be propagated to the other node.
     await dhtSync(
       [alice.player, bob.player],
       alice.player.cells[0].cell_id[0]
     );
+console.log('hey10');
         
     // Bob gets the updated {{pascal_case entry_type.name}}
     const readUpdatedOutput0: EntryRecord<{{pascal_case entry_type.name}}> = await toPromise(bob.store.{{camel_case (plural entry_type.name)}}.get({{camel_case entry_type.name}}.actionHash).latestVersion);
     assert.deepEqual(contentUpdate, cleanNodeDecoding(readUpdatedOutput0.entry));
+console.log('hey11');
 
     // Alice updates the {{pascal_case entry_type.name}} again
     contentUpdate = await sample{{pascal_case entry_type.name}}(alice.store.client);
+console.log('hey12');
 
     updated{{pascal_case entry_type.name}} = await alice.store.client.update{{pascal_case entry_type.name}}({{#if link_from_original_to_each_update}}originalActionHash, {{/if}}updated{{pascal_case entry_type.name}}.actionHash, contentUpdate);
     assert.ok(updated{{pascal_case entry_type.name}});
+console.log('hey13');
 
     // Wait for the created entry to be propagated to the other node.
     await dhtSync(
       [alice.player, bob.player],
       alice.player.cells[0].cell_id[0]
     );
+console.log('hey14');
         
     // Bob gets the updated {{pascal_case entry_type.name}}
     const readUpdatedOutput1: EntryRecord<{{pascal_case entry_type.name}}> = await toPromise(bob.store.{{camel_case (plural entry_type.name)}}.get(originalActionHash).latestVersion);
     assert.deepEqual(contentUpdate, cleanNodeDecoding(readUpdatedOutput1.entry));
+console.log('hey15');
   });
 });
 {{/if}}
@@ -100,24 +115,29 @@ test('create and update {{pascal_case entry_type.name}}', async () => {
 test('create and delete {{pascal_case entry_type.name}}', async () => {
   await runScenario(async scenario => {
     const [ alice, bob ] = await setup(scenario);
+console.log('hey16');
 
     // Alice creates a {{pascal_case entry_type.name}}
     const {{camel_case entry_type.name}}: EntryRecord<{{pascal_case entry_type.name}}> = await alice.store.client.create{{pascal_case entry_type.name}}(await sample{{pascal_case entry_type.name}}(alice.store.client));
     assert.ok({{camel_case entry_type.name}});
+console.log('hey17');
         
     // Alice deletes the {{pascal_case entry_type.name}}
     const deleteActionHash = await alice.store.client.delete{{pascal_case entry_type.name}}({{camel_case entry_type.name}}.actionHash);
     assert.ok(deleteActionHash);
+console.log('hey18');
 
     // Wait for the created entry to be propagated to the other node.
     await dhtSync(
       [alice.player, bob.player],
       alice.player.cells[0].cell_id[0]
     );
+console.log('hey19');
         
     // Bob tries to get the deleted {{pascal_case entry_type.name}}
     const deletes: Array<SignedActionHashed<Delete>> = await toPromise(bob.store.{{camel_case (plural entry_type.name)}}.get({{camel_case entry_type.name}}.actionHash).deletes);
     assert.equal(deletes.length, 1);
+console.log('hey20');
   });
 });
 {{/if}}
