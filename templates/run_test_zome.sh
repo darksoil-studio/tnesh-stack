@@ -6,13 +6,13 @@ DIR=$(pwd)
 
 nix shell --accept-flake-config .#scaffold-tnesh-zome --command bash -c "
 cd /tmp
-rm -rf posts-open-dev
-mkdir posts-open-dev
-cd posts-open-dev
+rm -rf posts-tnesh
+mkdir posts-tnesh
+cd posts-tnesh
 scaffold-tnesh-zome --zome-name posts --github-organization darksoil-studio --cachix-cache darksoil-studio --npm-organization darksoil-studio 
 "
 
-cd /tmp/posts-open-dev/posts-zome
+cd /tmp/posts-tnesh/posts-zome
 
 nix develop --no-update-lock-file --accept-flake-config --override-input tnesh-stack "path:$DIR" --command bash -c "
 set -e
@@ -34,7 +34,12 @@ hc-scaffold link-type --zome posts_integrity agent:creator post --delete false -
 
 git add .
 
-pnpm i
+nix flake lock
+
+pnpm install
+echo 'lockfile=false' > .npmrc
+
+nix run github:darksoil-studio/file-storage/main-0.4#scaffold -- --ci
 
 pnpm -F @darksoil-studio/posts format
 pnpm -F @darksoil-studio/posts lint

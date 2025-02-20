@@ -146,7 +146,6 @@ export class Create{{pascal_case entry_type.name}} extends SignalWatcher(LitElem
   render() {
     return html`
       <sl-card style="flex: 1;">
-        <span slot="header">${msg("Create {{title_case entry_type.name}}")}</span>
 
         <form 
           id="create-form"
@@ -154,6 +153,7 @@ export class Create{{pascal_case entry_type.name}} extends SignalWatcher(LitElem
           style="flex: 1; gap: 16px;"
           ${onSubmit(fields => this.create{{pascal_case entry_type.name}}(fields))}
         >  
+          <span class="title">${msg("Create {{title_case entry_type.name}}")}</span>
           {{#each entry_type.fields}}
             {{#if widget}}
               {{#if (not (eq cardinality "vector") )}}

@@ -66,7 +66,6 @@ pub fn scaffold_remote_zome(
     remote_zome_git_url: String,
     remote_zome_git_branch: Option<String>,
     remote_npm_package_name: String,
-    remote_npm_package_path: PathBuf,
     local_dna_to_add_the_zome_to: Option<String>,
     local_npm_package_to_add_the_ui_to: Option<String>,
     context_element: Option<String>,
@@ -91,13 +90,7 @@ pub fn scaffold_remote_zome(
         coordinator_zome_name,
     )?;
 
-    let npm_dependency_source = format!(
-        "{remote_zome_git_url}{}&path:{}",
-        remote_zome_git_branch
-            .map(|b| format!("#{b}"))
-            .unwrap_or_default(),
-        remote_npm_package_path.to_str().unwrap()
-    );
+    let npm_dependency_source = format!("*-rev.*");
 
     let (mut file_tree , package_json)= add_npm_dependency(
         file_tree, 
@@ -408,11 +401,6 @@ fn add_zome_to_nixified_dna(
         &serde_yaml::to_string(&new_manifest)?,
     )?;
 
-    println!(
-        "Added the integrity zome {integrity_zome_name:?} and the coordinator zome {coordinator_zome_name:?} to {:?}.", 
-        nixified_dna.dna_manifest.0
-    );
-
     Ok(())
 }
 
@@ -550,9 +538,8 @@ mod tests {
             Some("profiles_integrity".into()),
             Some("profiles".into()),
             "github:darksoil-studio/profiles-zome".into(),
-            Some("main-0.3".into()),
+            Some("main-0.4".into()),
             "@darksoil-studio/profiles-zome".into(),
-            PathBuf::from("ui"),
             None,
             Some("package1".into()),
             Some("profiles-context".into()),
@@ -569,7 +556,7 @@ mod tests {
             r#"{
   "name": "package1",
   "dependencies": {
-    "@darksoil-studio/profiles-zome": "github:darksoil-studio/profiles-zome#main-0.3&path:ui"
+    "@darksoil-studio/profiles-zome": "*-rev.*"
   }
 }"#
         );
@@ -596,6 +583,7 @@ coordinator:
     dependencies:
     - name: profiles_integrity
     dylib: null
+lineage: []
 "#
         );
 
@@ -605,11 +593,11 @@ coordinator:
   description = "Template for Holochain app development";
   
   inputs = {
-    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.3";
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.4";
     nixpkgs.follows = "holonix/nixpkgs";
 
     holonix.url = "github:holochain/holonix";
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.3";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
   };
 
   outputs = inputs @ { ... }:
@@ -716,9 +704,8 @@ export class App {
             Some("profiles_integrity".into()),
             Some("profiles".into()),
             "github:darksoil-studio/profiles-zome".into(),
-            Some("main-0.3".into()),
+            Some("main-0.4".into()),
             "@darksoil-studio/profiles-zome".into(),
-            PathBuf::from("ui"),
             None,
             None,
             Some("profiles-context".into()),
@@ -735,7 +722,7 @@ export class App {
             r#"{
   "name": "package1",
   "dependencies": {
-    "@darksoil-studio/profiles-zome": "github:darksoil-studio/profiles-zome#main-0.3&path:ui"
+    "@darksoil-studio/profiles-zome": "*-rev.*"
   }
 }"#
         );
@@ -762,6 +749,7 @@ coordinator:
     dependencies:
     - name: profiles_integrity
     dylib: null
+lineage: []
 "#
         );
 
@@ -771,11 +759,11 @@ coordinator:
   description = "Template for Holochain app development";
   
   inputs = {
-    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.3";
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.4";
     nixpkgs.follows = "holonix/nixpkgs";
 
     holonix.url = "github:holochain/holonix";
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.3";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
   };
 
   outputs = inputs @ { ... }:
@@ -883,6 +871,7 @@ integrity:
   zomes: []
 coordinator:
   zomes: []
+lineage: []
 "#
         )
     }
@@ -896,7 +885,7 @@ coordinator:
     nixpkgs.follows = "holonix/nixpkgs";
 
     holonix.url = "github:holochain/holonix";
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.3";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
   };
 
   outputs = inputs @ { ... }:

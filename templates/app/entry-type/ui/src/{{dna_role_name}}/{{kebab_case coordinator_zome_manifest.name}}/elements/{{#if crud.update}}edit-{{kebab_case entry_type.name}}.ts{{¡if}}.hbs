@@ -132,14 +132,13 @@ export class Edit{{pascal_case entry_type.name}} extends SignalWatcher(LitElemen
   renderEditForm(currentRecord: EntryRecord<{{pascal_case entry_type.name}}>) {
     return html`
       <sl-card>
-        <span slot="header">${msg("Edit {{title_case entry_type.name}}")}</span>
-
         <form
           id="form"
           class="column"
           style="flex: 1; gap: 16px;"
           ${onSubmit(fields => this.update{{pascal_case entry_type.name}}(currentRecord, fields))}
         >  
+          <span class="title">${msg("Edit {{title_case entry_type.name}}")}</span>
         {{#each entry_type.fields}}
           {{#if widget}}
             {{#if (not (eq cardinality "vector") )}}
@@ -151,28 +150,17 @@ export class Edit{{pascal_case entry_type.name}} extends SignalWatcher(LitElemen
           {{/if}}
         {{/each}}
 
-          <div class="row" style="gap: 8px;">
-            <sl-button
-              @click=${() => this.dispatchEvent(new CustomEvent('edit-canceled', {
-                bubbles: true,
-                composed: true
-              }))}
-              style="flex: 1;"
-            >${msg("Cancel")}</sl-button>
-            <sl-button
-              type="submit"
-              variant="primary"
-              style="flex: 1;"
-              .loading=${this.committing}
-            >${msg("Save")}</sl-button>
-
-          </div>
+          <sl-button
+            type="submit"
+            variant="primary"
+            .loading=${this.committing}
+          >${msg("Save")}</sl-button>
         </form>
       </sl-card>`;
   }
 
   render() {
-  const {{camel_case entry_type.name}} = this.{{camel_case coordinator_zome_manifest.name}}Store.{{camel_case (plural entry_type.name)}}.get(this.{{camel_case entry_type.name}}Hash).{{#if crud.update}}latestVersion{{else}}entry{{/if}}.get();
+    const {{camel_case entry_type.name}} = this.{{camel_case coordinator_zome_manifest.name}}Store.{{camel_case (plural entry_type.name)}}.get(this.{{camel_case entry_type.name}}Hash).{{#if crud.update}}latestVersion{{else}}entry{{/if}}.get();
 
     switch ({{camel_case entry_type.name}}.status) {
       case 'pending':

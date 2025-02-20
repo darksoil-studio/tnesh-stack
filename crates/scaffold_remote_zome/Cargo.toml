@@ -22,7 +22,7 @@ serde = "1"
 clap = {version = "4.5.4", features = ["derive"]}
 nix_scaffolding_utils = { path = "../nix_scaffolding_utils" }
 file_tree_utils = { path = "../file_tree_utils" }
-sync_npm_git_dependencies_with_nix = { path = "../sync_npm_git_dependencies_with_nix" }
+sync_npm_rev_dependencies_with_nix = { path = "../sync_npm_rev_dependencies_with_nix" }
 npm_scaffolding_utils= { path = "../npm_scaffolding_utils" }
 thiserror = "1"
 build-fs-tree = "0.4"

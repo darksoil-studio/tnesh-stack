@@ -3,10 +3,10 @@
 
   inputs = {
     nixpkgs.follows = "holonix/nixpkgs";
-    holonix.url = "github:holochain/holonix/main-0.3";
+    holonix.url = "github:holochain/holonix/main-0.4";
 
     tnesh-stack.url = "path:./../../..";
-    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.3";
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.4";
     # previousZomeVersion.url = "github:darksoil-studio/tnesh-stack/67dffe4af2c8675cd47d0b404fd0473d6a93ddfd?dir=nix/fixtures/module-repo";
   };
 

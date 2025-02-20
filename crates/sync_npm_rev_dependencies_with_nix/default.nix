@@ -3,7 +3,7 @@
 {
   perSystem = { inputs', pkgs, self', lib, ... }: {
 
-    packages.sync-npm-git-dependencies-with-nix = let
+    packages.sync-npm-rev-dependencies-with-nix = let
       craneLib = inputs.crane.mkLib pkgs;
 
       cratePath = ./.;
@@ -19,7 +19,7 @@
       };
       cargoArtifacts = craneLib.buildDepsOnly (commonArgs // {
         pname = "tnesh-workspace";
-        version = "0.3.x";
+        version = "0.4.x";
       });
     in craneLib.buildPackage (commonArgs // {
       pname = crate;

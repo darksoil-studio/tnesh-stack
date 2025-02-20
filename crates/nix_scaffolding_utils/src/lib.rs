@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use file_tree_utils::{file_content, map_file, FileTree, FileTreeError};
 use regex::{Captures, Regex};
+use rnix::parser::ParseError;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -12,8 +13,8 @@ pub enum NixScaffoldingUtilsError {
     #[error(transparent)]
     FileTreeError(#[from] FileTreeError),
 
-    #[error("flake.nix is malformed")]
-    MalformedFlakeNixError,
+    #[error(transparent)]
+    MalformedFlakeNixError(#[from] ParseError),
 }
 
 pub fn add_flake_input(
@@ -23,9 +24,7 @@ pub fn add_flake_input(
 ) -> Result<FileTree, NixScaffoldingUtilsError> {
     let flake_nix_path = PathBuf::from("flake.nix");
     let flake_nix_contents = file_content(&file_tree, flake_nix_path.as_path())?;
-    let Ok(_root) = rnix::Root::parse(&flake_nix_contents).ok() else {
-        return Err(NixScaffoldingUtilsError::MalformedFlakeNixError);
-    };
+    rnix::Root::parse(&flake_nix_contents.trim()).ok()?;
 
     map_file(
         &mut file_tree,

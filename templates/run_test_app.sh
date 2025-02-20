@@ -5,17 +5,16 @@ DIR=$(pwd)
 
 nix shell --accept-flake-config .#hc-scaffold-happ --command bash -c "
 cd /tmp
-rm -rf forum-lit-open-dev
+rm -rf forum-lit-tnesh
 
-hc-scaffold web-app forum-lit-open-dev
+hc-scaffold web-app forum-lit-tnesh --package-manager pnpm
 "
 
-cd /tmp/forum-lit-open-dev
+cd /tmp/forum-lit-tnesh
 
 nix develop --no-update-lock-file --accept-flake-config --override-input tnesh-stack "path:$DIR" --command bash -c "
 set -e
 
-cat package.json | nix run nixpkgs#jq -- 'del(.hcScaffold)' > package-tmp.json && mv package-tmp.json package.json
 hc-scaffold dna forum 
 
 hc-scaffold zome posts --integrity dnas/forum/zomes/integrity/ --coordinator dnas/forum/zomes/coordinator/
@@ -36,9 +35,12 @@ hc-scaffold link-type agent:creator post --delete false --bidirectional false
 
 git add .
 
-nix run github:darksoil-studio/profiles-zome/main-0.3#scaffold --refresh -- --ci
+nix flake lock
 
-pnpm i
+pnpm install
+echo 'lockfile=false' > .npmrc
+
+nix run github:darksoil-studio/file-storage/main-0.4#scaffold -- --ci
 
 pnpm -F ui format
 pnpm -F ui lint

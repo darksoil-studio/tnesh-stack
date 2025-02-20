@@ -9,7 +9,7 @@ use std::{
     path::PathBuf,
     process::{Command, ExitCode},
 };
-use sync_npm_git_dependencies_with_nix::synchronize_npm_git_dependencies_with_nix;
+use sync_npm_rev_dependencies_with_nix::synchronize_npm_rev_dependencies_with_nix;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -40,10 +40,6 @@ struct Args {
     /// Name of the UI package for the zome that's being scaffolded
     #[arg(long)]
     remote_npm_package_name: String,
-
-    /// Internal path of the UI package
-    #[arg(long)]
-    remote_npm_package_path: PathBuf,
 
     /// DNA of the local repository in which the zome should be scaffolded
     #[arg(long)]
@@ -145,7 +141,6 @@ These are the steps that will be taken:
         args.remote_zome_git_url,
         args.remote_zome_git_branch,
         args.remote_npm_package_name,
-        args.remote_npm_package_path,
         args.local_dna_to_add_the_zome_to,
         args.local_npm_package_to_add_the_ui_to,
         args.context_element,
@@ -158,8 +153,6 @@ These are the steps that will be taken:
 
     // Run nix flake update
 
-    // Run nix develop -c bash "pnpm install"
-
     println!(
         "{}",
         format!("Successfully scaffolded zome {}", args.module_name.bold()).green()
@@ -169,7 +162,9 @@ These are the steps that will be taken:
     println!("");
     Command::new("nix").args(["flake", "update"]).output()?;
 
-    synchronize_npm_git_dependencies_with_nix()?;
+    // Run nix develop -c bash "pnpm install"
+
+    synchronize_npm_rev_dependencies_with_nix(None)?;
 
     Ok(())
 }
