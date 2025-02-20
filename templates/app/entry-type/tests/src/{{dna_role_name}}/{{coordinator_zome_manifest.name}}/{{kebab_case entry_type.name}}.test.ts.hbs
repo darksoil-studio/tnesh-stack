@@ -42,6 +42,7 @@ console.log('hey2');
 console.log('hey3');
 		await pause(3000);
 
+setInterval(()=> {
 		console.log(
 			await alice.player.conductor.adminWs().dumpFullState({
 				cell_id: alice.player.cells[0].cell_id,
@@ -52,6 +53,8 @@ console.log('hey3');
 				cell_id: alice.player.cells[0].cell_id,
 			}),
 		);
+  
+}, 4000)
 
     // Wait for the created entry to be propagated to the other node.
     await dhtSync(
