@@ -47,6 +47,11 @@ pnpm -F @darksoil-studio/posts build
 
 pnpm i
 
-pnpm build:happ
-pnpm -F tests test
+pnpm t -- post
+sleep 10
+pnpm t -- comment
+sleep 10
+pnpm t -- likes
+sleep 10
+pnpm t -- certificate
 "
