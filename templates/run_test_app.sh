@@ -12,7 +12,7 @@ hc-scaffold web-app forum-lit-tnesh --package-manager pnpm
 
 cd /tmp/forum-lit-tnesh
 
-nix develop --no-update-lock-file --accept-flake-config --override-input tnesh-stack "path:$DIR" --command bash -c "
+nix develop --no-update-lock-file --accept-flake-config --command bash -c "
 set -e
 
 hc-scaffold dna forum 
