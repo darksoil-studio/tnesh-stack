@@ -23,6 +23,13 @@ test('create {{pascal_case entry_type.name}}', async () => {
   await runScenario(async scenario => {
     const [ alice, bob ] = await setup(scenario);
 
+console.log('hey-1');
+    // Wait for the created entry to be propagated to the other node.
+    await dhtSync(
+      [alice.player, bob.player],
+      alice.player.cells[0].cell_id[0]
+    );
+console.log('hey0');
     // Alice creates a {{pascal_case entry_type.name}}
     const {{camel_case entry_type.name}}: EntryRecord<{{pascal_case entry_type.name}}> = await alice.store.client.create{{pascal_case entry_type.name}}(await sample{{pascal_case entry_type.name}}(alice.store.client));
     assert.ok({{camel_case entry_type.name}});
