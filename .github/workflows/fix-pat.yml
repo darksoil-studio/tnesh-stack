@@ -1,0 +1,63 @@
+name: Update flake inputs
+on:
+  push:
+    branches: [fix/pat]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install nix
+        uses: cachix/install-nix-action@v25
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - uses: cachix/cachix-action@v14
+        with:
+          name: holochain-ci
+
+      - uses: cachix/cachix-action@v14
+        with:
+          name: darksoil-studio
+
+      - name: Update Flake
+        run: |
+          nix flake update
+          nix develop
+
+      - name: Update example repository
+        run: |
+          nix flake update
+          nix develop --command bash -c "cd nix/fixtures/module-repo && cargo update"
+          nix develop --command bash -c "cd nix/reference-happ && cargo update"
+
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            flake_lock:
+              - 'flake.lock'
+            package_json:
+              - '**/*/package.json'
+            cargo_lock:
+              - '**/*/Cargo.lock'
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.PULL_REQUESTS_ENABLE_CHECKS_TOKEN }}
+
+      - name: Enable Pull Request Automerge
+        if: (steps.changes.outputs.flake_lock == 'true' || steps.changes.outputs.package_json == 'true') && steps.cpr.outputs.pull-request-operation == 'created'
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.PULL_REQUESTS_ENABLE_CHECKS_TOKEN }}
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
