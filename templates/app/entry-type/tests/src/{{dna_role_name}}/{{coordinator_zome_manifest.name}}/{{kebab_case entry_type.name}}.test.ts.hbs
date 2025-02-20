@@ -24,6 +24,27 @@ test('create {{pascal_case entry_type.name}}', async () => {
     const [ alice, bob ] = await setup(scenario);
 
 console.log('hey-1');
+setInterval(async ()=> {
+		console.log(
+			JSON.stringify(
+				(
+					await bob.player.conductor.adminWs().dumpFullState({
+						cell_id: alice.player.cells[0].cell_id,
+					})
+				).integration_dump.integrated,
+			),
+		);
+		console.log(
+			JSON.stringify(
+				(
+					await bob.player.conductor.adminWs().dumpFullState({
+						cell_id: alice.player.cells[0].cell_id,
+					})
+				).integration_dump.validation_limbo,
+			),
+		);
+  
+}, 4000);
     // Wait for the created entry to be propagated to the other node.
     await dhtSync(
       [alice.player, bob.player],
