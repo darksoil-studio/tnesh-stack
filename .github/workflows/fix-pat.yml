@@ -26,28 +26,6 @@ jobs:
         with:
           name: darksoil-studio
 
-      - name: Update Flake
-        run: |
-          nix flake update
-          nix develop
-
-      - name: Update example repository
-        run: |
-          nix flake update
-          nix develop --command bash -c "cd nix/fixtures/module-repo && cargo update"
-          nix develop --command bash -c "cd nix/reference-happ && cargo update"
-
-      - uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            flake_lock:
-              - 'flake.lock'
-            package_json:
-              - '**/*/package.json'
-            cargo_lock:
-              - '**/*/Cargo.lock'
-
       - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v3
