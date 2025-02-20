@@ -12,12 +12,6 @@ import { {{pascal_case entry_type.name}} } from '../../../../ui/src/{{dna_role_n
 import { sample{{pascal_case entry_type.name}} } from '../../../../ui/src/{{dna_role_name}}/{{snake_case coordinator_zome_manifest.name}}/mocks.js';
 import { setup } from './setup.js';
 
-afterEach(async () => {
-  console.log('yes');
-  await pause(2000);
-  console.log(execSync('df').toString());
-});
-
 test('create {{pascal_case entry_type.name}}', async () => {
   await runScenario(async scenario => {
     const [ alice, bob ] = await setup(scenario);
