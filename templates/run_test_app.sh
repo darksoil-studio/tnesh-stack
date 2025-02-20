@@ -46,11 +46,5 @@ pnpm -F ui format
 pnpm -F ui lint
 pnpm -F ui build
 
-pnpm t -- post
-sleep 10
-pnpm t -- comment
-sleep 10
-pnpm t -- likes
-sleep 10
-pnpm t -- certificate
+pnpm test
 "

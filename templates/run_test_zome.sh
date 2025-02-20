@@ -3,7 +3,6 @@ set -e
 
 DIR=$(pwd)
 
-
 nix shell --accept-flake-config .#scaffold-tnesh-zome --command bash -c "
 cd /tmp
 rm -rf posts-tnesh
@@ -45,13 +44,7 @@ pnpm -F @darksoil-studio/posts format
 pnpm -F @darksoil-studio/posts lint
 pnpm -F @darksoil-studio/posts build
 
-pnpm i
+pnpm install
 
-pnpm t -- post
-sleep 10
-pnpm t -- comment
-sleep 10
-pnpm t -- likes
-sleep 10
-pnpm t -- certificate
+pnpm test
 "
