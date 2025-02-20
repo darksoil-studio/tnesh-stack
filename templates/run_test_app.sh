@@ -46,5 +46,5 @@ pnpm -F ui format
 pnpm -F ui lint
 pnpm -F ui build
 
-pnpm test
+RUST_LOG=debug pnpm test
 "
