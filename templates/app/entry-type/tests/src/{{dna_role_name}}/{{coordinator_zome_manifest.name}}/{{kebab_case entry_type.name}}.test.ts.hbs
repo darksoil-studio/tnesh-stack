@@ -42,27 +42,25 @@ console.log('hey2');
     assert.ok({{camel_case entry_type.name}});
 console.log('hey3');
 		await pause(3000);
-	await	bob.player.conductor.adminWs().grantZomeCallCapability({
-			cap_grant: {
-				access: [CapAccessType.Unrestricted],
-				functions: {
-					Listed: [],
-				},
-				tag: '',
-			},
-			cell_id: bob.player.cells[0].cell_id,
-		});
 
 setInterval(async ()=> {
 		console.log(
-			await alice.player.conductor.adminWs().dumpFullState({
-				cell_id: alice.player.cells[0].cell_id,
-			}),
+			JSON.stringify(
+				(
+					await bob.player.conductor.adminWs().dumpFullState({
+						cell_id: alice.player.cells[0].cell_id,
+					})
+				).integration_dump.integrated,
+			),
 		);
 		console.log(
-			await bob.player.conductor.adminWs().dumpFullState({
-				cell_id: alice.player.cells[0].cell_id,
-			}),
+			JSON.stringify(
+				(
+					await bob.player.conductor.adminWs().dumpFullState({
+						cell_id: alice.player.cells[0].cell_id,
+					})
+				).integration_dump.validation_limbo,
+			),
 		);
   
 }, 4000);
