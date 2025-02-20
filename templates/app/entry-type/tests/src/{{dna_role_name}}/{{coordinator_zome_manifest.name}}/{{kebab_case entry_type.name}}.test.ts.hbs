@@ -40,6 +40,18 @@ console.log('hey2');
     const {{camel_case entry_type.name}}: EntryRecord<{{pascal_case entry_type.name}}> = await alice.store.client.create{{pascal_case entry_type.name}}(sample);
     assert.ok({{camel_case entry_type.name}});
 console.log('hey3');
+		await pause(3000);
+
+		console.log(
+			await alice.player.conductor.adminWs().dumpFullState({
+				cell_id: alice.player.cells[0].cell_id,
+			}),
+		);
+		console.log(
+			await bob.player.conductor.adminWs().dumpFullState({
+				cell_id: alice.player.cells[0].cell_id,
+			}),
+		);
 
     // Wait for the created entry to be propagated to the other node.
     await dhtSync(
