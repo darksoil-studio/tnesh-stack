@@ -62,7 +62,7 @@
       },
       "original": {
         "owner": "holochain",
-        "ref": "expand-merge-helper-scopes",
+        "ref": "holochain-0.4",
         "repo": "scaffolding",
         "type": "github"
       }
