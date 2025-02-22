@@ -14,7 +14,7 @@ import {
   encodeHashToBase64 
 } from '@holochain/client';
 import { encode } from '@msgpack/msgpack';
-import { Player, Scenario } from '@holochain/tryorama';
+import { dhtSync, Player, Scenario } from '@holochain/tryorama';
 import { EntryRecord } from '@tnesh-stack/utils';
 import { appPath } from '../../app-path.js';
 import { {{pascal_case zome_manifest.name}}Client } from '../../../../ui/src/{{dna_role_name}}/{{zome_manifest.name}}/{{kebab_case zome_manifest.name}}-client.js';
