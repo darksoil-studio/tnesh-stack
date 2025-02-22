@@ -24,7 +24,6 @@ export async function setup(scenario: Scenario, numPlayers = 2) {
   const players = await promiseAllSequential(
     Array.from(new Array(numPlayers)).map(() => () => addPlayer(scenario)),
   );
-  const playersAndStores = await promiseAllSequential(players.map(player => () => setupStore(player)));
 
   // Shortcut peer discovery through gossip and register all agents in every
   // conductor of the scenario.
