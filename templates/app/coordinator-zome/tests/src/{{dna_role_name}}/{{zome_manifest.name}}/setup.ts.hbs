@@ -24,6 +24,7 @@ export async function setup(scenario: Scenario, numPlayers = 2) {
   const players = await promiseAllSequential(
     Array.from(new Array(numPlayers)).map(() => () => addPlayer(scenario)),
   );
+  const playersAndStores = await promiseAllSequential(players.map(player => () => setupStore(player)));
 
   // Shortcut peer discovery through gossip and register all agents in every
   // conductor of the scenario.
@@ -40,11 +41,11 @@ export async function setup(scenario: Scenario, numPlayers = 2) {
 }
 
 async function promiseAllSequential<T>(
-  promises: Array<Promise<T>>,
+  promises: Array<() => Promise<T>>,
 ): Promise<Array<T>> {
   const results: Array<T> = [];
   for (const promise of promises) {
-    results.push(await promise);
+    results.push(await promise());
   }
   return results;
 }
