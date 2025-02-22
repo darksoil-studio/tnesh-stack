@@ -14,39 +14,37 @@ import {
   encodeHashToBase64 
 } from '@holochain/client';
 import { encode } from '@msgpack/msgpack';
-import { Player, Scenario } from '@holochain/tryorama';
+import { dhtSync, Player, Scenario } from '@holochain/tryorama';
 import { EntryRecord } from '@tnesh-stack/utils';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { {{pascal_case zome_name}}Client } from '../../ui/src/{{kebab_case zome_name}}-client.js';
 import { {{pascal_case zome_name}}Store } from '../../ui/src/{{kebab_case zome_name}}-store.js';
 
-export async function setup(scenario: Scenario, numPlayers = 2) {
-  const testHappUrl =
-    dirname(fileURLToPath(import.meta.url)) + '/../../workdir/{{zome_name}}_test.happ';
-  const players = await scenario.addPlayersWithApps(
-    Array.from(new Array(numPlayers)).fill({ appBundleSource: { path: testHappUrl } }),
-  );
-  const playersAndStores = await promiseAllSequential(players.map(player => () => setupStore(player)));
+const testHappUrl = dirname(fileURLToPath(import.meta.url)) + '/../../workdir/{{zome_name}}_test.happ';
 
+export async function setup(scenario: Scenario, numPlayers = 2) {
+  const players = await promiseAllSequential(
+    Array.from(new Array(numPlayers)).map(() => () => addPlayer(scenario)),
+  );
+  
   // Shortcut peer discovery through gossip and register all agents in every
   // conductor of the scenario.
   await scenario.shareAllAgents();
+  
+  await dhtSync(
+    players.map(p => p.player),
+    players[0].player.cells[0].cell_id[0],
+  );
+  
+  console.log('Setup completed!');
 
-  return playersAndStores;
+  return players;
 }
 
-async function promiseAllSequential<T>(
-  promises: Array<() => Promise<T>>,
-): Promise<Array<T>> {
-  const results: Array<T> = [];
-  for (const promise of promises) {
-    results.push(await promise());
-  }
-  return results;
-}
+async function addPlayer(scenario: Scenario) {
+  const player = await scenario.addPlayerWithApp({ path: testHappUrl });
 
-async function setupStore(player: Player) {
   patchCallZome(player.appWs as AppWebsocket);
   await player.conductor
   	.adminWs()
@@ -70,6 +68,16 @@ async function setupStore(player: Player) {
   	  store.client.client = appWs;
   	},
   };
+}
+
+async function promiseAllSequential<T>(
+  promises: Array<() => Promise<T>>,
+): Promise<Array<T>> {
+  const results: Array<T> = [];
+  for (const promise of promises) {
+    results.push(await promise());
+  }
+  return results;
 }
 
 function patchCallZome(appWs: AppWebsocket) {

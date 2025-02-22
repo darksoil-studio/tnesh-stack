@@ -14,23 +14,29 @@ import {
   encodeHashToBase64 
 } from '@holochain/client';
 import { encode } from '@msgpack/msgpack';
-import { Player, Scenario } from '@holochain/tryorama';
+import { dhtSync, Player, Scenario } from '@holochain/tryorama';
 import { EntryRecord } from '@tnesh-stack/utils';
 import { appPath } from '../../app-path.js';
 import { {{pascal_case zome_manifest.name}}Client } from '../../../../ui/src/{{dna_role_name}}/{{zome_manifest.name}}/{{kebab_case zome_manifest.name}}-client.js';
 import { {{pascal_case zome_manifest.name}}Store } from '../../../../ui/src/{{dna_role_name}}/{{zome_manifest.name}}/{{kebab_case zome_manifest.name}}-store.js';
 
 export async function setup(scenario: Scenario, numPlayers = 2) {
-  const players = await scenario.addPlayersWithApps(
-    Array.from(new Array(numPlayers)).fill({ appBundleSource: { path: appPath } }),
+  const players = await promiseAllSequential(
+    Array.from(new Array(numPlayers)).map(() => () => addPlayer(scenario)),
   );
-  const playersAndStores = await promiseAllSequential(players.map(player => () => setupStore(player)));
 
   // Shortcut peer discovery through gossip and register all agents in every
   // conductor of the scenario.
   await scenario.shareAllAgents();
+  
+  await dhtSync(
+    players.map(p => p.player),
+    players[0].player.cells[0].cell_id[0],
+  );
+  
+  console.log('Setup completed!');
 
-  return playersAndStores;
+  return players;
 }
 
 async function promiseAllSequential<T>(
@@ -43,7 +49,9 @@ async function promiseAllSequential<T>(
   return results;
 }
 
-async function setupStore(player: Player) {
+async function addPlayer(scenario: Scenario) {
+  const player = await scenario.addPlayerWithApp({ path: appPath });
+
   patchCallZome(player.appWs as AppWebsocket);
   await player.conductor
   	.adminWs()
