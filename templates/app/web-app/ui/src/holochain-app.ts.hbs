@@ -1,5 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { property, state, customElement } from 'lit/decorators.js';
+import { ResizeController } from '@lit-labs/observers/resize-controller.js';
 import { AppWebsocket, AppClient, ActionHash, encodeHashToBase64, decodeHashFromBase64 } from '@holochain/client';
 import { SignalWatcher } from '@tnesh-stack/signals';
 import { Router, hashState, wrapPathInSvg } from '@tnesh-stack/elements';
