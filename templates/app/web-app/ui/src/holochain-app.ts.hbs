@@ -15,9 +15,12 @@ import '@tnesh-stack/elements/dist/elements/app-client-context.js';
 import '@darksoil-studio/profiles-zome/dist/elements/profile-prompt.js';
 import '@darksoil-studio/profiles-zome/dist/elements/my-profile.js';
 
+import { isMobileContext } from './context.js';
 import { appStyles } from './app-styles.js';
 import './home-page.js';
 import './overlay-page.js';
+
+export const MOBILE_WIDTH_PX = 600;
 
 @localized()
 @customElement('holochain-app')
@@ -57,7 +60,17 @@ export class HolochainApp extends SignalWatcher(LitElement) {
     },
   ]);
 
+  @provide({ context: isMobileContext })
+  @property()
+  _isMobile: boolean = false;
+
   async firstUpdated() {
+    new ResizeController(this, {
+      callback: () => {
+        this._isMobile = this.getBoundingClientRect().width < MOBILE_WIDTH_PX;
+      },
+    });
+
     try {
       this._client = await AppWebsocket.connect();
     } catch (e: unknown) {
