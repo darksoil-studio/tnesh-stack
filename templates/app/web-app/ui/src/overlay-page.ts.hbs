@@ -3,7 +3,10 @@ import { wrapPathInSvg } from '@tnesh-stack/elements';
 import { SignalWatcher } from '@tnesh-stack/signals';
 import { LitElement, TemplateResult, css, html, render } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { styleMap } from 'lit/directives/style-map.js';
+import { consume } from '@lit/context';
 
+import { isMobileContext } from './context.js';
 import { appStyles } from './app-styles.js';
 
 @customElement('overlay-page')
@@ -14,8 +17,12 @@ export class OverlayPage extends SignalWatcher(LitElement) {
   @property()
   icon: 'back' | 'close' = 'close';
 
+  @property()
+  @consume({ context: isMobileContext })
+  isMobile: boolean = false;
+
   mdiIcon() {
-  if (this.icon === 'back') return mdiArrowLeft;
+    if (this.icon === 'back') return mdiArrowLeft;
     return mdiClose;
   }
 
@@ -38,7 +45,14 @@ export class OverlayPage extends SignalWatcher(LitElement) {
                 class="column"
                 style="min-height: calc(100% - 32px); margin: 16px; align-items: center"
               >
-                <slot></slot>
+                <div
+                  class="column"
+                  style=${styleMap({
+                    'min-width': this.isMobile ? '100%' : '600px',
+                  })}
+                >
+                  <slot></slot>
+                </div>
               </div>
             </div>
           </div>
