@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "AGENTS=2 pnpm network",
-    "network": "hc s clean && pnpm build:happ && UI_PORT=8888 concurrently -k \"pnpm -F ui start\" \"pnpm launch\" \"hc playground\"",
+    "network": "pnpm build:happ && UI_PORT=8888 concurrently -k \"pnpm -F ui start\" \"pnpm launch\" \"hc playground\"",
     "launch": "concurrently-repeat  \"RUST_LOG=warn hc pilot workdir/{{app_name}}.happ --ui-port $UI_PORT\" $AGENTS",
     "test": "pnpm build:happ && pnpm -F tests test",
     "build:happ": "nix build -L .#{{app_name}}_happ.meta.debug -o workdir/{{app_name}}.happ",
