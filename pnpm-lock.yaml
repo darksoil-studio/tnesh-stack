@@ -93,6 +93,9 @@ importers:
       '@shoelace-style/shoelace':
         specifier: ^2.11.0
         version: 2.20.0(@floating-ui/utils@0.2.9)(@types/react@19.0.10)
+      '@tnesh-stack/signals':
+        specifier: workspace:^0.400.0
+        version: link:../signals
       '@tnesh-stack/utils':
         specifier: workspace:^0.400.0
         version: link:../utils

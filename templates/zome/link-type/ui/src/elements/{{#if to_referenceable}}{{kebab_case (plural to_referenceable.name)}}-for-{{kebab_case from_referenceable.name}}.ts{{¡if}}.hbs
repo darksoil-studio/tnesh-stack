@@ -14,7 +14,7 @@ import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 {{#if (ne to_referenceable.hash_type "AgentPubKey")}}
 import './{{kebab_case to_referenceable.name}}-summary.js';
 {{else}}
-import '@darksoil-studio/profiles-zome/dist/elements/agent-avatar.js';
+import '@darksoil-studio/profiles-provider/dist/elements/agent-avatar.js';
 {{/if}}
 
 import { {{pascal_case coordinator_zome_manifest.name}}Store } from '../{{kebab_case coordinator_zome_manifest.name}}-store.js';
