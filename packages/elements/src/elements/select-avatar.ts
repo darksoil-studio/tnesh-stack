@@ -68,7 +68,6 @@ export class SelectAvatar extends LitElement implements FormField {
 				const img = new Image();
 				img.crossOrigin = 'anonymous';
 				img.onload = () => {
-					console.log(this.avatarHeight);
 					this.value = resizeAndExport(
 						img,
 						this.avatarWidth,

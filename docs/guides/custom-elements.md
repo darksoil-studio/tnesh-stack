@@ -10,7 +10,7 @@ To include elements into your app you import them like this:
 
 ```js
 import "@darksoil-studio/profiles-zome/dist/elements/profile-prompt.js";
-import "@darksoil-studio/profiles-zome/dist/elements/list-profiles.js";
+import "@darksoil-studio/profiles-zome/dist/elements/all-profiles.js";
 ```
 
 ## Context
