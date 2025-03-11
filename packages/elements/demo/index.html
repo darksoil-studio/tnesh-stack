@@ -45,6 +45,7 @@
 			import '../src/elements/display-error.ts';
 			import '../src/elements/holo-identicon.ts';
 			import '../src/elements/select-avatar.ts';
+			import '../src/elements/sl-combobox.ts';
 			import '../src/elements/sl-datetime-input.ts';
 			import { notifyError } from '../src/notify.ts';
 			import { onSubmit } from '../src/on-submit.ts';
@@ -108,6 +109,16 @@
 									.defaultValue=${formatDateForInput(new Date())}
 									type="datetime-local"
 								></sl-input>
+
+								<sl-combobox
+									.search=${async filter => {
+										await new Promise(resolve => {
+											setTimeout(() => resolve(), 2000);
+										});
+										return ['hey', 'ho'];
+									}}
+								>
+								</sl-combobox>
 								<input type="submit" />
 							</form>
 						`;

@@ -688,7 +688,7 @@
           "type": {
             "text": "array"
           },
-          "default": "[\n  css`\n    .row {\n      display: flex;\n      flex-direction: row;\n    }\n    .column {\n      display: flex;\n      flex-direction: column;\n    }\n    .small-margin {\n      margin-top: 6px;\n    }\n    .big-margin {\n      margin-top: 23px;\n    }\n\n    .fill {\n      flex: 1;\n      height: 100%;\n    }\n\n    .title {\n      font-size: 20px;\n    }\n\n    .center-content {\n      align-items: center;\n      justify-content: center;\n    }\n\n    .placeholder {\n      color: var(--sl-color-gray-700);\n    }\n\n    .flex-scrollable-parent {\n      position: relative;\n      display: flex;\n      flex: 1;\n    }\n\n    .flex-scrollable-container {\n      position: absolute;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0;\n    }\n\n    .flex-scrollable-x {\n      max-width: 100%;\n      overflow-x: auto;\n    }\n    .flex-scrollable-y {\n      max-height: 100%;\n      overflow-y: auto;\n    }\n    :host {\n      color: var(--sl-color-neutral-1000);\n    }\n\n    sl-card {\n      display: flex;\n    }\n    sl-card::part(base) {\n      flex: 1;\n    }\n    sl-card::part(body) {\n      display: flex;\n      flex: 1;\n    }\n    sl-drawer::part(body) {\n      display: flex;\n    }\n  `,\n]"
+          "default": "[\n\tcss`\n\t\t.row {\n\t\t\tdisplay: flex;\n\t\t\tflex-direction: row;\n\t\t}\n\t\t.column {\n\t\t\tdisplay: flex;\n\t\t\tflex-direction: column;\n\t\t}\n\t\t.small-margin {\n\t\t\tmargin-top: 6px;\n\t\t}\n\t\t.big-margin {\n\t\t\tmargin-top: 23px;\n\t\t}\n\n\t\t.fill {\n\t\t\tflex: 1;\n\t\t\theight: 100%;\n\t\t}\n\n\t\t.title {\n\t\t\tfont-size: 20px;\n\t\t}\n\n\t\t.center-content {\n\t\t\talign-items: center;\n\t\t\tjustify-content: center;\n\t\t}\n\n\t\t.placeholder {\n\t\t\tcolor: var(--sl-color-gray-700);\n\t\t}\n\n\t\t.flex-scrollable-parent {\n\t\t\tposition: relative;\n\t\t\tdisplay: flex;\n\t\t\tflex: 1;\n\t\t}\n\n\t\t.flex-scrollable-container {\n\t\t\tposition: absolute;\n\t\t\ttop: 0;\n\t\t\tleft: 0;\n\t\t\tright: 0;\n\t\t\tbottom: 0;\n\t\t}\n\n\t\t.flex-scrollable-x {\n\t\t\tmax-width: 100%;\n\t\t\toverflow-x: auto;\n\t\t}\n\t\t.flex-scrollable-y {\n\t\t\tmax-height: 100%;\n\t\t\toverflow-y: auto;\n\t\t}\n\t\t:host {\n\t\t\tcolor: var(--sl-color-neutral-1000);\n\t\t}\n\n\t\tsl-card {\n\t\t\tdisplay: flex;\n\t\t}\n\t\tsl-card::part(base) {\n\t\t\tflex: 1;\n\t\t}\n\t\tsl-card::part(body) {\n\t\t\tdisplay: flex;\n\t\t\tflex: 1;\n\t\t\theight: 100%;\n\t\t}\n\t\tsl-drawer::part(body) {\n\t\t\tdisplay: flex;\n\t\t}\n\t`,\n]"
         }
       ],
       "exports": [
@@ -1187,6 +1187,140 @@
           "declaration": {
             "name": "SelectAvatar",
             "module": "src/elements/select-avatar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/sl-combobox.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SlCombobox",
+          "members": [
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_controller",
+              "default": "new FormFieldController(this)"
+            },
+            {
+              "kind": "field",
+              "name": "search",
+              "type": {
+                "text": "(filter: string) => Promise<string[]>"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "renderItem",
+              "type": {
+                "text": "((searchResult: string) => TemplateResult) | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_search",
+              "default": "new AsyncState<string[]>({ status: 'pending' })"
+            },
+            {
+              "kind": "method",
+              "name": "performSearch",
+              "parameters": [
+                {
+                  "name": "filter",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reset"
+            },
+            {
+              "kind": "method",
+              "name": "renderSearchResults"
+            }
+          ],
+          "events": [
+            {
+              "name": "sl-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "mixins": [
+            {
+              "name": "SignalWatcher",
+              "package": "@tnesh-stack/signals"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SlCombobox",
+          "declaration": {
+            "name": "SlCombobox",
+            "module": "src/elements/sl-combobox.ts"
           }
         }
       ]

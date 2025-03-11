@@ -13,7 +13,7 @@ import '@shoelace-style/shoelace/dist/components/spinner/spinner.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 
 {{#if (eq linked_from.hash_type "AgentPubKey")}}
-import '@darksoil-studio/profiles-zome/dist/elements/agent-avatar.js';
+import '@darksoil-studio/profiles-provider/dist/elements/agent-avatar.js';
 {{/if}}
 
 import { {{pascal_case ../coordinator_zome_manifest.name}}Store } from '../{{kebab_case ../coordinator_zome_manifest.name}}-store.js';
