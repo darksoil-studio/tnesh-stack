@@ -2527,7 +2527,7 @@ dependencies = [
  "must_future",
  "one_err",
  "parking_lot 0.12.3",
- "reqwest 0.12.13",
+ "reqwest 0.12.14",
  "serde",
  "serde_bytes",
  "serde_json",
@@ -3541,7 +3541,7 @@ dependencies = [
  "hex",
  "hex-literal",
  "influxive-core",
- "reqwest 0.12.13",
+ "reqwest 0.12.14",
  "sha2",
  "tar",
  "tempfile",
@@ -3815,7 +3815,7 @@ dependencies = [
  "kitsune_p2p_types",
  "parking_lot 0.12.3",
  "rand 0.8.5",
- "reqwest 0.12.13",
+ "reqwest 0.12.14",
  "serde",
  "serde_bytes",
  "thiserror 1.0.69",
@@ -3832,7 +3832,7 @@ dependencies = [
  "kitsune_p2p_bin_data",
  "kitsune_p2p_bootstrap",
  "kitsune_p2p_types",
- "reqwest 0.12.13",
+ "reqwest 0.12.14",
  "serde",
  "serde_bytes",
  "url2",
@@ -4414,7 +4414,7 @@ dependencies = [
  "holochain_util",
  "proptest",
  "proptest-derive 0.5.1",
- "reqwest 0.12.13",
+ "reqwest 0.12.14",
  "rmp-serde",
  "serde",
  "serde_bytes",
@@ -5802,9 +5802,9 @@ dependencies = [
 
 [[package]]
 name = "reqwest"
-version = "0.12.13"
+version = "0.12.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "389a89e494bbc88bebf30e23da98742c843863a16a352647716116aa71fae80a"
+checksum = "989e327e510263980e231de548a33e63d34962d29ae61b467389a1a09627a254"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -8521,9 +8521,9 @@ checksum = "271414315aff87387382ec3d271b52d7ae78726f5d44ac98b4f4030c91880486"
 
 [[package]]
 name = "winnow"
-version = "0.7.3"
+version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e7f4ea97f6f78012141bcdb6a216b2609f0979ada50b20ca5b52dde2eac2bb1"
+checksum = "0e97b544156e9bebe1a0ffbc03484fc1ffe3100cbce3ffb17eac35f7cdd7ab36"
 dependencies = [
  "memchr",
 ]
