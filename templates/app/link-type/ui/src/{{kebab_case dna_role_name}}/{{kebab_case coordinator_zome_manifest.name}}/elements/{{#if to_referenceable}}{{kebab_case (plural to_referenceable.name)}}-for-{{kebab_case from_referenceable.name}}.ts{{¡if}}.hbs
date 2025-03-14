@@ -48,7 +48,7 @@ export class {{pascal_case (plural to_referenceable.name)}}For{{pascal_case from
 
   renderList(hashes: Array<{{to_referenceable.hash_type}}>) {
     if (hashes.length === 0) 
-      return html` <div class="column placeholder center-content" style="gap: 16px;">
+      return html` <div class="column placeholder center-content" style="gap: 8px;">
         <sl-icon
           style="height: 64px; width: 64px;"
           .src=${wrapPathInSvg(mdiInformationOutline)}
@@ -57,7 +57,7 @@ export class {{pascal_case (plural to_referenceable.name)}}For{{pascal_case from
       </div>`;
     
     return html`
-      <div class="column" style="gap: 16px;">
+      <div class="column" style="gap: 8px;">
         ${hashes.map(hash => 
       {{#if (not (eq to_referenceable.hash_type "AgentPubKey") )}}
           html`<{{kebab_case to_referenceable.name}}-summary .{{camel_case to_referenceable.name}}Hash=${hash}></{{kebab_case to_referenceable.name}}-summary>`
