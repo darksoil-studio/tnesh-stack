@@ -30,17 +30,16 @@ export class DisplayError extends LitElement {
 	renderIcon() {
 		return html`
 			<sl-icon
-				style="color: red; height: ${this._iconSize}; width: ${this
-					._iconSize}; margin-bottom: 8px;"
+				style="color: red; height: ${this._iconSize}; width: ${this._iconSize};"
 				src="${wrapPathInSvg(mdiAlertCircleOutline)}"
 			></sl-icon>
 		`;
 	}
 
 	renderFull() {
-		return html` <div class="column center-content" style="flex: 1">
+		return html` <div class="column center-content" style="flex: 1; gap: 8px">
 			${this.renderIcon()}
-			<div style="width: 500px; text-align: center" class="column">
+			<div style="max-width: 500px; text-align: center" class="column">
 				${this.headline
 					? html` <span style="margin-bottom: 8px">${this.headline} </span>`
 					: html``}

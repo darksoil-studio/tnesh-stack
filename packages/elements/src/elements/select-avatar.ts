@@ -62,6 +62,8 @@ export class SelectAvatar extends LitElement implements FormField {
 	}
 
 	onAvatarUploaded() {
+		const button = this.shadowRoot!.querySelector('sl-button');
+		if (button) button.loading = true;
 		if (this._avatarFilePicker.files && this._avatarFilePicker.files[0]) {
 			const reader = new FileReader();
 			reader.onload = e => {
@@ -84,6 +86,7 @@ export class SelectAvatar extends LitElement implements FormField {
 							},
 						}),
 					);
+					button.loading = false;
 				};
 				img.src = e.target?.result as string;
 			};

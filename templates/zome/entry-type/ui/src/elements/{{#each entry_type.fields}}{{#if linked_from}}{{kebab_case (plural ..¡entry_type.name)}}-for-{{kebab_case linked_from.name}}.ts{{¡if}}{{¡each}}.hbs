@@ -46,12 +46,12 @@ export class {{pascal_case (plural ../entry_type.name)}}For{{pascal_case linked_
 
   renderList(hashes: Array<{{#if ../entry_type.reference_entry_hash}}EntryHash{{else}}ActionHash{{/if}}>) {
     if (hashes.length === 0) 
-      return html` <div class="column center-content" style="gap: 16px;">
+      return html` <div class="column placeholder center-content" style="gap: 8px;">
         <sl-icon
-          style="color: grey; height: 64px; width: 64px;"
+          style="height: 64px; width: 64px;"
           .src=${wrapPathInSvg(mdiInformationOutline)}
         ></sl-icon>
-        <span class="placeholder">${msg("No {{lower_case (plural ../entry_type.name)}} found for this {{lower_case linked_from.name}}.")}</span>
+        <span>${msg("No {{lower_case (plural ../entry_type.name)}} found for this {{lower_case linked_from.name}}.")}</span>
       </div>`;
 
     return html`
