@@ -39,7 +39,7 @@ export class DisplayError extends LitElement {
 	renderFull() {
 		return html` <div class="column center-content" style="flex: 1; gap: 8px">
 			${this.renderIcon()}
-			<div style="width: 500px; text-align: center" class="column">
+			<div style="max-width: 500px; text-align: center" class="column">
 				${this.headline
 					? html` <span style="margin-bottom: 8px">${this.headline} </span>`
 					: html``}
