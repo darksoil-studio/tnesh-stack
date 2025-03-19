@@ -146,7 +146,7 @@ export class SelectAvatar extends LitElement implements FormField {
 				${this.label !== ''
 					? html`
 							<span
-								style="font-size: var(--sl-input-label-font-size-medium); margin-bottom: 4px"
+								style="font-size: var(--sl-input-label-font-size-medium); margin-bottom: 4px; white-space: nowrap;"
 								>${this.label}${this.required !== false ? ' *' : ''}</span
 							>
 						`
