@@ -49,10 +49,10 @@ export class {{pascal_case collection_name}} extends SignalWatcher(LitElement) {
       return html` <div class="column placeholder center-content" style="gap: 8px; flex: 1">
         <sl-icon
           .src=${wrapPathInSvg(mdiInformationOutline)}
-          style="height: 64px; width: 64px;"
+          style="font-size: 64px;"
           ></sl-icon
         >
-        <span>${msg("No {{lower_case (plural referenceable.name)}} found.")}</span>
+        <span style="text-align: center">${msg("No {{lower_case (plural referenceable.name)}} found.")}</span>
       </div>`;
 
     return html`
