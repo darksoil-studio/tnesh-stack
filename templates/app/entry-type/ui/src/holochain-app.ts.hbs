@@ -23,7 +23,7 @@ import './{{kebab_case dna_role_name}}/{{kebab_case coordinator_zome_manifest.na
     {
       path: "/{{kebab_case entry_type.name}}/:{{camel_case entry_type.name}}Hash",
       render: (params) => {
-        const store = this.shadowRoot?.querySelector<{{pascal_case coordinator_zome_manifest.name}}Context>("<{{kebab_case coordinator_zome_manifest.name}}-context>")?.store;
+        const store = this.shadowRoot?.querySelector<{{pascal_case coordinator_zome_manifest.name}}Context>("{{kebab_case coordinator_zome_manifest.name}}-context")?.store;
         const {{camel_case entry_type.name}} = store?.{{camel_case (plural entry_type.name)}}
           .get(decodeHashFromBase64(params.{{camel_case entry_type.name}}Hash!))
           .{{#if crud.update}}latestVersion{{else}}entry{{/if}}.get();
