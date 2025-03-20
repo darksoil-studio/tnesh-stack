@@ -29,13 +29,27 @@ export class ZomeClient<SIGNAL_PAYLOAD> {
 		});
 	}
 
-	protected callZome(fn_name: string, payload: any) {
-		const req: AppCallZomeRequest = {
-			role_name: this.roleName,
-			zome_name: this.zomeName,
-			fn_name,
-			payload,
-		};
-		return this.client.callZome(req);
+	protected async callZome(fn_name: string, payload: any) {
+		try {
+			const req: AppCallZomeRequest = {
+				role_name: this.roleName,
+				zome_name: this.zomeName,
+				fn_name,
+				payload,
+			};
+			const result = await this.client.callZome(req);
+			return result;
+		} catch (e) {
+			// Just retry if this is about concurrent init calls
+			if (
+				JSON.stringify(e).includes(
+					'Another zome function has triggered the `init()` callback',
+				)
+			) {
+				return this.callZome(fn_name, payload);
+			} else {
+				throw e;
+			}
+		}
 	}
 }
