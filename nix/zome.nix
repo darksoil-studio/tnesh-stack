@@ -15,9 +15,12 @@ let
       allCargoTomlsPaths =
         builtins.filter (path: lib.strings.hasSuffix "/Cargo.toml" path)
         allFiles;
-      allCratesPaths =
-        builtins.map (path: builtins.dirOf path) allCargoTomlsPaths;
-    in allCratesPaths;
+      cargoTomlsPathsWithoutWorkspace = builtins.filter (path:
+        builtins.hasAttr "package" (builtins.fromTOML (builtins.readFile path)))
+        allCargoTomlsPaths;
+      cratesPathsWithoutWorkspace = builtins.map (path: builtins.dirOf path)
+        cargoTomlsPathsWithoutWorkspace;
+    in cratesPathsWithoutWorkspace;
 
   listCratesNamesFromWorskspace = src:
     let
@@ -31,29 +34,31 @@ let
         builtins.map (toml: toml.package.name) cratesWithoutWorkspace;
     in cratesNames;
 
-  listBinaryCratesFromWorkspace = src:
+  isCrateZome = path:
     let
-      isCrateZome = path:
-        let
-          hasSrc =
-            lib.filesystem.pathIsDirectory (builtins.toString (path + "/src"));
-          hasMain = hasSrc && (builtins.pathExists
-            (builtins.toString (path + "/src/main.rs")));
-          hasBinDir = hasSrc && (lib.filesystem.pathIsDirectory
-            (builtins.toString (path + "/src/bin")));
-        in hasSrc && !hasMain && !hasBinDir;
+      hasSrc =
+        lib.filesystem.pathIsDirectory (builtins.toString (path + "/src"));
+      hasMain = hasSrc
+        && (builtins.pathExists (builtins.toString (path + "/src/main.rs")));
+      hasBinDir = hasSrc && (lib.filesystem.pathIsDirectory
+        (builtins.toString (path + "/src/bin")));
+    in hasSrc && !hasMain && !hasBinDir;
 
+  listBinaryCratesPathsFromWorkspace = src:
+    let
       allCratesPaths = listCratesPathsFromWorkspace src;
       binaryCratesPaths =
         builtins.filter (cratePath: !(isCrateZome cratePath)) allCratesPaths;
+    in binaryCratesPaths;
+
+  listBinaryCratesFromWorkspace = src:
+    let
+      binaryCratesPaths = listBinaryCratesPathsFromWorkspace src;
       binaryCratesCargoToml = builtins.map
         (path: builtins.fromTOML (builtins.readFile (path + "/Cargo.toml")))
         binaryCratesPaths;
-      binaryCratesWithoutWorkspace =
-        builtins.filter (toml: builtins.hasAttr "package" toml)
-        binaryCratesCargoToml;
       binaryCrates =
-        builtins.map (toml: toml.package.name) binaryCratesWithoutWorkspace;
+        builtins.map (toml: toml.package.name) binaryCratesCargoToml;
     in binaryCrates;
 
   nonWasmCrates = listBinaryCratesFromWorkspace src;
@@ -67,8 +72,32 @@ let
   else
     "";
 
+  cleanBinaryCrates = { lib }:
+    src:
+    let
+      binaryCratesPaths = listBinaryCratesPathsFromWorkspace src;
+      isInsideBinCrate = path:
+        builtins.any (binaryCratePath:
+          (lib.strings.hasPrefix "${
+              (builtins.substring 51 (builtins.stringLength binaryCratePath)
+                binaryCratePath)
+            }/" (builtins.substring 51 (builtins.stringLength path) path)))
+        binaryCratesPaths;
+
+    in lib.cleanSourceWith {
+      inherit src;
+      filter = orig_path: type:
+        (lib.strings.hasSuffix "Cargo.toml" orig_path)
+        || !(isInsideBinCrate orig_path);
+
+      name = "clean-binary-crates";
+    };
+
   commonArgs = {
-    inherit src;
+    src = if (builtins.length nonWasmCrates) > 0 then
+      (cleanBinaryCrates { inherit lib; } src)
+    else
+      src;
     doCheck = false;
     CARGO_BUILD_TARGET = "wasm32-unknown-unknown";
     pname = "${workspaceName}-workspace";
