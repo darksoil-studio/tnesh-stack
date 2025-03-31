@@ -1,7 +1,7 @@
 name: sync current main-x with main
 on:
   push: 
-    branches: [ main-0.4 ]
+    branches: [ main ]
 
 permissions:
   pull-requests: write
@@ -18,8 +18,8 @@ jobs:
         uses: tretuna/sync-branches@1.4.0
         with:
           GITHUB_TOKEN: $\{{ secrets.GITHUB_TOKEN }}
-          FROM_BRANCH: "main-0.4"
-          TO_BRANCH: "main"
+          FROM_BRANCH: "main"
+          TO_BRANCH: "main-0.4"
 
       - name: Enable Pull Request Automerge
         uses: peter-evans/enable-pull-request-automerge@v3
