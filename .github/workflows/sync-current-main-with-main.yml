@@ -20,4 +20,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PULL_REQUESTS_ENABLE_CHECKS_TOKEN }}
           FROM_BRANCH: "main"
           TO_BRANCH: "main-0.4"
-          PULL_REQUEST_AUTO_MERGE_METHOD: "merge"
+
+      - name: Enable Pull Request Automerge
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.pull.outputs.PULL_REQUEST_NUMBER }}
+          merge-method: merge
