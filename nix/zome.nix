@@ -1,6 +1,6 @@
 { lib, workspacePath, cargoArtifacts, runCommandLocal, runCommandNoCC, binaryen
 , deterministicCraneLib, craneLib, crateCargoToml, matchingZomeHash ? null
-, zome-wasm-hash, meta, zomeEnvironmentVars ? { } }:
+, zome-wasm-hash, meta, zomeEnvironmentVars ? { }, excludedCrates ? [ ] }:
 
 let
   cargoToml = builtins.fromTOML (builtins.readFile crateCargoToml);
@@ -10,7 +10,6 @@ let
 
   listCratesPathsFromWorkspace = src:
     let
-
       allFiles = lib.filesystem.listFilesRecursive src;
       allCargoTomlsPaths =
         builtins.filter (path: lib.strings.hasSuffix "/Cargo.toml" path)
@@ -62,8 +61,8 @@ let
     in binaryCrates;
 
   nonWasmCrates = listBinaryCratesFromWorkspace src;
-  excludedCrates =
-    builtins.toString (builtins.map (c: " --exclude ${c}") nonWasmCrates);
+  excludedCratesArgument = builtins.toString
+    (builtins.map (c: " --exclude ${c}") (nonWasmCrates ++ excludedCrates));
 
   allCratesNames = listCratesNamesFromWorskspace src;
 
@@ -103,7 +102,7 @@ let
     pname = "${workspaceName}-workspace";
     version = cargoToml.package.version;
     cargoBuildCommand =
-      "cargo build --release --locked --workspace ${excludedCrates}";
+      "cargo build --release --locked --workspace ${excludedCratesArgument}";
     cargoCheckCommand = "";
     cargoExtraArgs = "";
   };
