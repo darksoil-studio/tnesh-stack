@@ -119,7 +119,8 @@
             [ pkgs.apple-sdk_10_15 ]);
         builders = {
           rustZome = { crateCargoToml, workspacePath, cargoArtifacts ? null
-            , matchingZomeHash ? null, meta ? { }, zomeEnvironmentVars ? { } }:
+            , matchingZomeHash ? null, meta ? { }, zomeEnvironmentVars ? { }
+            , excludedCrates ? [ ] }:
             let
               deterministicCraneLib = let
                 rustToolchain =
@@ -136,7 +137,7 @@
             in pkgs.callPackage ./nix/zome.nix {
               inherit deterministicCraneLib craneLib crateCargoToml
                 cargoArtifacts workspacePath matchingZomeHash zome-wasm-hash
-                meta zomeEnvironmentVars;
+                meta zomeEnvironmentVars excludedCrates;
             };
           sweettest = { dna, workspacePath, crateCargoToml, buildInputs ? [ ]
             , nativeBuildInputs ? [ ], cargoArtifacts ? null }:
