@@ -113,10 +113,6 @@
       systems = builtins.attrNames inputs.holonix.devShells;
 
       perSystem = { inputs', self', config, pkgs, system, lib, ... }: rec {
-        dependencies.holochain.buildInputs = (with pkgs; [ perl openssl go ])
-          ++ (pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.pkg-config ])
-          ++ (pkgs.lib.optionals (system == "x86_64-darwin")
-            [ pkgs.apple-sdk_10_15 ]);
         builders = {
           rustZome = { crateCargoToml, workspacePath, cargoArtifacts ? null
             , matchingZomeHash ? null, meta ? { }, zomeEnvironmentVars ? { }
@@ -168,8 +164,23 @@
             };
         };
 
+        dependencies.holochain.buildInputs =
+          [ pkgs.go pkgs.perl pkgs.cmake pkgs.openssl ]
+          ++ (pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.pkg-config ])
+          # Holochain needs `clang` to build but the clang provided for x86_64-darwin fetches the wrong macos SDK.
+          ++ (pkgs.lib.optionals (system != "x86_64-darwin") [ pkgs.clang ])
+          # On intel macs, the default SDK is still 10.12 and Holochain won't build against that because we're
+          # using a newer Go version. So override with the newest SDK available for x86_64-darwin.
+          ++ (pkgs.lib.optional (system == "x86_64-darwin")
+            pkgs.apple-sdk_10_15);
+
         devShells.holochainDev = pkgs.mkShell {
           buildInputs = self'.dependencies.holochain.buildInputs;
+
+          shellHook = ''
+            # Make sure libdatachannel can find C++ standard libraries from clang.
+            export LIBCLANG_PATH=${pkgs.llvmPackages_18.libclang.lib}/lib
+          '';
         };
 
         devShells.default = pkgs.mkShell {
