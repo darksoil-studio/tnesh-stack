@@ -688,7 +688,7 @@
           "type": {
             "text": "array"
           },
-          "default": "[\n\tcss`\n\t\t.row {\n\t\t\tdisplay: flex;\n\t\t\tflex-direction: row;\n\t\t}\n\t\t.column {\n\t\t\tdisplay: flex;\n\t\t\tflex-direction: column;\n\t\t}\n\t\t.small-margin {\n\t\t\tmargin-top: 6px;\n\t\t}\n\t\t.big-margin {\n\t\t\tmargin-top: 23px;\n\t\t}\n\n\t\t.fill {\n\t\t\tflex: 1;\n\t\t\theight: 100%;\n\t\t}\n\n\t\t.title {\n\t\t\tfont-size: 20px;\n\t\t}\n\n\t\t.center-content {\n\t\t\talign-items: center;\n\t\t\tjustify-content: center;\n\t\t}\n\n\t\t.placeholder {\n\t\t\tcolor: var(--sl-color-gray-700);\n\t\t}\n\n\t\t.flex-scrollable-parent {\n\t\t\tposition: relative;\n\t\t\tdisplay: flex;\n\t\t\tflex: 1;\n\t\t}\n\n\t\t.flex-scrollable-container {\n\t\t\tposition: absolute;\n\t\t\ttop: 0;\n\t\t\tleft: 0;\n\t\t\tright: 0;\n\t\t\tbottom: 0;\n\t\t}\n\n\t\t.flex-scrollable-x {\n\t\t\tmax-width: 100%;\n\t\t\toverflow-x: auto;\n\t\t}\n\t\t.flex-scrollable-y {\n\t\t\tmax-height: 100%;\n\t\t\toverflow-y: auto;\n\t\t}\n\t\t:host {\n\t\t\tcolor: var(--sl-color-neutral-1000);\n\t\t}\n\n\t\tsl-card {\n\t\t\tdisplay: flex;\n\t\t}\n\t\tsl-card::part(base) {\n\t\t\tflex: 1;\n\t\t}\n\t\tsl-card::part(body) {\n\t\t\tdisplay: flex;\n\t\t\tflex: 1;\n\t\t\theight: 100%;\n\t\t}\n\t\tsl-drawer::part(body) {\n\t\t\tdisplay: flex;\n\t\t}\n\t`,\n]"
+          "default": "[ css` .row { display: flex; flex-direction: row; } .column { display: flex; flex-direction: column; } .small-margin { margin-top: 6px; } .big-margin { margin-top: 23px; } .fill { flex: 1; height: 100%; } .title { font-size: 20px; } .center-content { align-items: center; justify-content: center; } .placeholder { color: var(--sl-color-gray-700); } .flex-scrollable-parent { position: relative; display: flex; flex: 1; } .flex-scrollable-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; } .flex-scrollable-x { max-width: 100%; overflow-x: auto; } .flex-scrollable-y { max-height: 100%; overflow-y: auto; } :host { color: var(--sl-color-neutral-1000); } sl-card { display: flex; } sl-card::part(base) { flex: 1; } sl-card::part(body) { display: flex; flex: 1; height: 100%; } sl-drawer::part(body) { display: flex; } `, ]"
         }
       ],
       "exports": [
@@ -716,13 +716,24 @@
               "name": "client",
               "type": {
                 "text": "AppClient"
-              }
+              },
+              "attribute": "client"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "client",
+              "type": {
+                "text": "AppClient"
+              },
+              "fieldName": "client"
             }
           ],
           "superclass": {
             "name": "LitElement",
             "package": "lit"
           },
+          "tagName": "app-client-context",
           "customElement": true
         }
       ],
@@ -730,6 +741,14 @@
         {
           "kind": "js",
           "name": "AppClientContext",
+          "declaration": {
+            "name": "AppClientContext",
+            "module": "src/elements/app-client-context.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "app-client-context",
           "declaration": {
             "name": "AppClientContext",
             "module": "src/elements/app-client-context.ts"
@@ -751,7 +770,8 @@
               "name": "client",
               "type": {
                 "text": "AppClient"
-              }
+              },
+              "attribute": "client"
             },
             {
               "kind": "field",
@@ -769,10 +789,20 @@
               }
             }
           ],
+          "attributes": [
+            {
+              "name": "client",
+              "type": {
+                "text": "AppClient"
+              },
+              "fieldName": "client"
+            }
+          ],
           "superclass": {
             "name": "LitElement",
             "package": "lit"
           },
+          "tagName": "app-websocket-context",
           "customElement": true
         }
       ],
@@ -780,6 +810,14 @@
         {
           "kind": "js",
           "name": "AppWebsocketContext",
+          "declaration": {
+            "name": "AppWebsocketContext",
+            "module": "src/elements/app-websocket-context.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "app-websocket-context",
           "declaration": {
             "name": "AppWebsocketContext",
             "module": "src/elements/app-websocket-context.ts"
@@ -802,32 +840,37 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false"
+              "default": "false",
+              "attribute": "tooltip"
             },
             {
               "kind": "field",
               "name": "headline",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "headline"
             },
             {
               "kind": "field",
               "name": "error",
               "type": {
                 "text": "any"
-              }
+              },
+              "attribute": "error"
             },
             {
               "kind": "field",
               "name": "iconSize",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "icon-size"
             },
             {
               "kind": "field",
-              "name": "_iconSize"
+              "name": "_iconSize",
+              "readonly": true
             },
             {
               "kind": "method",
@@ -842,10 +885,42 @@
               "name": "renderTooltip"
             }
           ],
+          "attributes": [
+            {
+              "name": "tooltip",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "tooltip"
+            },
+            {
+              "name": "headline",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "headline"
+            },
+            {
+              "name": "error",
+              "type": {
+                "text": "any"
+              },
+              "fieldName": "error"
+            },
+            {
+              "name": "icon-size",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "iconSize"
+            }
+          ],
           "superclass": {
             "name": "LitElement",
             "package": "lit"
           },
+          "tagName": "display-error",
           "customElement": true
         }
       ],
@@ -853,6 +928,14 @@
         {
           "kind": "js",
           "name": "DisplayError",
+          "declaration": {
+            "name": "DisplayError",
+            "module": "src/elements/display-error.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "display-error",
           "declaration": {
             "name": "DisplayError",
             "module": "src/elements/display-error.ts"
@@ -874,35 +957,40 @@
               "name": "linuxUrl",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "linux-url"
             },
             {
               "kind": "field",
               "name": "nixCommand",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "nix-command"
             },
             {
               "kind": "field",
               "name": "macosIntelUrl",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "macos-intel-url"
             },
             {
               "kind": "field",
               "name": "macosSiliconUrl",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "macos-silicon-url"
             },
             {
               "kind": "field",
               "name": "windowsUrl",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "windows-url"
             },
             {
               "kind": "method",
@@ -917,10 +1005,48 @@
               ]
             }
           ],
+          "attributes": [
+            {
+              "name": "linux-url",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "linuxUrl"
+            },
+            {
+              "name": "nix-command",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "nixCommand"
+            },
+            {
+              "name": "macos-intel-url",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "macosIntelUrl"
+            },
+            {
+              "name": "macos-silicon-url",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "macosSiliconUrl"
+            },
+            {
+              "name": "windows-url",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "windowsUrl"
+            }
+          ],
           "superclass": {
             "name": "LitElement",
             "package": "lit"
           },
+          "tagName": "download-installer-button",
           "customElement": true
         }
       ],
@@ -928,6 +1054,14 @@
         {
           "kind": "js",
           "name": "DownloadInstallerButton",
+          "declaration": {
+            "name": "DownloadInstallerButton",
+            "module": "src/elements/download-installer-button.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "download-installer-button",
           "declaration": {
             "name": "DownloadInstallerButton",
             "module": "src/elements/download-installer-button.ts"
@@ -949,7 +1083,8 @@
               "name": "hash",
               "type": {
                 "text": "HoloHash"
-              }
+              },
+              "attribute": "hash"
             },
             {
               "kind": "field",
@@ -958,7 +1093,8 @@
                 "text": "number"
               },
               "default": "32",
-              "description": "Size of the identicon in pixels."
+              "description": "Size of the identicon in pixels.",
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -967,7 +1103,8 @@
                 "text": "'square' | 'circle'"
               },
               "default": "'circle'",
-              "description": "Shape of the identicon."
+              "description": "Shape of the identicon.",
+              "attribute": "shape"
             },
             {
               "kind": "field",
@@ -976,7 +1113,8 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Disables showing the tooltip for the hash"
+              "description": "Disables showing the tooltip for the hash",
+              "attribute": "disable-tooltip"
             },
             {
               "kind": "field",
@@ -985,7 +1123,8 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Disable copying of the hash on click"
+              "description": "Disable copying of the hash on click",
+              "attribute": "disable-copy"
             },
             {
               "kind": "field",
@@ -1024,17 +1163,64 @@
             },
             {
               "kind": "field",
-              "name": "strHash"
+              "name": "strHash",
+              "readonly": true
             },
             {
               "kind": "method",
               "name": "renderCanvas"
             }
           ],
+          "attributes": [
+            {
+              "name": "hash",
+              "type": {
+                "text": "HoloHash"
+              },
+              "fieldName": "hash"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "number"
+              },
+              "default": "32",
+              "description": "Size of the identicon in pixels.",
+              "fieldName": "size"
+            },
+            {
+              "name": "shape",
+              "type": {
+                "text": "'square' | 'circle'"
+              },
+              "default": "'circle'",
+              "description": "Shape of the identicon.",
+              "fieldName": "shape"
+            },
+            {
+              "name": "disable-tooltip",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disables showing the tooltip for the hash",
+              "fieldName": "disableTooltip"
+            },
+            {
+              "name": "disable-copy",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disable copying of the hash on click",
+              "fieldName": "disableCopy"
+            }
+          ],
           "superclass": {
             "name": "LitElement",
             "package": "lit"
           },
+          "tagName": "holo-identicon",
           "customElement": true
         }
       ],
@@ -1042,6 +1228,14 @@
         {
           "kind": "js",
           "name": "HoloIdenticon",
+          "declaration": {
+            "name": "HoloIdenticon",
+            "module": "src/elements/holo-identicon.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "holo-identicon",
           "declaration": {
             "name": "HoloIdenticon",
             "module": "src/elements/holo-identicon.ts"
@@ -1064,7 +1258,8 @@
               "type": {
                 "text": "string"
               },
-              "default": "'avatar'"
+              "default": "'avatar'",
+              "attribute": "name"
             },
             {
               "kind": "field",
@@ -1072,7 +1267,8 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false"
+              "default": "false",
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -1080,14 +1276,16 @@
               "type": {
                 "text": "'circle' | 'square' | 'rounded'"
               },
-              "default": "'circle'"
+              "default": "'circle'",
+              "attribute": "shape"
             },
             {
               "kind": "field",
               "name": "value",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "value"
             },
             {
               "kind": "field",
@@ -1095,14 +1293,16 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false"
+              "default": "false",
+              "attribute": "disabled"
             },
             {
               "kind": "field",
               "name": "defaultValue",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "defaultValue"
             },
             {
               "kind": "field",
@@ -1110,7 +1310,8 @@
               "type": {
                 "text": "number"
               },
-              "default": "300"
+              "default": "300",
+              "attribute": "avatar-width"
             },
             {
               "kind": "field",
@@ -1118,14 +1319,16 @@
               "type": {
                 "text": "number"
               },
-              "default": "300"
+              "default": "300",
+              "attribute": "avatar-height"
             },
             {
               "kind": "field",
               "name": "label",
               "type": {
                 "text": "string"
-              }
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -1173,10 +1376,82 @@
               }
             }
           ],
+          "attributes": [
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "'avatar'",
+              "fieldName": "name"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "required"
+            },
+            {
+              "name": "shape",
+              "type": {
+                "text": "'circle' | 'square' | 'rounded'"
+              },
+              "default": "'circle'",
+              "fieldName": "shape"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "value"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "defaultValue",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "defaultValue"
+            },
+            {
+              "name": "avatar-width",
+              "type": {
+                "text": "number"
+              },
+              "default": "300",
+              "fieldName": "avatarWidth"
+            },
+            {
+              "name": "avatar-height",
+              "type": {
+                "text": "number"
+              },
+              "default": "300",
+              "fieldName": "avatarHeight"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "fieldName": "label"
+            }
+          ],
           "superclass": {
             "name": "LitElement",
             "package": "lit"
           },
+          "tagName": "select-avatar",
           "customElement": true
         }
       ],
@@ -1184,6 +1459,14 @@
         {
           "kind": "js",
           "name": "SelectAvatar",
+          "declaration": {
+            "name": "SelectAvatar",
+            "module": "src/elements/select-avatar.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "select-avatar",
           "declaration": {
             "name": "SelectAvatar",
             "module": "src/elements/select-avatar.ts"
@@ -1205,21 +1488,24 @@
               "name": "label",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
               "name": "name",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "name"
             },
             {
               "kind": "field",
               "name": "defaultValue",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "defaultValue"
             },
             {
               "kind": "field",
@@ -1227,7 +1513,8 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false"
+              "default": "false",
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -1235,7 +1522,8 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false"
+              "default": "false",
+              "attribute": "disabled"
             },
             {
               "kind": "field",
@@ -1247,14 +1535,16 @@
               "name": "search",
               "type": {
                 "text": "(filter: string) => Promise<string[]>"
-              }
+              },
+              "attribute": "search"
             },
             {
               "kind": "field",
               "name": "renderItem",
               "type": {
                 "text": "((searchResult: string) => TemplateResult) | undefined"
-              }
+              },
+              "attribute": "renderItem"
             },
             {
               "kind": "field",
@@ -1301,6 +1591,59 @@
               }
             }
           ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "label"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "name"
+            },
+            {
+              "name": "defaultValue",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "defaultValue"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "required"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "search",
+              "type": {
+                "text": "(filter: string) => Promise<string[]>"
+              },
+              "fieldName": "search"
+            },
+            {
+              "name": "renderItem",
+              "type": {
+                "text": "((searchResult: string) => TemplateResult) | undefined"
+              },
+              "fieldName": "renderItem"
+            }
+          ],
           "mixins": [
             {
               "name": "SignalWatcher",
@@ -1311,6 +1654,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "tagName": "sl-combobox",
           "customElement": true
         }
       ],
@@ -1318,6 +1662,14 @@
         {
           "kind": "js",
           "name": "SlCombobox",
+          "declaration": {
+            "name": "SlCombobox",
+            "module": "src/elements/sl-combobox.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "sl-combobox",
           "declaration": {
             "name": "SlCombobox",
             "module": "src/elements/sl-combobox.ts"
@@ -1339,21 +1691,24 @@
               "name": "label",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
               "name": "name",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "attribute": "name"
             },
             {
               "kind": "field",
               "name": "defaultValue",
               "type": {
                 "text": "Date | number | string | undefined"
-              }
+              },
+              "attribute": "defaultValue"
             },
             {
               "kind": "field",
@@ -1361,7 +1716,8 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false"
+              "default": "false",
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -1369,21 +1725,24 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false"
+              "default": "false",
+              "attribute": "disabled"
             },
             {
               "kind": "field",
               "name": "min",
               "type": {
                 "text": "Date | number | string | undefined"
-              }
+              },
+              "attribute": "min"
             },
             {
               "kind": "field",
               "name": "max",
               "type": {
                 "text": "Date | number | string | undefined"
-              }
+              },
+              "attribute": "max"
             },
             {
               "kind": "field",
@@ -1429,13 +1788,68 @@
               "name": "value",
               "type": {
                 "text": "string | undefined"
-              }
+              },
+              "readonly": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "label"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "name"
+            },
+            {
+              "name": "defaultValue",
+              "type": {
+                "text": "Date | number | string | undefined"
+              },
+              "fieldName": "defaultValue"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "required"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "min",
+              "type": {
+                "text": "Date | number | string | undefined"
+              },
+              "fieldName": "min"
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "Date | number | string | undefined"
+              },
+              "fieldName": "max"
             }
           ],
           "superclass": {
             "name": "LitElement",
             "package": "lit"
           },
+          "tagName": "sl-datetime-input",
           "customElement": true
         }
       ],
@@ -1443,6 +1857,14 @@
         {
           "kind": "js",
           "name": "SlDatetimeInput",
+          "declaration": {
+            "name": "SlDatetimeInput",
+            "module": "src/elements/sl-datetime-input.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "sl-datetime-input",
           "declaration": {
             "name": "SlDatetimeInput",
             "module": "src/elements/sl-datetime-input.ts"
