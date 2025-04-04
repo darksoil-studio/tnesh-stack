@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.follows = "holonix/nixpkgs";
-    holonix.url = "github:holochain/holonix/main-0.4";
+    holonix.url = "github:holochain/holonix/main-0.5";
 
     tnesh-stack.url = "path:./../../..";
     service = {

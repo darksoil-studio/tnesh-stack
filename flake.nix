@@ -1,6 +1,6 @@
 {
   inputs = {
-    holonix.url = "github:holochain/holonix/main-0.4";
+    holonix.url = "github:holochain/holonix";
     nixpkgs.follows = "holonix/nixpkgs";
     rust-overlay.follows = "holonix/rust-overlay";
     crane.follows = "holonix/crane";
@@ -193,7 +193,7 @@
             };
             cargoArtifacts = craneLib.buildDepsOnly (commonArgs // {
               pname = "zome";
-              version = "for-holochain-0.4.x";
+              version = "for-holochain-0.5.x";
             });
 
           in cargoArtifacts;
@@ -213,7 +213,7 @@
               # CARGO_PROFILE = "release";
               CARGO_PROFILE = "release";
               pname = "sweettest";
-              version = "for-holochain-0.4.x";
+              version = "for-holochain-0.5.x";
             };
           in cargoArtifacts;
         };

@@ -8,9 +8,9 @@ exclude = [
 resolver = "2"
 
 [workspace.dependencies]
-hdi = "0.5.1"
-hdk = "0.4.1"
-holochain = "0.4.1"
-holo_hash = "0.4.1"
-holochain_types = "0.4.1"
-mr_bundle = "0.4.1"
+hdi = "0.6.0-dev"
+hdk = "0.5.0-dev"
+holochain = "0.5.0-dev"
+holo_hash = "0.5.0-dev"
+holochain_types = "0.5.0-dev"
+mr_bundle = "0.5.0-dev"

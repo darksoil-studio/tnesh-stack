@@ -538,7 +538,7 @@ mod tests {
             Some("profiles_integrity".into()),
             Some("profiles".into()),
             "github:darksoil-studio/profiles-zome".into(),
-            Some("main-0.4".into()),
+            Some("main-0.5".into()),
             "@darksoil-studio/profiles-zome".into(),
             None,
             Some("package1".into()),
@@ -593,11 +593,11 @@ lineage: []
   description = "Template for Holochain app development";
   
   inputs = {
-    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.4";
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.5";
     nixpkgs.follows = "holonix/nixpkgs";
 
     holonix.url = "github:holochain/holonix";
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.5";
   };
 
   outputs = inputs @ { ... }:
@@ -704,7 +704,7 @@ export class App {
             Some("profiles_integrity".into()),
             Some("profiles".into()),
             "github:darksoil-studio/profiles-zome".into(),
-            Some("main-0.4".into()),
+            Some("main-0.5".into()),
             "@darksoil-studio/profiles-zome".into(),
             None,
             None,
@@ -759,11 +759,11 @@ lineage: []
   description = "Template for Holochain app development";
   
   inputs = {
-    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.4";
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.5";
     nixpkgs.follows = "holonix/nixpkgs";
 
     holonix.url = "github:holochain/holonix";
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.5";
   };
 
   outputs = inputs @ { ... }:
@@ -885,7 +885,7 @@ lineage: []
     nixpkgs.follows = "holonix/nixpkgs";
 
     holonix.url = "github:holochain/holonix";
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.5";
   };
 
   outputs = inputs @ { ... }:

@@ -3,14 +3,14 @@
 
   inputs = {
     nixpkgs.follows = "holonix/nixpkgs";
-    holonix.url = "github:holochain/holonix/main-0.4";
+    holonix.url = "github:holochain/holonix/main-0.5";
 
     tnesh-stack.url = "path:./../../..";
     module = {
       url = "path:./../module-repo";
       inputs.tnesh-stack.follows = "tnesh-stack";
     };
-    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.4";
+    profiles-zome.url = "github:darksoil-studio/profiles-zome/main-0.5";
 
     # previousDnaVersion.url =
     #   "github:darksoil-studio/tnesh-stack/cab12a7cfe0c7da510f4887b7bc93321cd0b6960?dir=nix/fixtures/service-repo";

@@ -40,8 +40,8 @@ nix flake lock
 pnpm install
 echo 'lockfile=false' > .npmrc
 
-nix run github:darksoil-studio/profiles-zome/main-0.4#scaffold -- --ci
-nix run github:darksoil-studio/file-storage/main-0.4#scaffold -- --ci
+nix run github:darksoil-studio/profiles-zome/main-0.5#scaffold -- --ci
+nix run github:darksoil-studio/file-storage/main-0.5#scaffold -- --ci
 
 pnpm -F ui format
 pnpm -F ui lint
