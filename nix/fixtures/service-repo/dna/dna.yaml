@@ -4,7 +4,6 @@ name: my_dna
 integrity:
   network_seed: ~
   properties: ~
-  origin_time: 2022-02-11T23:29:00.789576Z
   zomes:
     - name: my_zome_integrity
       dylib: ~

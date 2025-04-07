@@ -19,7 +19,6 @@
           integrity:
             network_seed: ~
             properties: ~
-            origin_time: 1709638576394039
             zomes: []
           coordinator:
             zomes:
