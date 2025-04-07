@@ -1,6 +1,6 @@
 {
 	"name": "@tnesh-stack/signals",
-	"version": "0.500.0-dev.0",
+	"version": "0.500.0-rc.0",
 	"description": "Holochain async-signals to build reusable tnesh modules",
 	"author": "guillem.cordoba@gmail.com",
 	"main": "dist/index.js",
@@ -18,8 +18,8 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@tnesh-stack/utils": "workspace:^0.500.0-dev",
-		"@holochain/client": "^0.19.0-dev",
+		"@tnesh-stack/utils": "workspace:^0.500.0-rc",
+		"@holochain/client": "^0.19.0-rc",
 		"@msgpack/msgpack": "^2.8.0",
 		"async-signals": "^0.1.10",
 		"lodash-es": "^4.17.21",
