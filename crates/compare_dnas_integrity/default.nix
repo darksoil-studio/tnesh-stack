@@ -19,7 +19,7 @@
       };
       cargoArtifacts = craneLib.buildDepsOnly (commonArgs // {
         pname = "tnesh-workspace";
-        version = "0.4.x";
+        version = "0.5.x";
       });
     in craneLib.buildPackage (commonArgs // {
       pname = crate;
