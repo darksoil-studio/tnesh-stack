@@ -87,6 +87,8 @@ let
       inherit src;
       filter = orig_path: type:
         (lib.strings.hasSuffix "Cargo.toml" orig_path)
+        || (lib.strings.hasSuffix "lib.rs" orig_path)
+        || (lib.strings.hasSuffix "main.rs" orig_path)
         || !(isInsideBinCrate orig_path);
 
       name = "clean-binary-crates";
