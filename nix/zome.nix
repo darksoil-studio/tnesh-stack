@@ -95,11 +95,7 @@ let
     };
 
   commonArgs = {
-    src =
-      # if (builtins.length nonWasmCrates) > 0 then
-      #   (cleanBinaryCrates { inherit lib; } src)
-      # else
-      src;
+    inherit src;
     doCheck = false;
     CARGO_BUILD_TARGET = "wasm32-unknown-unknown";
     pname = "${workspaceName}-workspace";
