@@ -95,9 +95,10 @@ let
     };
 
   commonArgs = {
-    src = if (builtins.length nonWasmCrates) > 0 then
-      (cleanBinaryCrates { inherit lib; } src)
-    else
+    src =
+      # if (builtins.length nonWasmCrates) > 0 then
+      #   (cleanBinaryCrates { inherit lib; } src)
+      # else
       src;
     doCheck = false;
     CARGO_BUILD_TARGET = "wasm32-unknown-unknown";
