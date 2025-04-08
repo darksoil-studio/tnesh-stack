@@ -568,7 +568,6 @@ name: my_dna
 integrity:
   network_seed: null
   properties: null
-  origin_time: 1709638576394039
   zomes:
   - name: profiles_integrity
     hash: null
@@ -734,7 +733,6 @@ name: my_dna
 integrity:
   network_seed: null
   properties: null
-  origin_time: 1709638576394039
   zomes:
   - name: profiles_integrity
     hash: null
@@ -867,7 +865,6 @@ name: {dna_name}
 integrity:
   network_seed: ~
   properties: ~
-  origin_time: 1709638576394039
   zomes: []
 coordinator:
   zomes: []
